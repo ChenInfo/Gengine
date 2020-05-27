@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * ResourceUnavailableAction which terminates the JVM with the specified exit code, not to be used lightly.
+ * ComponentUnavailableAction which terminates the JVM with the specified exit code, not to be used lightly.
  *
  */
 public class ComponentUnavailableActionTerminate implements ComponentUnavailableAction
