@@ -17,7 +17,7 @@ public class ComponentUnavailableExceptionHandler
     private Map<String, ComponentUnavailableAction> policies;
 
     /**
-     * A map of ComponentUnavailableException simple class names to the
+     * A map of ComponentUnavailableException canonical class names to the
      * ComponentUnavailableAction that should be executed.
      *
      * @param policies
@@ -33,13 +33,13 @@ public class ComponentUnavailableExceptionHandler
      *
      * @param e
      */
-    public void handle(ComponentUnavailableException e)
+    public void handle(Throwable e)
     {
         if (e == null)
         {
             return;
         }
-        String actionKey = e.getClass().getSimpleName();
+        String actionKey = e.getClass().getCanonicalName();
         if (policies == null || !policies.containsKey(actionKey))
         {
             logger.error("Received " + actionKey +

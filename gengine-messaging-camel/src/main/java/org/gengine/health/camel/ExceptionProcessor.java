@@ -2,7 +2,6 @@ package org.gengine.health.camel;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.gengine.health.ComponentUnavailableException;
 import org.gengine.health.ComponentUnavailableExceptionHandler;
 
 /**
@@ -22,19 +21,15 @@ public class ExceptionProcessor implements Processor
     public void process(Exchange exchange) throws Exception
     {
         Exception cause = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
-        // Handler can only deal with ComponentUnavailableExceptions
-        if (cause instanceof ComponentUnavailableException)
-        {
-            handler.handle((ComponentUnavailableException) cause);
-        }
+        handler.handle(cause);
     }
 
     public void onReceive(Object body)
     {
-        // Handler can only deal with ComponentUnavailableExceptions
-        if (body instanceof ComponentUnavailableException)
+        // Handler can only deal with Throwables
+        if (body instanceof Throwable)
         {
-            handler.handle((ComponentUnavailableException) body);
+            handler.handle((Throwable) body);
         }
     }
 
