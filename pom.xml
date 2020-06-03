@@ -8,6 +8,35 @@
     <artifactId>gengine-parent</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+    
+    <organization>
+        <name>ChenInfo Software</name>
+        <url>http://www.cheninfo.org/</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>${maven.license.name}</name>
+            <url>${maven.license.url}</url>
+        </license>
+    </licenses>
+    <scm>
+        <connection>${maven.scm.connection}</connection>
+        <developerConnection>${maven.scm.developerConnection}</developerConnection>
+        <url>${maven.scm.url}</url>
+    </scm>
+    
+    <properties>
+        <maven.license.name>GNU Lesser General Public License v3.0 or later</maven.license.name>
+        <maven.license.url>http://www.gnu.org/licenses/lgpl-3.0-standalone.html</maven.license.url>
+        <maven.scm.connection>scm:git:https://github.com/ChenInfo/gengine.git</maven.scm.connection>
+        <maven.scm.developerConnection>scm:git:git@github.com:ChenInfo/gengine.git</maven.scm.developerConnection>
+        <maven.scm.url>https://github.com/ChenInfo/gengine</maven.scm.url>
+        <maven.repository.url>https://artifacts.cheninfo.com/nexus/content/groups/public</maven.repository.url>
+        <maven.compile.source>1.7</maven.compile.source>
+        <maven.compile.target>1.7</maven.compile.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
 
     <modules>
         <module>gengine-commons</module>
@@ -27,13 +56,6 @@
         <module>gengine-hash-worker-javase</module>
         <module>gengine-hash-node-javase</module>
     </modules>
-
-    <properties>
-        <maven.compile.source>1.7</maven.compile.source>
-        <maven.compile.target>1.7</maven.compile.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
 
     <dependencies>
         <dependency>
