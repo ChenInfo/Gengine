@@ -383,7 +383,7 @@ public class ImageMagickContentTransformerWorker extends AbstractContentTransfor
     {
         // Need a page source if we're transforming from PDF or TIFF to an image other than TIFF
         // or from PSD
-        return ((sourceMimetype.equals(FileMediaType.MEDIATYPE_APPLICATION_PHOTOSHOP.getMediaType()) ||
+        return ((sourceMimetype.equals(FileMediaType.MEDIATYPE_PDF.getMediaType()) ||
                 sourceMimetype.equals(FileMediaType.MEDIATYPE_IMAGE_TIFF.getMediaType())) &&
                 ((!targetMimetype.equals(FileMediaType.MEDIATYPE_IMAGE_TIFF.getMediaType())
                 && targetMimetype.contains(FileMediaType.PREFIX_IMAGE)) ||

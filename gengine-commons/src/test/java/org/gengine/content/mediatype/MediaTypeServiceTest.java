@@ -27,8 +27,8 @@ public class MediaTypeServiceTest
     @Test
     public void testGetExtensionFromMediaType()
     {
-        assertEquals(".txt", mediaTypeService.getExtension("text/plain"));
-        assertEquals(".pdf", mediaTypeService.getExtension("application/pdf"));
+        assertEquals("txt", mediaTypeService.getExtension("text/plain"));
+        assertEquals("pdf", mediaTypeService.getExtension("application/pdf"));
     }
 
     @Test

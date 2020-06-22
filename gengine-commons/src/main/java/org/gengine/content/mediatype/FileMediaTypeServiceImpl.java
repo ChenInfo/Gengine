@@ -44,7 +44,12 @@ public class FileMediaTypeServiceImpl implements FileMediaTypeService
             MimeType tikaMimeType = tikaConfig.getMimeRepository().forName(mimetype);
             if (tikaMimeType != null)
             {
-                return tikaMimeType.getExtension();
+                String tikaExtension = tikaMimeType.getExtension();
+                if (tikaExtension.startsWith("."))
+                {
+                    tikaExtension = tikaExtension.substring(1, tikaExtension.length());
+                }
+                return tikaExtension;
             }
         }
         catch (MimeTypeException e)

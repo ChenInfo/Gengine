@@ -55,6 +55,8 @@
         <module>gengine-transform-node-commons</module>
         <module>gengine-transform-worker-ffmpeg</module>
         <module>gengine-transform-node-ffmpeg</module>
+        <module>gengine-transform-worker-imagemagick</module>
+        <module>gengine-transform-node-imagemagick</module>
         <module>gengine-hash-node-commons</module>
         <module>gengine-hash-worker-javase</module>
         <module>gengine-hash-node-javase</module>
