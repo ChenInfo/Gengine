@@ -9,7 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>gengine-health-commons</artifactId>
+    <artifactId>gengine-hash-commons</artifactId>
 
     <dependencies>
         <dependency>

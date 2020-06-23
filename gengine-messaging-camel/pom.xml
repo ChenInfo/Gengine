@@ -19,12 +19,12 @@
         <dependency>
             <groupId>org.gengine</groupId>
             <artifactId>gengine-messaging-commons</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.gengine</groupId>
             <artifactId>gengine-health-commons</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>

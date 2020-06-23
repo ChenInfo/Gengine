@@ -9,13 +9,27 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>gengine-health-commons</artifactId>
+    <artifactId>gengine-messaging-commons</artifactId>
+
+    <properties>
+        <dependency.jackson2.version>2.1.4</dependency.jackson2.version>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.gengine</groupId>
             <artifactId>gengine-commons</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${dependency.jackson2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>${dependency.jackson2.version}</version>
         </dependency>
     </dependencies>
 

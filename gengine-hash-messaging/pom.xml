@@ -9,12 +9,12 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>gengine-health-commons</artifactId>
+    <artifactId>gengine-hash-messaging</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>org.gengine</groupId>
-            <artifactId>gengine-commons</artifactId>
+            <artifactId>gengine-messaging-commons</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
