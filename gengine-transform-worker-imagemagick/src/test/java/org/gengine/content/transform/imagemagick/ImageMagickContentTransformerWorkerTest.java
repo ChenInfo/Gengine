@@ -11,6 +11,8 @@ import org.cheninfo.service.cmr.repository.TransformationSourceOptions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gengine.content.ContentReference;
+import org.gengine.content.file.FileProvider;
+import org.gengine.content.file.TempFileProvider;
 import org.gengine.content.handler.ContentReferenceHandler;
 import org.gengine.content.handler.FileContentReferenceHandlerImpl;
 import org.gengine.content.mediatype.FileMediaType;
@@ -36,11 +38,15 @@ public class ImageMagickContentTransformerWorkerTest extends AbstractContentTran
 
     @Before
     public void setUp() throws Exception {
+        FileProvider fileProvider = new TempFileProvider();
         contentReferenceHandler = new FileContentReferenceHandlerImpl();
+        ((FileContentReferenceHandlerImpl) contentReferenceHandler).setFileProvider(fileProvider);
         progressReporter = new LoggingProgressReporterImpl();
 
         transformerWorker = new ImageMagickContentTransformerWorker();
-        ((ImageMagickContentTransformerWorker) transformerWorker).setContentReferenceHandler(
+        ((ImageMagickContentTransformerWorker) transformerWorker).setSourceContentReferenceHandler(
+                contentReferenceHandler);
+        ((ImageMagickContentTransformerWorker) transformerWorker).setTargetContentReferenceHandler(
                 contentReferenceHandler);
         ((ImageMagickContentTransformerWorker) transformerWorker).init();
     }

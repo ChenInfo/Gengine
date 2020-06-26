@@ -29,6 +29,11 @@
         </dependency>
         <dependency>
             <groupId>org.gengine</groupId>
+            <artifactId>gengine-simple-node-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.gengine</groupId>
             <artifactId>gengine-commons</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>

@@ -133,17 +133,17 @@ public class ImageMagickContentTransformerWorker extends AbstractContentTransfor
                 throw new ChenInfoRuntimeException("Sample image not found: " + resourcePath);
             }
             // dump to a temp file
-            ContentReference sourceReference = contentReferenceHandler.createContentReference(
+            ContentReference sourceReference = targetContentReferenceHandler.createContentReference(
                     getClass().getSimpleName() + "_init_source_.gif",
                     FileMediaType.MEDIATYPE_IMAGE_GIF.getMediaType());
-            contentReferenceHandler.putInputStream(imageStream, sourceReference);
-            File inputFile = contentReferenceHandler.getFile(sourceReference);
+            targetContentReferenceHandler.putInputStream(imageStream, sourceReference);
+            File inputFile = targetContentReferenceHandler.getFile(sourceReference);
 
             // create the output file
-            ContentReference targetReference = contentReferenceHandler.createContentReference(
+            ContentReference targetReference = targetContentReferenceHandler.createContentReference(
                     getClass().getSimpleName() + "_init_target_.png",
                     FileMediaType.MEDIATYPE_IMAGE_PNG.getMediaType());
-            File outputFile = contentReferenceHandler.getFile(targetReference);
+            File outputFile = targetContentReferenceHandler.getFile(targetReference);
 
             // execute it
             transformInternal(
@@ -179,6 +179,7 @@ public class ImageMagickContentTransformerWorker extends AbstractContentTransfor
      */
     public void init()
     {
+        super.init();
         if (executer == null)
         {
             if (System.getProperty("img.exe") != null)

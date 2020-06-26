@@ -52,11 +52,11 @@
         <module>gengine-hash-messaging</module>
         <module>gengine-messaging-amqp-direct</module>
         <module>gengine-messaging-camel</module>
+        <module>gengine-simple-node-commons</module>
         <module>gengine-transform-node-commons</module>
         <module>gengine-transform-worker-ffmpeg</module>
-        <module>gengine-transform-node-ffmpeg</module>
         <module>gengine-transform-worker-imagemagick</module>
-        <module>gengine-transform-node-imagemagick</module>
+        <module>gengine-transform-node-simple</module>
         <module>gengine-hash-node-commons</module>
         <module>gengine-hash-worker-javase</module>
         <module>gengine-hash-node-javase</module>

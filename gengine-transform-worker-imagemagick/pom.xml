@@ -15,12 +15,12 @@
         <dependency>
             <groupId>org.gengine</groupId>
             <artifactId>gengine-transform-commons</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.gengine</groupId>
             <artifactId>gengine-transform-commons</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -44,7 +44,7 @@
                                 <artifactItem>
                                     <groupId>org.gengine</groupId>
                                     <artifactId>gengine-commons</artifactId>
-                                    <version>${version}</version>
+                                    <version>${project.version}</version>
                                     <type>test-jar</type>
                                     <overWrite>false</overWrite>
                                     <includes>quick/*</includes>

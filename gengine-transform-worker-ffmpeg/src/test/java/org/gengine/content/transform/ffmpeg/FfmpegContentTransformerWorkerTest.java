@@ -9,13 +9,15 @@ import static junit.framework.Assert.*;
 
 import org.cheninfo.service.cmr.repository.TemporalSourceOptions;
 import org.gengine.content.ContentReference;
+import org.gengine.content.file.FileProvider;
+import org.gengine.content.file.TempFileProvider;
+import org.gengine.content.handler.ContentReferenceHandler;
 import org.gengine.content.handler.FileContentReferenceHandlerImpl;
 import org.gengine.content.transform.ContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
 import org.gengine.content.transform.ffmpeg.FfmpegContentTransformerWorker;
 import org.gengine.content.transform.options.TransformationOptions;
 import org.gengine.content.transform.options.TransformationOptionsImpl;
-import org.gengine.util.TempFileProvider;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,9 +33,14 @@ public class FfmpegContentTransformerWorkerTest
 
     @Before
     public void setUp() throws Exception {
+        FileProvider fileProvider = new TempFileProvider();
+        ContentReferenceHandler contentReferenceHandler = new FileContentReferenceHandlerImpl();
+        ((FileContentReferenceHandlerImpl) contentReferenceHandler).setFileProvider(fileProvider);
         transformerWorker = new FfmpegContentTransformerWorker();
-        ((FfmpegContentTransformerWorker) transformerWorker).setContentReferenceHandler(
-                new FileContentReferenceHandlerImpl());
+        ((FfmpegContentTransformerWorker) transformerWorker).setSourceContentReferenceHandler(
+                contentReferenceHandler);
+        ((FfmpegContentTransformerWorker) transformerWorker).setTargetContentReferenceHandler(
+                contentReferenceHandler);
         ((FfmpegContentTransformerWorker) transformerWorker).init();
     }
 
