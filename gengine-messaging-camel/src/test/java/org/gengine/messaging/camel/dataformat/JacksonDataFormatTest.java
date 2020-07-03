@@ -61,4 +61,15 @@ public class JacksonDataFormatTest
         assertEquals(EXPECTED_FIELD3_VALUE, simplePojo.getField3());
     }
 
+    @Test
+    public void testUnmarshalQpidBodyJsonToPojo() throws Exception
+    {
+        String messageBody = "sfjh09434" + EXPECTED_JSON;
+        InputStream is = new ByteArrayInputStream(messageBody.getBytes("UTF-8"));
+        SimplePojo simplePojo = (SimplePojo) dataFormat.unmarshal(null, is);
+        assertEquals(EXPECTED_FIELD1_VALUE, simplePojo.getField1());
+        assertEquals(EXPECTED_FIELD2_VALUE, simplePojo.getField2());
+        assertEquals(EXPECTED_FIELD3_VALUE, simplePojo.getField3());
+    }
+
 }

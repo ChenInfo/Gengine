@@ -13,7 +13,7 @@ public class ObjectMapperFactory
     public static ObjectMapper createInstance()
     {
 
-        QpidBodyCleanerObjectMapper mapper = new QpidBodyCleanerObjectMapper();
+        QpidJsonBodyCleanerObjectMapper mapper = new QpidJsonBodyCleanerObjectMapper();
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
