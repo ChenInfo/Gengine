@@ -3,22 +3,20 @@ package org.gengine.messaging.amqp;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.qpid.amqp_1_0.jms.Connection;
+import org.apache.qpid.amqp_1_0.jms.ConnectionFactory;
+import org.apache.qpid.amqp_1_0.jms.Session;
+import org.apache.qpid.amqp_1_0.jms.TextMessage;
+import org.apache.qpid.amqp_1_0.jms.impl.ConnectionFactoryImpl;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.qpid.amqp_1_0.client.Connection;
-import org.apache.qpid.amqp_1_0.client.ConnectionException;
-import org.apache.qpid.amqp_1_0.client.Message;
-import org.apache.qpid.amqp_1_0.client.Receiver;
-import org.apache.qpid.amqp_1_0.client.Sender;
-import org.apache.qpid.amqp_1_0.client.Session;
-import org.apache.qpid.amqp_1_0.client.Sender.SenderCreationException;
-import org.apache.qpid.amqp_1_0.type.Section;
-import org.apache.qpid.amqp_1_0.type.UnsignedInteger;
-import org.apache.qpid.amqp_1_0.type.messaging.AmqpValue;
+import javax.jms.JMSException;
+import javax.jms.MessageListener;
+import javax.jms.Queue;
+
 import org.gengine.messaging.MessageConsumer;
 import org.gengine.messaging.MessageProducer;
 import org.gengine.messaging.MessagingException;
@@ -35,7 +33,6 @@ public class AmqpDirectEndpoint implements MessageProducer
 {
     private static final Log logger = LogFactory.getLog(AmqpDirectEndpoint.class);
 
-    private static final int RECEIVER_CREDIT = 2000;
     private static final int DEFAULT_PORT = 5672;
     private static final String DEFAULT_USERNAME = "guest";
     private static final String DEFAULT_PASSWORD = "password";
@@ -49,7 +46,7 @@ public class AmqpDirectEndpoint implements MessageProducer
 
     private Connection connection;
     private Session session;
-    private Sender sender;
+    private org.apache.qpid.amqp_1_0.jms.MessageProducer defaultMessageProducer;
 
     private MessageConsumer messageConsumer;
     private AmqpListener listener;
@@ -61,79 +58,75 @@ public class AmqpDirectEndpoint implements MessageProducer
 
         public void run()
         {
-            Connection connection = null;
             try
             {
-                Receiver receiver = getSession().createReceiver(receiveQueueName);
-                receiver.setCredit(UnsignedInteger.valueOf(RECEIVER_CREDIT), false);
+                Queue receiveQueue = getSession().createQueue(receiveQueueName);
+                org.apache.qpid.amqp_1_0.jms.MessageConsumer receiver =
+                        getSession().createConsumer(receiveQueue);
 
                 isInitialized = true;
 
-                while (true)
+                logger.info("Waiting for an AMQP message on " + host + ":" + receiveQueueName);
+                receiver.setMessageListener(new MessageListener()
                 {
-                    logger.info("Waiting for an AMQP message on " + host + ":" + receiveQueueName);
-                    Message message = receiver.receive();
-                    logger.debug("Processing AMQP message");
-                    String stringMessage = null;
-                    List<Section> sections = message.getPayload();
-                    for (Section section : sections)
+                    public void onMessage(final javax.jms.Message message)
                     {
-                        if (section instanceof AmqpValue)
+                        try
                         {
-                            AmqpValue value = (AmqpValue) section;
-                            if (!(value.getValue() instanceof String))
-                            {
-                                logger.error("Only string message bodies supported");
-                                continue;
-                            }
-                            stringMessage = (String) value.getValue();
-                        }
-                    }
-                    if (stringMessage != null)
-                    {
-                        Object pojoMessage = objectMapper.readValue(stringMessage,
-                                messageConsumer.getConsumingMessageBodyClass());
-                        if (pojoMessage == null)
-                        {
-                            logger.error("Request could not be unmarshalled");
-                        }
-                        else
-                        {
-                            if (pojoMessage instanceof Request<?>)
-                            {
-                                // Check for a reply to queue message header
-                               if (StringUtils.isEmpty(((Request<?>) pojoMessage).getReplyTo()))
-                               {
-                                   String replyQueueName = message.getProperties().getReplyTo();
-                                   if (!StringUtils.isEmpty(replyQueueName))
-                                   {
-                                       ((Request<?>) pojoMessage).setReplyTo(replyQueueName);
-                                   }
-                               }
-                            }
+                            logger.debug("Processing AMQP message");
+                            String stringMessage = null;
 
-                            messageConsumer.onReceive(pojoMessage);
+                            if (message instanceof TextMessage)
+                            {
+                                stringMessage = ((TextMessage) message).getText();
+                            }
+                            if (stringMessage != null)
+                            {
+                                Object pojoMessage = objectMapper.readValue(stringMessage,
+                                        messageConsumer.getConsumingMessageBodyClass());
+                                if (pojoMessage == null)
+                                {
+                                    logger.error("Request could not be unmarshalled");
+                                }
+                                else
+                                {
+                                    if (pojoMessage instanceof Request<?>)
+                                    {
+                                        // Check for a reply to queue message header
+                                       if (StringUtils.isEmpty(((Request<?>) pojoMessage).getReplyTo()))
+                                       {
+                                           if (message.getJMSReplyTo() != null)
+
+                                           {
+                                               String replyQueueName = message.getJMSReplyTo().toString();
+                                               if (!StringUtils.isEmpty(replyQueueName))
+                                               {
+                                                   ((Request<?>) pojoMessage).setReplyTo(replyQueueName);
+                                               }
+                                           }
+                                       }
+                                    }
+
+                                    messageConsumer.onReceive(pojoMessage);
+                                }
+                            }
+                            else
+                            {
+                                logger.error("No valid message body found in " + message.toString());
+                            }
+                        }
+                        catch (JMSException | IOException e)
+                        {
+                            logger.error(e.getMessage(), e);
                         }
                     }
-                    else
-                    {
-                        logger.error("No valid message body found in " + message.toString());
-                    }
+                });
 
-                    receiver.acknowledge(message.getDeliveryTag());
-                }
+                getConnection().start();
             }
             catch (Exception e)
             {
                 logger.error(e.getMessage(), e);
-            }
-            finally
-            {
-                if (connection != null)
-                {
-                    connection.close();
-
-                }
             }
         }
     }
@@ -178,41 +171,45 @@ public class AmqpDirectEndpoint implements MessageProducer
         this.objectMapper = objectMapper;
     }
 
-    private Connection getConnection() throws ConnectionException
+    private Connection getConnection() throws JMSException
     {
         if (connection == null)
         {
-            connection = new Connection(host, port, username, password);
+            ConnectionFactory connectionFactory =
+                    new ConnectionFactoryImpl(host, port, username, password);
+            connection = connectionFactory.createConnection();
 
         }
         return connection;
     }
 
-    private Session getSession() throws ConnectionException
+    private Session getSession() throws JMSException
     {
         if (session == null)
         {
-            session = new Session(getConnection(), "RemoteSimpleTransformerSession");
+            session = getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
         }
         return session;
     }
 
-    private Sender getDefaultSender() throws SenderCreationException, ConnectionException
+    private org.apache.qpid.amqp_1_0.jms.MessageProducer getDefaultMessageProducer() throws JMSException
     {
-        if (sender == null)
+        if (defaultMessageProducer == null)
         {
-            sender = getSession().createSender(sendQueueName);
+            Queue sendQueue = getSession().createQueue(sendQueueName);
+            defaultMessageProducer = getSession().createProducer(sendQueue);
         }
-        return sender;
+        return defaultMessageProducer;
     }
 
-    private Sender getSender(String queueName) throws SenderCreationException, ConnectionException
+    private org.apache.qpid.amqp_1_0.jms.MessageProducer getMessageProducer(String queueName) throws JMSException
     {
         if (sendQueueName.equals(queueName))
         {
-            return getDefaultSender();
+            return getDefaultMessageProducer();
         }
-        return getSession().createSender(queueName);
+        Queue queue = getSession().createQueue(queueName);
+        return getSession().createProducer(queue);
     }
 
     public void send(Object message) {
@@ -226,20 +223,18 @@ public class AmqpDirectEndpoint implements MessageProducer
             objectMapper.writeValue(strWriter, message);
             String stringMessage = strWriter.toString();
 
-            ArrayList<Section> sections = new ArrayList<>(2);
-            sections.add(new AmqpValue(stringMessage));
             if (StringUtils.isEmpty(queueName))
             {
                 queueName = sendQueueName;
             }
 
-            final Message amqpMessage = new Message(sections);
+            TextMessage textMessage = getSession().createTextMessage(stringMessage);
 
             if (logger.isDebugEnabled())
             {
                 logger.debug("Sending message to " + host + ":" + queueName + ": " + stringMessage);
             }
-            getSender(queueName).send(amqpMessage);
+            getMessageProducer(queueName).send(textMessage);
         }
         catch (Exception e)
         {
