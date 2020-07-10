@@ -16,6 +16,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -227,7 +228,15 @@ public class S3ContentReferenceHandlerImpl implements ContentReferenceHandler
     }
 
     @Override
-    public void putFile(File sourceFile, ContentReference targetContentReference) throws ContentIOException
+    public File getFile(ContentReference contentReference, boolean waitForTransfer) throws ContentIOException,
+            InterruptedException
+    {
+        // s3.getObject is a synchronous call, no need to check file size
+        return getFile(contentReference);
+    }
+
+    @Override
+    public long putFile(File sourceFile, ContentReference targetContentReference) throws ContentIOException
     {
         if (!isContentReferenceSupported(targetContentReference))
         {
@@ -239,6 +248,9 @@ public class S3ContentReferenceHandlerImpl implements ContentReferenceHandler
         try
         {
             s3.putObject(new PutObjectRequest(s3BucketName, remotePath, sourceFile));
+            ObjectMetadata metadata = s3.getObjectMetadata(
+                    new GetObjectMetadataRequest(s3BucketName, remotePath));
+            return metadata.getContentLength();
         } catch (AmazonClientException e)
         {
             throw new ContentIOException("Failed to write content", e);
@@ -271,7 +283,7 @@ public class S3ContentReferenceHandlerImpl implements ContentReferenceHandler
     }
 
     @Override
-    public void putInputStream(InputStream sourceInputStream, ContentReference targetContentReference)
+    public long putInputStream(InputStream sourceInputStream, ContentReference targetContentReference)
             throws ContentIOException
     {
         if (!isContentReferenceSupported(targetContentReference))
@@ -285,6 +297,9 @@ public class S3ContentReferenceHandlerImpl implements ContentReferenceHandler
         {
             s3.putObject(new PutObjectRequest(
                     s3BucketName, remotePath, sourceInputStream, new ObjectMetadata()));
+            ObjectMetadata metadata = s3.getObjectMetadata(
+                    new GetObjectMetadataRequest(s3BucketName, remotePath));
+            return metadata.getContentLength();
         } catch (AmazonClientException e)
         {
             throw new ContentIOException("Failed to write content", e);

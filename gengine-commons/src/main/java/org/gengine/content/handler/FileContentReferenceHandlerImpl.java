@@ -31,6 +31,8 @@ public class FileContentReferenceHandlerImpl implements ContentReferenceHandler
 
     public static final String URI_SCHEME_FILE = "file:/";
 
+    private static final long TRANSFER_CHECK_PERIOD_MS = 2000;
+
     private FileProvider fileProvider;
 
     public void setFileProvider(FileProvider fileProvider)
@@ -67,6 +69,20 @@ public class FileContentReferenceHandlerImpl implements ContentReferenceHandler
     @Override
     public File getFile(ContentReference contentReference) throws ContentIOException
     {
+        try
+        {
+            return getFile(contentReference, false);
+        }
+        catch (InterruptedException e)
+        {
+            // Should not encounter interrupted when validate=false
+            throw new ContentIOException("Interrupt caught: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public File getFile(ContentReference contentReference, boolean waitForTransfer) throws ContentIOException, InterruptedException
+    {
         if (!isContentReferenceSupported(contentReference))
         {
             throw new ContentIOException("ContentReference not supported");
@@ -76,20 +92,49 @@ public class FileContentReferenceHandlerImpl implements ContentReferenceHandler
             logger.debug("Getting file for content reference: " +
                     contentReference.getUri());
         }
+        File file = null;
         try
         {
-            return new File(new URI(contentReference.getUri()));
+            file = new File(new URI(contentReference.getUri()));
         }
         catch (URISyntaxException e)
         {
             throw new ContentIOException("Syntax error getting file reference", e);
         }
+        if (!waitForTransfer)
+        {
+            return file;
+        }
+        if (contentReference.getSize() == null)
+        {
+            logger.debug("Expected file size unknown, skipping size check");
+            return file;
+        }
+        long expectedSize = contentReference.getSize();
+        long actualSize = file.length();
+        while (actualSize < expectedSize)
+        {
+            logger.trace("Checked file, expectedSize=" + expectedSize + " actualSize=" + actualSize +
+                    ", waiting " + TRANSFER_CHECK_PERIOD_MS + "ms");
+            Thread.sleep(TRANSFER_CHECK_PERIOD_MS);
+            actualSize = file.length();
+        }
+        logger.debug("File expectedSize=" + expectedSize + " actualSize=" + actualSize + ", ending check");
+        return file;
     }
 
     @Override
     public InputStream getInputStream(ContentReference contentReference) throws ContentIOException
     {
-        File file = getFile(contentReference);
+        File file = null;
+        try
+        {
+            file = getFile(contentReference, true);
+        }
+        catch (InterruptedException e1)
+        {
+            // We were asked to stop
+        }
         if (file == null)
         {
             throw new ContentIOException("File not found");
@@ -105,12 +150,13 @@ public class FileContentReferenceHandlerImpl implements ContentReferenceHandler
     }
 
     @Override
-    public void putFile(File sourceFile, ContentReference targetContentReference) throws ContentIOException
+    public long putFile(File sourceFile, ContentReference targetContentReference) throws ContentIOException
     {
         File targetFile = getFile(targetContentReference);
         try
         {
             FileUtils.copyFile(sourceFile, targetFile);
+            return targetFile.length();
         }
         catch (IOException e)
         {
@@ -120,13 +166,16 @@ public class FileContentReferenceHandlerImpl implements ContentReferenceHandler
     }
 
     @Override
-    public void putInputStream(InputStream sourceInputStream, ContentReference targetContentReference)
+    public long putInputStream(InputStream sourceInputStream, ContentReference targetContentReference)
             throws ContentIOException
     {
         File targetFile = getFile(targetContentReference);
         try
         {
-            IOUtils.copyLarge(sourceInputStream, new FileOutputStream(targetFile));
+            FileOutputStream fileOutputStream = new FileOutputStream(targetFile);
+            long sizeCopied = IOUtils.copyLarge(sourceInputStream, fileOutputStream);
+            fileOutputStream.close();
+            return sizeCopied;
         }
         catch (IOException e)
         {

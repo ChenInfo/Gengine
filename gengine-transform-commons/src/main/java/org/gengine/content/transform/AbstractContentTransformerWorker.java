@@ -36,11 +36,14 @@ public abstract class AbstractContentTransformerWorker implements ContentTransfo
             TransformationOptions options,
             ContentTransformerWorkerProgressReporter progressReporter) throws Exception
     {
+        File sourceFile = sourceContentReferenceHandler.getFile(source, true);
+        File targetFile = targetContentReferenceHandler.getFile(target);
         transformInternal(
-                sourceContentReferenceHandler.getFile(source), source.getMediaType(),
-                targetContentReferenceHandler.getFile(target), target.getMediaType(),
+                sourceFile, source.getMediaType(),
+                targetFile, target.getMediaType(),
                 options,
                 progressReporter);
+        target.setSize(targetFile.length());
     }
 
     /**

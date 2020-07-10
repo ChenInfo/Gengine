@@ -1,4 +1,4 @@
-package org.gengine.content.transform;
+package org.gengine.content.node;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,16 +19,16 @@ import org.gengine.messaging.amqp.AmqpNodeBootstrapUtils;
  * specified via command line argument, loads a worker class and creates an instance of it,
  * then creates an AMQP endpoint and starts a listener for it.
  *
- * @param <T> the type of worker
+ * @param <W> the type of worker
+ * @param <N> the type of node
  */
-public abstract class AbstractSimpleAmqpNodeBootstrap<T>
+public abstract class AbstractSimpleAmqpNodeBootstrap<W, N extends MessageConsumer>
 {
     protected static final String PROP_WORKER_CLASS = "gengine.worker.class";
     protected static final String PROP_WORKER_DIR_SOURCE = "gengine.worker.dir.source";
 
     private String propertiesFilePath;
     private Properties properties;
-    private AmqpDirectEndpoint endpoint;
 
     public void run(String[] args)
     {
@@ -41,7 +41,26 @@ public abstract class AbstractSimpleAmqpNodeBootstrap<T>
 
         getProperties();
 
-        getEndpoint().startListener();
+        W worker = createWorkerFromPropClassname();
+        initWorker(worker);
+
+        N node = createNode(worker);
+
+        if (node == null)
+        {
+            throw new ChenInfoRuntimeException("Could not create node");
+        }
+
+        AmqpDirectEndpoint endpoint = createEndpoint(node);
+
+        if (endpoint == null)
+        {
+            throw new ChenInfoRuntimeException("Could not create endpoint");
+        }
+
+        initNode(node, endpoint);
+
+        endpoint.startListener();
     }
 
     /**
@@ -89,12 +108,12 @@ public abstract class AbstractSimpleAmqpNodeBootstrap<T>
      * @return the newly created worker object
      */
     @SuppressWarnings("unchecked")
-    protected T createWorker()
+    protected W createWorkerFromPropClassname()
     {
         try
         {
             String workerClassName = getProperties().getProperty(PROP_WORKER_CLASS);
-            Class<T> workerClass = (Class<T>) AbstractSimpleAmqpNodeBootstrap.class.getClassLoader().loadClass(workerClassName);
+            Class<W> workerClass = (Class<W>) AbstractSimpleAmqpNodeBootstrap.class.getClassLoader().loadClass(workerClassName);
             return workerClass.newInstance();
         }
         catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
@@ -104,26 +123,39 @@ public abstract class AbstractSimpleAmqpNodeBootstrap<T>
     }
 
     /**
-     * Creates and caches an AMQP endpoint using the properties file configuration.
+     * Initializes the worker, i.e. setting source and target directories.
      *
-     * @return the AMQP endpoint
+     * @param worker
      */
-    protected AmqpDirectEndpoint getEndpoint()
-    {
-        if (endpoint == null)
-        {
-            endpoint = AmqpNodeBootstrapUtils.createEndpoint(
-                    getMessageConsumer(), getProperties());
-        }
-        return endpoint;
-    }
+    protected abstract void initWorker(W worker);
 
     /**
-     * Gets the consumer that request message should be sent to.
+     * Gets the ndoe that request message should be sent to.
      *
-     * @return the message consumer
+     * @param worker
+     * @return the node
      */
-    protected abstract MessageConsumer getMessageConsumer();
+    protected abstract N createNode(W worker);
+
+    /**
+     * Initializes the node, i.e. setting the message producer for replies
+     *
+     * @param node
+     * @param endpoint
+     */
+    protected abstract void initNode(N node, AmqpDirectEndpoint endpoint);
+
+    /**
+     * Creates and caches an AMQP endpoint using the properties file configuration.
+     *
+     * @param messageConsumer
+     * @return the AMQP endpoint
+     */
+    protected AmqpDirectEndpoint createEndpoint(MessageConsumer messageConsumer)
+    {
+        return AmqpNodeBootstrapUtils.createEndpoint(
+                    messageConsumer, getProperties());
+    }
 
     /**
      * Constructs a {@link FileContentReferenceHandlerImpl} using the path
