@@ -58,9 +58,10 @@ public class FfmpegContentTransformerWorker extends AbstractContentTransformerWo
     private RuntimeExec executer;
     private String ffmpegExe = "ffmpeg";
 
-    public void init()
+    @Override
+    public void initialize()
     {
-        super.init();
+        super.initialize();
         if (executer == null)
         {
             if (System.getProperty("ffmpeg.exe") != null)

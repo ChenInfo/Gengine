@@ -2,6 +2,7 @@ package org.gengine.content.transform;
 
 import java.io.File;
 
+import org.gengine.content.AbstractContentWorker;
 import org.gengine.content.ContentReference;
 import org.gengine.content.handler.ContentReferenceHandler;
 import org.gengine.content.transform.options.TransformationOptions;
@@ -11,22 +12,17 @@ import org.gengine.content.transform.options.TransformationOptions;
  * content reference into a usable File object for the actual implementation.
  *
  */
-public abstract class AbstractContentTransformerWorker implements ContentTransformerWorker
+public abstract class AbstractContentTransformerWorker
+        extends AbstractContentWorker implements ContentTransformerWorker
 {
-    protected ContentReferenceHandler sourceContentReferenceHandler;
     protected ContentReferenceHandler targetContentReferenceHandler;
-
-    public void setSourceContentReferenceHandler(ContentReferenceHandler sourceContentReferenceHandler)
-    {
-        this.sourceContentReferenceHandler = sourceContentReferenceHandler;
-    }
 
     public void setTargetContentReferenceHandler(ContentReferenceHandler targetContentReferenceHandler)
     {
         this.targetContentReferenceHandler = targetContentReferenceHandler;
     }
 
-    public void init()
+    public void initialize()
     {
     }
 

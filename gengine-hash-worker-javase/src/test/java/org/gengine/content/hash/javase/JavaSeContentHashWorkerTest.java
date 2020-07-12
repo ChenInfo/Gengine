@@ -22,7 +22,7 @@ public class JavaSeContentHashWorkerTest
     @Before
     public void setUp() throws Exception {
         worker = new JavaSeContentHashNodeWorker();
-        ((JavaSeContentHashNodeWorker) worker).setContentReferenceHandler(
+        ((JavaSeContentHashNodeWorker) worker).setSourceContentReferenceHandler(
                 new FileContentReferenceHandlerImpl());
     }
 

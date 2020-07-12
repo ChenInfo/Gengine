@@ -3,22 +3,19 @@ package org.gengine.content.hash;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+import org.gengine.content.AbstractContentWorker;
 import org.gengine.content.ContentReference;
-import org.gengine.content.handler.ContentReferenceHandler;
 
 /**
  * Abstract hash node worker which uses a content reference handler to convert the
  * content reference into a usable input stream for the actual implementation.
  *
  */
-public abstract class AbstractContentHashWorker implements ContentHashWorker
+public abstract class AbstractContentHashWorker extends AbstractContentWorker implements ContentHashWorker
 {
 
-    protected ContentReferenceHandler contentReferenceHandler;
-
-    public void setContentReferenceHandler(ContentReferenceHandler contentReferenceFileHandler)
+    public void initialize()
     {
-        this.contentReferenceHandler = contentReferenceFileHandler;
     }
 
     public String generateHash(
@@ -26,7 +23,7 @@ public abstract class AbstractContentHashWorker implements ContentHashWorker
             String hashAlgorithm) throws Exception
     {
         return generateHashInternal(
-                new FileInputStream(contentReferenceHandler.getFile(source)),
+                new FileInputStream(sourceContentReferenceHandler.getFile(source)),
                 hashAlgorithm);
     }
 
@@ -46,7 +43,7 @@ public abstract class AbstractContentHashWorker implements ContentHashWorker
     public String toString()
     {
         StringBuilder builder = new StringBuilder(this.getClass().getSimpleName() + "[");
-        builder.append("contentReferenceHandler: " + contentReferenceHandler.toString());
+        builder.append("contentReferenceHandler: " + sourceContentReferenceHandler.toString());
         builder.append("]");
         return builder.toString();
     }

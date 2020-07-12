@@ -43,23 +43,26 @@
 
     <modules>
         <module>gengine-commons</module>
-        <module>gengine-messaging-commons</module>
         <module>gengine-commons-s3</module>
-        <module>gengine-health-commons</module>
-        <module>gengine-transform-commons</module>
-        <module>gengine-transform-messaging</module>
-        <module>gengine-hash-commons</module>
-        <module>gengine-hash-messaging</module>
+
+        <module>gengine-messaging-commons</module>
         <module>gengine-messaging-amqp-direct</module>
         <module>gengine-messaging-camel</module>
-        <module>gengine-simple-node-commons</module>
-        <module>gengine-transform-node-commons</module>
+
+        <module>gengine-health-commons</module>
+
+        <module>gengine-transform-commons</module>
+        <module>gengine-transform-messaging</module>
         <module>gengine-transform-worker-ffmpeg</module>
         <module>gengine-transform-worker-imagemagick</module>
-        <module>gengine-transform-node-simple</module>
-        <module>gengine-hash-node-commons</module>
+        <module>gengine-transform-component</module>
+
+        <module>gengine-hash-commons</module>
+        <module>gengine-hash-messaging</module>
         <module>gengine-hash-worker-javase</module>
-        <module>gengine-hash-node-javase</module>
+        <module>gengine-hash-component</module>
+
+        <module>gengine-node-simple</module>
     </modules>
 
     <dependencies>

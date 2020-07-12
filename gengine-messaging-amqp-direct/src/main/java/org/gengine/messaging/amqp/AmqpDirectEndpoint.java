@@ -264,4 +264,23 @@ public class AmqpDirectEndpoint implements MessageProducer
         return listener != null && listener.isInitialized;
     }
 
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder(this.getClass().getSimpleName() + "[");
+        builder.append("host: " + host);
+        builder.append(", ");
+        builder.append("port: " + port);
+        builder.append(", ");
+        builder.append("username: " + username);
+        builder.append(", ");
+        builder.append("sendQueueName: " + sendQueueName);
+        builder.append(", ");
+        builder.append("receiveQueueName: " + receiveQueueName);
+        builder.append(", ");
+        builder.append("isInitialized: " + isInitialized());
+        builder.append("]");
+        return builder.toString();
+    }
+
 }

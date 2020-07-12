@@ -177,9 +177,10 @@ public class ImageMagickContentTransformerWorker extends AbstractContentTransfor
      * {@link #transformInternal(File, File) transformation method} to check
      * that the sample image can be converted.
      */
-    public void init()
+    @Override
+    public void initialize()
     {
-        super.init();
+        super.initialize();
         if (executer == null)
         {
             if (System.getProperty("img.exe") != null)

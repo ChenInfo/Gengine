@@ -41,7 +41,7 @@ public class FfmpegContentTransformerWorkerTest
                 contentReferenceHandler);
         ((FfmpegContentTransformerWorker) transformerWorker).setTargetContentReferenceHandler(
                 contentReferenceHandler);
-        ((FfmpegContentTransformerWorker) transformerWorker).init();
+        ((FfmpegContentTransformerWorker) transformerWorker).initialize();
     }
 
     @Test
