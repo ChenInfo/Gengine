@@ -1,0 +1,40 @@
+
+sourceDirectory: /Users/rgauss/Desktop
+targetDirectory: /Users/rgauss/Desktop
+
+messaging:
+    broker:
+        url: tcp://localhost:5672
+        # username: guest
+        # password: password
+
+components:
+  - name: imagemagick
+    workerClass: org.gengine.content.transform.imagemagick.ImageMagickContentTransformerWorker
+    enabled: true
+    requestQueue: cheninfo.transform.request.image
+    replyQueue: cheninfo.transform.reply.image
+  - name: ffmpeg
+    workerClass: org.gengine.content.transform.ffmpeg.FfmpegContentTransformerWorker
+    enabled: true
+    requestQueue: cheninfo.transform.request.video
+    replyQueue: cheninfo.transform.reply.video
+  - name: hash
+    workerClass: org.gengine.content.hash.javase.JavaSeContentHashNodeWorker
+    enabled: true
+    requestQueue: cheninfo.hash.request
+    replyQueue: cheninfo.hash.reply
+
+server:
+    applicationConnectors:
+      - type: http
+        port: 8888
+    adminConnectors:
+      - type: http
+        port: 8889
+
+version: ${project.version} (${buildNumber})
+
+logging:
+    loggers:
+        "org.gengine": DEBUG

@@ -63,6 +63,7 @@
         <module>gengine-hash-component</module>
 
         <module>gengine-node-simple</module>
+        <module>gengine-node-dropwizard</module>
     </modules>
 
     <dependencies>
