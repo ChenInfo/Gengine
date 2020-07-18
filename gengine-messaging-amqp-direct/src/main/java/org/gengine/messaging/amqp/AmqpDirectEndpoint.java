@@ -74,7 +74,7 @@ public class AmqpDirectEndpoint implements MessageProducer
                     {
                         try
                         {
-                            logger.debug("Processing AMQP message");
+                            logger.trace("Processing AMQP message");
                             String stringMessage = null;
 
                             if (message instanceof TextMessage)
@@ -244,9 +244,9 @@ public class AmqpDirectEndpoint implements MessageProducer
 
             TextMessage textMessage = getSession().createTextMessage(stringMessage);
 
-            if (logger.isDebugEnabled())
+            if (logger.isTraceEnabled())
             {
-                logger.debug("Sending message to " + host + ":" + queueName + ": " + stringMessage);
+                logger.trace("Sending message to " + host + ":" + queueName + ": " + stringMessage);
             }
             getMessageProducer(queueName).send(textMessage);
         }
