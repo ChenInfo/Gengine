@@ -12,6 +12,7 @@ import org.apache.qpid.amqp_1_0.jms.impl.ConnectionFactoryImpl;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Map;
 
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
@@ -214,6 +215,19 @@ public class AmqpDirectEndpoint implements MessageProducer
 
     public void send(Object message) {
         send(message, sendQueueName);
+    }
+
+    @Override
+    public void send(Object message, Map<String, Object> headers) throws MessagingException
+    {
+        send(message, sendQueueName, headers);
+    }
+
+    @Override
+    public void send(Object message, String queueName, Map<String, Object> headers) throws MessagingException
+    {
+        // TODO: Would need to inspect all headers sent in to detect type and/or JMS property key
+        throw new UnsupportedOperationException("Headers not currently supported");
     }
 
     public void send(Object message, String queueName) {
