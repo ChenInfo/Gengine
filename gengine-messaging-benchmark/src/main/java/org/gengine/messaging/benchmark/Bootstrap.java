@@ -19,7 +19,7 @@ public class Bootstrap
 {
     private static final Log logger = LogFactory.getLog(Bootstrap.class);
 
-    protected static final String DEFAULT_QUEUE = "cheninfo.test.benchmark";
+    protected static final String DEFAULT_QUEUE = "gengine.test.benchmark";
     protected static final String USAGE_MESSAGE = "USAGE: brokerUrl numMessages [queue]";
     protected static final String LOG_SEPERATOR = "----------------------------------------------\n";
 
