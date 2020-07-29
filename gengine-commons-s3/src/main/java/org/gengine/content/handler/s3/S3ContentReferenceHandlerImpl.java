@@ -1,15 +1,12 @@
 package org.gengine.content.handler.s3;
 
-import java.io.File;
 import java.io.InputStream;
-import java.util.UUID;
 
 import org.cheninfo.service.cmr.repository.ContentIOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gengine.content.ContentReference;
-import org.gengine.content.file.TempFileProvider;
-import org.gengine.content.handler.ContentReferenceHandler;
+import org.gengine.content.handler.AbstractUrlContentReferenceHandler;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -26,7 +23,7 @@ import com.amazonaws.services.s3.model.S3Object;
  * AWS S3 content handler implementation
  *
  */
-public class S3ContentReferenceHandlerImpl implements ContentReferenceHandler
+public class S3ContentReferenceHandlerImpl extends AbstractUrlContentReferenceHandler
 {
     private static final Log logger = LogFactory.getLog(S3ContentReferenceHandlerImpl.class);
 
@@ -42,8 +39,6 @@ public class S3ContentReferenceHandlerImpl implements ContentReferenceHandler
     private String s3SecretKey;
     private String s3BucketName;
     private String s3BucketRegion;
-
-    private boolean isAvailable = false;
 
     public void setS3AccessKey(String s3AccessKey)
     {
@@ -108,39 +103,10 @@ public class S3ContentReferenceHandlerImpl implements ContentReferenceHandler
         }
     }
 
+    @Override
     protected String getRemoteBaseUrl()
     {
         return S3_STORE_PROTOCOL + S3_PROTOCOL_DELIMITER + s3BucketName + "/";
-    }
-
-    protected String createNewUrl(String remotePath)
-    {
-        return getRemoteBaseUrl() + remotePath;
-    }
-
-    protected String getRemotePath(String remoteFilename)
-    {
-        // root is fine for now
-        return remoteFilename;
-    }
-
-    protected String getRelativePath(String remoteContentUrl)
-    {
-        if (remoteContentUrl == null)
-        {
-            return null;
-        }
-        return remoteContentUrl.replaceFirst(getRemoteBaseUrl(), "");
-    }
-
-    protected String getExtension(String remoteContentUrl)
-    {
-        if (remoteContentUrl == null)
-        {
-            return null;
-        }
-        String[] urlComponents = remoteContentUrl.split("\\.");
-        return urlComponents[urlComponents.length-1];
     }
 
     protected String getS3UrlFromHttpUrl(String url)
@@ -157,11 +123,6 @@ public class S3ContentReferenceHandlerImpl implements ContentReferenceHandler
         url = url.replaceFirst(HTTP_PROTOCOL + ":\\/\\/", S3_STORE_PROTOCOL + ":\\/\\/");
         url = url.replaceFirst("\\.s3\\.amazonaws\\.com", "");
         return url;
-    }
-
-    public boolean isAvailable()
-    {
-        return isAvailable;
     }
 
     @Override
@@ -189,76 +150,7 @@ public class S3ContentReferenceHandlerImpl implements ContentReferenceHandler
     }
 
     @Override
-    public ContentReference createContentReference(String fileName, String mediaType) throws ContentIOException
-    {
-        return new ContentReference(getRemoteBaseUrl() + fileName, mediaType);
-    }
-
-    @Override
-    public File getFile(ContentReference contentReference) throws ContentIOException
-    {
-        if (!isContentReferenceSupported(contentReference))
-        {
-            throw new ContentIOException("ContentReference not supported");
-        }
-        try
-        {
-            String s3Url = getS3UrlFromHttpUrl(
-                    contentReference.getUri());
-
-            String tempExtension = getExtension(s3Url);
-            File tempFile = TempFileProvider.createTempFile(
-                    this.getClass().getSimpleName() + "-" + UUID.randomUUID().toString(),
-                    "." + tempExtension);
-
-            if (logger.isDebugEnabled())
-            {
-                logger.debug("Reading remote with reference=" + s3Url + " into file " + tempFile.getAbsolutePath());
-            }
-            // Get the object and retrieve the input stream
-            s3.getObject(
-                    new GetObjectRequest(s3BucketName, getRelativePath(s3Url)),
-                    tempFile);
-            return tempFile;
-        }
-        catch (Throwable t)
-        {
-            throw new ContentIOException("Failed to read content", t);
-        }
-    }
-
-    @Override
-    public File getFile(ContentReference contentReference, boolean waitForTransfer) throws ContentIOException,
-            InterruptedException
-    {
-        // s3.getObject is a synchronous call, no need to check file size
-        return getFile(contentReference);
-    }
-
-    @Override
-    public long putFile(File sourceFile, ContentReference targetContentReference) throws ContentIOException
-    {
-        if (!isContentReferenceSupported(targetContentReference))
-        {
-            throw new ContentIOException("ContentReference not supported");
-        }
-
-        String remotePath = getRelativePath(targetContentReference.getUri());
-
-        try
-        {
-            s3.putObject(new PutObjectRequest(s3BucketName, remotePath, sourceFile));
-            ObjectMetadata metadata = s3.getObjectMetadata(
-                    new GetObjectMetadataRequest(s3BucketName, remotePath));
-            return metadata.getContentLength();
-        } catch (AmazonClientException e)
-        {
-            throw new ContentIOException("Failed to write content", e);
-        }
-    }
-
-    @Override
-    public InputStream getInputStream(ContentReference contentReference) throws ContentIOException
+    public InputStream getInputStream(ContentReference contentReference, boolean waitForAvailability) throws ContentIOException
     {
         if (!isContentReferenceSupported(contentReference))
         {

@@ -13,7 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gengine.content.ContentReference;
 import org.gengine.content.mediatype.FileMediaType;
-import org.gengine.content.transform.AbstractContentTransformerWorker;
+import org.gengine.content.transform.AbstractFileContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
 import org.gengine.content.transform.options.ImageTransformationOptions;
 import org.gengine.content.transform.options.TransformationOptions;
@@ -26,7 +26,7 @@ import org.gengine.util.exec.RuntimeExec.ExecutionResult;
  * Executes a statement to implement
  *
  */
-public class ImageMagickContentTransformerWorker extends AbstractContentTransformerWorker
+public class ImageMagickContentTransformerWorker extends AbstractFileContentTransformerWorker
 {
     /** options variable name */
     private static final String KEY_OPTIONS = "options";
@@ -132,32 +132,31 @@ public class ImageMagickContentTransformerWorker extends AbstractContentTransfor
             {
                 throw new ChenInfoRuntimeException("Sample image not found: " + resourcePath);
             }
-            // dump to a temp file
+            // dump to a temp target reference (we may only be able to write to the target handler)
             ContentReference sourceReference = targetContentReferenceHandler.createContentReference(
                     getClass().getSimpleName() + "_init_source_.gif",
                     FileMediaType.MEDIATYPE_IMAGE_GIF.getMediaType());
             targetContentReferenceHandler.putInputStream(imageStream, sourceReference);
-            File inputFile = targetContentReferenceHandler.getFile(sourceReference);
 
             // create the output file
             ContentReference targetReference = targetContentReferenceHandler.createContentReference(
                     getClass().getSimpleName() + "_init_target_.png",
                     FileMediaType.MEDIATYPE_IMAGE_PNG.getMediaType());
-            File outputFile = targetContentReferenceHandler.getFile(targetReference);
 
             // execute it
-            transformInternal(
-                    inputFile, FileMediaType.MEDIATYPE_IMAGE_GIF.getMediaType(),
-                    outputFile, FileMediaType.MEDIATYPE_IMAGE_PNG.getMediaType(),
+            transform(
+                    sourceReference,
+                    targetReference,
                     new TransformationOptionsImpl(),
                     null);
 
             // check that the file exists
-            if (!outputFile.exists() || outputFile.length() == 0)
+
+            if (targetReference.getSize() == null || targetReference.getSize() == 0)
             {
                 throw new Exception("Image conversion failed: \n" +
-                        "   from: " + inputFile + "\n" +
-                        "   to: " + outputFile);
+                        "   from: " + sourceReference + "\n" +
+                        "   to: " + targetReference);
             }
             // we can be sure that it works
             setAvailable(true);
@@ -223,11 +222,14 @@ public class ImageMagickContentTransformerWorker extends AbstractContentTransfor
      */
     @Override
     protected void transformInternal(
-            File sourceFile, String sourceMimetype,
-            File targetFile, String targetMimetype,
+            File sourceFile, ContentReference sourceRef,
+            File targetFile, ContentReference targetRef,
             TransformationOptions options,
             ContentTransformerWorkerProgressReporter progressReporter) throws Exception
     {
+        String sourceMimetype = sourceRef.getMediaType();
+        String targetMimetype = targetRef.getMediaType();
+
         Map<String, String> properties = new HashMap<String, String>(5);
         // set properties
         if (options instanceof ImageTransformationOptions)

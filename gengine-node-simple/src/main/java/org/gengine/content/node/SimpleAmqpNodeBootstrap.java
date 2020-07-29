@@ -29,7 +29,8 @@ public class SimpleAmqpNodeBootstrap
 
         Properties properties = loadProperties(args[0]);
 
-        ContentWorker worker = createWorkerFromProperties(properties);
+        ContentWorker worker = (ContentWorker) createObjectFromClassInProperties(
+                properties, PROP_WORKER_CLASS);
 
         @SuppressWarnings("rawtypes")
         AbstractComponentBootstrapFromProperties componentBootrap =
@@ -76,25 +77,23 @@ public class SimpleAmqpNodeBootstrap
     }
 
     /**
-     * Attempts to load the worker class specified in the properties file and
+     * Attempts to load the class specified in the properties file and
      * create a new instance of it.
      *
-     * @return the newly created worker object
+     * @return the newly created object
      */
-    @SuppressWarnings("unchecked")
-    protected static ContentWorker createWorkerFromProperties(Properties properties)
+    protected static Object createObjectFromClassInProperties(Properties properties, String key)
     {
         try
         {
-            String workerClassName = properties.getProperty(PROP_WORKER_CLASS);
-            Class<? extends ContentWorker> workerClass =
-                    (Class<? extends ContentWorker>) SimpleAmqpNodeBootstrap.class.getClassLoader().loadClass(
+            String workerClassName = properties.getProperty(key);
+            Class<?> workerClass = SimpleAmqpNodeBootstrap.class.getClassLoader().loadClass(
                             workerClassName);
             return workerClass.newInstance();
         }
         catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
         {
-            throw new ChenInfoRuntimeException("Could not load worker class", e);
+            throw new ChenInfoRuntimeException("Could not load class", e);
         }
     }
 

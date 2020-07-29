@@ -1,6 +1,5 @@
 package org.gengine.content.hash;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.gengine.content.AbstractContentWorker;
@@ -14,16 +13,18 @@ import org.gengine.content.ContentReference;
 public abstract class AbstractContentHashWorker extends AbstractContentWorker implements ContentHashWorker
 {
 
+    @Override
     public void initialize()
     {
     }
 
+    @Override
     public String generateHash(
             ContentReference source,
             String hashAlgorithm) throws Exception
     {
         return generateHashInternal(
-                new FileInputStream(sourceContentReferenceHandler.getFile(source)),
+                sourceContentReferenceHandler.getInputStream(source, true),
                 hashAlgorithm);
     }
 

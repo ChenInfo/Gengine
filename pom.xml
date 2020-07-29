@@ -44,6 +44,7 @@
     <modules>
         <module>gengine-commons</module>
         <module>gengine-commons-s3</module>
+        <module>gengine-commons-webdav</module>
 
         <module>gengine-messaging-commons</module>
         <module>gengine-messaging-amqp-direct</module>

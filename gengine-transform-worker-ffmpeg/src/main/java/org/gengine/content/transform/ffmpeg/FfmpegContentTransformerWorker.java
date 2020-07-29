@@ -8,7 +8,8 @@ import org.cheninfo.repo.content.transform.magick.ImageResizeOptions;
 import org.cheninfo.service.cmr.repository.TemporalSourceOptions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.gengine.content.transform.AbstractContentTransformerWorker;
+import org.gengine.content.ContentReference;
+import org.gengine.content.transform.AbstractFileContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
 import org.gengine.content.transform.options.ImageTransformationOptions;
 import org.gengine.content.transform.options.TransformationOptions;
@@ -18,7 +19,7 @@ import org.gengine.util.exec.RuntimeExec;
  * An FFmpeg command line implementation of a content hash node worker
  *
  */
-public class FfmpegContentTransformerWorker extends AbstractContentTransformerWorker
+public class FfmpegContentTransformerWorker extends AbstractFileContentTransformerWorker
 {
     private static final Log logger = LogFactory.getLog(FfmpegContentTransformerWorker.class);
 
@@ -83,11 +84,14 @@ public class FfmpegContentTransformerWorker extends AbstractContentTransformerWo
     }
 
     protected void transformInternal(
-            File sourceFile, String sourceMimetype,
-            File targetFile, String targetMimetype,
+            File sourceFile, ContentReference sourceRef,
+            File targetFile, ContentReference targetRef,
             TransformationOptions options,
             ContentTransformerWorkerProgressReporter progressReporter) throws Exception
     {
+        String sourceMimetype = sourceRef.getMediaType();
+        String targetMimetype = targetRef.getMediaType();
+
         Map<String, String> properties = new HashMap<String, String>(5);
         // set properties
         String commandOptions = "";

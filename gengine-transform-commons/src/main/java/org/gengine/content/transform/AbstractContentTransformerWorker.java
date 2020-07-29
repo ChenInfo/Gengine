@@ -1,11 +1,9 @@
 package org.gengine.content.transform;
 
-import java.io.File;
-
 import org.gengine.content.AbstractContentWorker;
 import org.gengine.content.ContentReference;
 import org.gengine.content.handler.ContentReferenceHandler;
-import org.gengine.content.transform.options.TransformationOptions;
+import org.gengine.content.mediatype.FileMediaType;
 
 /**
  * Abstract transform node worker which uses a content reference handler to convert the
@@ -26,39 +24,10 @@ public abstract class AbstractContentTransformerWorker
     {
     }
 
-    public void transform(
-            ContentReference source,
-            ContentReference target,
-            TransformationOptions options,
-            ContentTransformerWorkerProgressReporter progressReporter) throws Exception
+    protected String getExtension(ContentReference contentReference)
     {
-        File sourceFile = sourceContentReferenceHandler.getFile(source, true);
-        File targetFile = targetContentReferenceHandler.getFile(target);
-        transformInternal(
-                sourceFile, source.getMediaType(),
-                targetFile, target.getMediaType(),
-                options,
-                progressReporter);
-        target.setSize(targetFile.length());
+        return FileMediaType.SERVICE.getExtension(contentReference.getMediaType());
     }
-
-    /**
-     * Transforms the given source file to the given target file and media type using
-     * the given transformation options and reports progress via the given progress reporter.
-     *
-     * @param sourceFile
-     * @param sourceMimetype
-     * @param targetFile
-     * @param targetMimetype
-     * @param options
-     * @param progressReporter
-     * @throws Exception
-     */
-    protected abstract void transformInternal(
-            File sourceFile, String sourceMimetype,
-            File targetFile, String targetMimetype,
-            TransformationOptions options,
-            ContentTransformerWorkerProgressReporter progressReporter) throws Exception;
 
     @Override
     public String toString()

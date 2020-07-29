@@ -3,6 +3,7 @@ package org.gengine.content.node;
 import java.util.Properties;
 
 import org.gengine.content.AbstractComponent;
+import org.gengine.content.handler.ContentReferenceHandler;
 import org.gengine.content.hash.AbstractContentHashWorker;
 import org.gengine.content.hash.BaseContentHashComponent;
 
@@ -23,8 +24,9 @@ public class HashComponentBootstrapFromProperties<W extends AbstractContentHashW
 
     protected void initWorker()
     {
-        worker.setSourceContentReferenceHandler(
-                createFileContentReferenceHandler(PROP_WORKER_DIR_SOURCE));
+        ContentReferenceHandler sourceHandler = createContentReferenceHandler(
+                PROP_WORKER_CONTENT_REF_HANDLER_SOURCE_PREFIX);
+        worker.setSourceContentReferenceHandler(sourceHandler);
         worker.initialize();
     }
 

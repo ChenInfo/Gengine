@@ -11,6 +11,7 @@ import org.gengine.content.file.FileProviderImpl;
 import org.gengine.content.file.TempFileProvider;
 import org.gengine.content.handler.ContentReferenceHandler;
 import org.gengine.content.handler.FileContentReferenceHandlerImpl;
+import org.gengine.content.handler.webdav.WebDavContentReferenceHandlerImpl;
 import org.gengine.error.ChenInfoRuntimeException;
 import org.gengine.messaging.amqp.AmqpDirectEndpoint;
 import org.gengine.messaging.amqp.AmqpNodeBootstrapUtils;
@@ -19,7 +20,13 @@ public abstract class AbstractComponentBootstrapFromProperties<W extends Content
 {
     private static final Log logger = LogFactory.getLog(AbstractComponentBootstrapFromProperties.class);
 
-    public static final String PROP_WORKER_DIR_SOURCE = "gengine.worker.dir.source";
+    public static final String PROP_WORKER_CONTENT_REF_HANDLER_SOURCE_PREFIX =
+            "gengine.worker.contentrefhandler.source";
+    public static final String PROP_WORKER_CONTENT_REF_HANDLER_CLASS_SUFFIX = ".class";
+    public static final String PROP_WORKER_CONTENT_REF_HANDLER_FILE_DIR_SUFFIX = ".file.dir";
+    public static final String PROP_WORKER_CONTENT_REF_HANDLER_WEBDAV_URL_SUFFIX = ".webdav.url";
+    public static final String PROP_WORKER_CONTENT_REF_HANDLER_WEBDAV_USERNAME_SUFFIX = ".webdav.username";
+    public static final String PROP_WORKER_CONTENT_REF_HANDLER_WEBDAV_PASSWORD_SUFFIX = ".webdav.password";
 
     protected Properties properties;
     protected W worker;
@@ -34,10 +41,66 @@ public abstract class AbstractComponentBootstrapFromProperties<W extends Content
      * Constructs a {@link FileContentReferenceHandlerImpl} using the path
      * specified in the properties file under the given propertiesKey.
      *
+     * @param handler the content reference handler
+     * @param dirPropertiesKey the properties key for getting the directory value
+     * @return the ContentReferenceHandler
+     */
+    protected void setFileContentReferenceHandlerProvider(
+            FileContentReferenceHandlerImpl handler, String dirPropertiesKey)
+    {
+        String directoryPath = properties.getProperty(dirPropertiesKey);
+        FileProviderImpl fileProvider = new FileProviderImpl();
+        fileProvider.setDirectoryPath(directoryPath);
+                new FileContentReferenceHandlerImpl();
+        handler.setFileProvider(fileProvider);
+    }
+
+    protected void setWebDavContentReferenceHandlerCredentials(
+            WebDavContentReferenceHandlerImpl handler,
+            String urlPropertiesKey,
+            String usernamePropertiesKey,
+            String passwordPropertiesKey)
+    {
+        String url = properties.getProperty(urlPropertiesKey);
+        String username = properties.getProperty(usernamePropertiesKey);
+        String password = properties.getProperty(passwordPropertiesKey);
+        handler.setRemoteBaseUrl(url);
+        handler.setUsername(username);
+        handler.setPassword(password);
+    }
+
+    protected ContentReferenceHandler createContentReferenceHandler(String propertiesKeyPrefix)
+    {
+        ContentReferenceHandler handler =
+                (ContentReferenceHandler) SimpleAmqpNodeBootstrap.createObjectFromClassInProperties(
+                        properties, propertiesKeyPrefix + PROP_WORKER_CONTENT_REF_HANDLER_CLASS_SUFFIX);
+        if (handler instanceof FileContentReferenceHandlerImpl)
+        {
+            setFileContentReferenceHandlerProvider(
+                    (FileContentReferenceHandlerImpl) handler,
+                    propertiesKeyPrefix + PROP_WORKER_CONTENT_REF_HANDLER_FILE_DIR_SUFFIX);
+        }
+        if (handler instanceof WebDavContentReferenceHandlerImpl)
+        {
+            setWebDavContentReferenceHandlerCredentials(
+                    (WebDavContentReferenceHandlerImpl) handler,
+                    propertiesKeyPrefix + PROP_WORKER_CONTENT_REF_HANDLER_WEBDAV_URL_SUFFIX,
+                    propertiesKeyPrefix + PROP_WORKER_CONTENT_REF_HANDLER_WEBDAV_USERNAME_SUFFIX,
+                    propertiesKeyPrefix + PROP_WORKER_CONTENT_REF_HANDLER_WEBDAV_PASSWORD_SUFFIX);
+            ((WebDavContentReferenceHandlerImpl) handler).init();
+        }
+
+        return handler;
+    }
+
+    /**
+     * Constructs a {@link FileContentReferenceHandlerImpl} using the path
+     * specified in the properties file under the given propertiesKey.
+     *
      * @param propertiesKey
      * @return the ContentReferenceHandler
      */
-    protected ContentReferenceHandler createFileContentReferenceHandler(String propertiesKey)
+    protected ContentReferenceHandler createWebDavContentReferenceHandler(String propertiesKey)
     {
         String directoryPath = properties.getProperty(propertiesKey);
         FileProviderImpl fileProvider = new FileProviderImpl();

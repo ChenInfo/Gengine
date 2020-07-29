@@ -21,7 +21,12 @@
             <artifactId>gengine-messaging-amqp-direct</artifactId>
             <version>${project.version}</version>
         </dependency>
-                <dependency>
+        <dependency>
+            <groupId>org.gengine</groupId>
+            <artifactId>gengine-commons-webdav</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.gengine</groupId>
             <artifactId>gengine-transform-component</artifactId>
             <version>${project.version}</version>
