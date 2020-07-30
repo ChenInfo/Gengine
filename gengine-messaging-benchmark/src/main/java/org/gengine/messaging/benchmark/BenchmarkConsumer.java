@@ -19,15 +19,29 @@ public class BenchmarkConsumer implements MessageConsumer
     @Override
     public void onReceive(Object message)
     {
-        if (!((BenchmarkMessage) message).getValue().equals(BenchmarkMessage.DEFAULT_VALUE))
+        if (logger.isTraceEnabled())
+        {
+            logger.trace("Receiving message, current messageCount=" + messageCount + "...");
+        }
+        if (message == null || ((BenchmarkMessage) message).getValue() == null ||
+                !((BenchmarkMessage) message).getValue().equals(BenchmarkMessage.DEFAULT_VALUE))
         {
             throw new IllegalArgumentException("Could not verify message");
         }
+
+        messageCount++;
+
         if (messageCount > 0 && messageCount % LOG_AFTER_NUM_MESSAGES == 0)
         {
             logger.debug("Received " + messageCount + " messages...");
         }
-        messageCount++;
+        else
+        {
+            if (logger.isTraceEnabled())
+            {
+                logger.trace("Received " + messageCount + " messages...");
+            }
+        }
     }
 
     @Override
