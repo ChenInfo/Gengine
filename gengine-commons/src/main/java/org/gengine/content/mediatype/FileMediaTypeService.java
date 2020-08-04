@@ -1,5 +1,7 @@
 package org.gengine.content.mediatype;
 
+import java.io.File;
+
 public interface FileMediaTypeService
 {
 
@@ -18,5 +20,14 @@ public interface FileMediaTypeService
      * @return Returns a valid media type if found, or null if does not exist
      */
     public String getMediaType(String extension);
+
+    /**
+     * Get the internet media type for the specified file using only its
+     * file name, no inspection
+     *
+     * @param file
+     * @return Returns a valid media type if found, or null if does not exist
+     */
+    public String getMediaTypeByName(File file);
 
 }

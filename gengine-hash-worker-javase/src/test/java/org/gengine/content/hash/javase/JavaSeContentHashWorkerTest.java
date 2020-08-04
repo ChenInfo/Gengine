@@ -2,6 +2,9 @@ package org.gengine.content.hash.javase;
 
 import static junit.framework.Assert.*;
 
+import java.util.Arrays;
+import java.util.Map;
+
 import org.gengine.content.ContentReference;
 import org.gengine.content.handler.FileContentReferenceHandlerImpl;
 import org.gengine.content.hash.ContentHashWorker;
@@ -31,10 +34,11 @@ public class JavaSeContentHashWorkerTest
         ContentReference source = new ContentReference(
                 this.getClass().getResource("/quick/quick.mpg").toURI().toString(), "video/mpeg");
 
-        String value = worker.generateHash(source, hashAlgorithm);
+        Map<ContentReference, String> values = worker.generateHashes(Arrays.asList(source), hashAlgorithm);
 
-        assertNotNull("Hash value was null", value);
-        assertEquals(expectedValue, value);
+        assertNotNull("Hash values was null", values);
+        assertFalse("Hash values was empty", values.size() == 0);
+        assertEquals(expectedValue, values.get(source));
     }
 
     @Test

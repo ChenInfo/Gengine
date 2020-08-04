@@ -28,8 +28,8 @@ public class BaseContentTransformerComponent extends AbstractComponent<ContentTr
             progressReporter.onTransformationStarted();
 
             worker.transform(
-                    request.getSourceContentReference(),
-                    request.getTargetContentReference(),
+                    request.getSourceContentReferences(),
+                    request.getTargetContentReferences(),
                     request.getOptions(),
                     progressReporter);
 

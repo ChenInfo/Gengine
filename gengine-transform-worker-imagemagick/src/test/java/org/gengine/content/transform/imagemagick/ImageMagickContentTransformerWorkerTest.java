@@ -3,6 +3,7 @@ package org.gengine.content.transform.imagemagick;
 import static junit.framework.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.cheninfo.service.cmr.repository.PagedSourceOptions;
@@ -75,7 +76,10 @@ public class ImageMagickContentTransformerWorkerTest extends AbstractContentTran
                     contentReferenceHandler.createContentReference(targetFileName, targetMimetype);
 
             // do the transformation
-            transformerWorker.transform(sourceReference, targetReference, options, progressReporter);
+            transformerWorker.transform(
+                    Arrays.asList(sourceReference),
+                    Arrays.asList(targetReference),
+                    options, progressReporter);
 
             assertTrue(targetReference.getSize() > 10);
         }

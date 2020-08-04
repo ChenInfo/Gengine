@@ -1,8 +1,11 @@
 package org.gengine.content.hash;
 
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gengine.content.AbstractComponent;
+import org.gengine.content.ContentReference;
 import org.gengine.content.hash.HashReply;
 import org.gengine.content.hash.HashRequest;
 import org.gengine.messaging.MessageProducer;
@@ -26,12 +29,12 @@ public class BaseContentHashComponent extends AbstractComponent<ContentHashWorke
         try
         {
 
-            String value = worker.generateHash(
-                    request.getSourceContentReference(),
+            Map<ContentReference, String> values = worker.generateHashes(
+                    request.getSourceContentReferences(),
                     request.getHashAlgorithm());
 
             HashReply reply = new HashReply(request);
-            reply.setHexValue(value);
+            reply.setHexEncodedValues(values);
 
             if (logger.isDebugEnabled())
             {

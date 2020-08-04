@@ -1,6 +1,9 @@
 package org.gengine.content.hash;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.gengine.content.AbstractContentWorker;
 import org.gengine.content.ContentReference;
@@ -19,13 +22,23 @@ public abstract class AbstractContentHashWorker extends AbstractContentWorker im
     }
 
     @Override
-    public String generateHash(
-            ContentReference source,
+    public Map<ContentReference, String> generateHashes(
+            List<ContentReference> sources,
             String hashAlgorithm) throws Exception
     {
-        return generateHashInternal(
-                sourceContentReferenceHandler.getInputStream(source, true),
-                hashAlgorithm);
+        Map<ContentReference, String> values = new HashMap<ContentReference, String>();
+        if (sources == null || sources.size() == 0)
+        {
+            return values;
+        }
+        for (ContentReference source : sources)
+        {
+            String value = generateHashInternal(
+                    sourceContentReferenceHandler.getInputStream(source, true),
+                    hashAlgorithm);
+            values.put(source, value);
+        }
+        return values;
     }
 
     /**

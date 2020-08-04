@@ -1,8 +1,9 @@
 package org.gengine.content.mediatype;
 
+import java.io.File;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.mime.MimeType;
@@ -64,6 +65,12 @@ public class FileMediaTypeServiceImpl implements FileMediaTypeService
     public String getMediaType(String extension)
     {
         return tika.detect("*." + extension);
+    }
+
+    @Override
+    public String getMediaTypeByName(File file)
+    {
+        return tika.detect(file.getName());
     }
 
     public MimeType getTikaMimeType(String mimetype) throws MimeTypeException

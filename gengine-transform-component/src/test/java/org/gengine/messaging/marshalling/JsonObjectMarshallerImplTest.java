@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 
 import org.cheninfo.repo.content.transform.magick.ImageResizeOptions;
 import org.cheninfo.service.cmr.repository.PagedSourceOptions;
@@ -54,7 +55,7 @@ public class JsonObjectMarshallerImplTest
                 "file:/tmp/ChenInfo/TempFileContentTransportImpl-be08c51b-4282-4040-8a58-a1e4cd1df1472999488129563166381.png",
                 "image/png");
         TransformationRequest request =
-                new TransformationRequest(source, target, options);
+                new TransformationRequest(Arrays.asList(source), Arrays.asList(target), options);
 
 
         Writer strWriter = new StringWriter();

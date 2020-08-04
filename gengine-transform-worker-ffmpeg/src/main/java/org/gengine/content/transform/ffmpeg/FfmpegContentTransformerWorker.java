@@ -1,14 +1,15 @@
 package org.gengine.content.transform.ffmpeg;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.cheninfo.repo.content.transform.magick.ImageResizeOptions;
 import org.cheninfo.service.cmr.repository.TemporalSourceOptions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.gengine.content.ContentReference;
 import org.gengine.content.transform.AbstractFileContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
 import org.gengine.content.transform.options.ImageTransformationOptions;
@@ -83,14 +84,42 @@ public class FfmpegContentTransformerWorker extends AbstractFileContentTransform
         }
     }
 
-    protected void transformInternal(
-            File sourceFile, ContentReference sourceRef,
-            File targetFile, ContentReference targetRef,
+    protected List<File> transformInternal(
+            List<FileContentReferencePair> sourcePairs,
+            List<FileContentReferencePair> targetPairs,
             TransformationOptions options,
             ContentTransformerWorkerProgressReporter progressReporter) throws Exception
     {
-        String sourceMimetype = sourceRef.getMediaType();
-        String targetMimetype = targetRef.getMediaType();
+        if (sourcePairs.size() > 1 || targetPairs.size() > 1)
+        {
+            throw new IllegalArgumentException("Only single source and target "
+                    + "transformations are currently supported");
+        }
+        FileContentReferencePair targetPair = targetPairs.iterator().next();
+        File targetFile = targetPair.getFile();
+        singleTransformInternal(
+                sourcePairs.iterator().next(),
+                targetPair,
+                options, progressReporter);
+        return Arrays.asList(targetFile);
+        // TODO: Other transform types, i.e.:
+        //   - Stitch multiple sources into one target
+        //   - Storyboard thumbnails: one source into multiple images
+        //   - Merge multiple images into a movie?
+        //   - Extract multiple audio tracks from a movie
+    }
+
+    protected void singleTransformInternal(
+            FileContentReferencePair sourcePair,
+            FileContentReferencePair targetPair,
+            TransformationOptions options,
+            ContentTransformerWorkerProgressReporter progressReporter) throws Exception
+    {
+        File sourceFile = sourcePair.getFile();
+        File targetFile = targetPair.getFile();
+
+        String sourceMimetype = sourcePair.getContentReference().getMediaType();
+        String targetMimetype = targetPair.getContentReference().getMediaType();
 
         Map<String, String> properties = new HashMap<String, String>(5);
         // set properties

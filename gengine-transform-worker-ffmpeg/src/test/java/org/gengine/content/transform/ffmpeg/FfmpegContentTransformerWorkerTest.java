@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
+import java.util.Arrays;
 
 import static junit.framework.Assert.*;
 
@@ -70,8 +71,9 @@ public class FfmpegContentTransformerWorkerTest
             ContentReference target = new ContentReference(
                     targetFile.toURI().toString(), "video/mp4");
 
-
-            transformerWorker.transform(source, target, options, new LoggingProgressReporterImpl());
+            transformerWorker.transform(
+                    Arrays.asList(source), Arrays.asList(target),
+                    options, new LoggingProgressReporterImpl());
 
             long targetSize = targetFile.length();
 

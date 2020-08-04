@@ -2,7 +2,9 @@ package org.gengine.content.transform.imagemagick;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.cheninfo.repo.content.transform.magick.ImageResizeOptions;
@@ -145,8 +147,8 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
 
             // execute it
             transform(
-                    sourceReference,
-                    targetReference,
+                    Arrays.asList(sourceReference),
+                    Arrays.asList(targetReference),
                     new TransformationOptionsImpl(),
                     null);
 
@@ -217,18 +219,43 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
         }
     }
 
-    /**
-     * Transform the image content from the source file to the target file
-     */
-    @Override
-    protected void transformInternal(
-            File sourceFile, ContentReference sourceRef,
-            File targetFile, ContentReference targetRef,
+    protected List<File> transformInternal(
+            List<FileContentReferencePair> sourcePairs,
+            List<FileContentReferencePair> targetPairs,
             TransformationOptions options,
             ContentTransformerWorkerProgressReporter progressReporter) throws Exception
     {
-        String sourceMimetype = sourceRef.getMediaType();
-        String targetMimetype = targetRef.getMediaType();
+        if (sourcePairs.size() > 1 || targetPairs.size() > 1)
+        {
+            throw new IllegalArgumentException("Only single source and target "
+                    + "transformations are currently supported");
+        }
+        FileContentReferencePair targetPair = targetPairs.iterator().next();
+        File targetFile = targetPair.getFile();
+        singleTransformInternal(
+                sourcePairs.iterator().next(),
+                targetPair,
+                options, progressReporter);
+        return Arrays.asList(targetFile);
+        // TODO: Other transform types, i.e.:
+        //   - Layer multiple sources into one target
+        //   - PDF/TIFF pages: one source into multiple images
+    }
+
+    /**
+     * Transform the image content from the source file to the target file
+     */
+    protected void singleTransformInternal(
+            FileContentReferencePair sourcePair,
+            FileContentReferencePair targetPair,
+            TransformationOptions options,
+            ContentTransformerWorkerProgressReporter progressReporter) throws Exception
+    {
+        File sourceFile = sourcePair.getFile();
+        File targetFile = targetPair.getFile();
+
+        String sourceMimetype = sourcePair.getContentReference().getMediaType();
+        String targetMimetype = targetPair.getContentReference().getMediaType();
 
         Map<String, String> properties = new HashMap<String, String>(5);
         // set properties
