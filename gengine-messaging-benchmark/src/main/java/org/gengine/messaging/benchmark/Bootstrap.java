@@ -80,7 +80,7 @@ public class Bootstrap
         BenchmarkConsumer messageConsumer = new BenchmarkConsumer();
         MessageProducer endpoint = null;
 
-        if (brokerUrl.startsWith("tcp"))
+        if (brokerUrl.startsWith("tcp") || brokerUrl.startsWith("failover"))
         {
             logger.debug("Initializing Camel Endpoint");
             endpoint = initializeCamelEndpoint(brokerUrl, queue, messageConsumer);
