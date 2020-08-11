@@ -137,13 +137,13 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
             // dump to a temp target reference (we may only be able to write to the target handler)
             ContentReference sourceReference = targetContentReferenceHandler.createContentReference(
                     getClass().getSimpleName() + "_init_source_.gif",
-                    FileMediaType.MEDIATYPE_IMAGE_GIF.getMediaType());
+                    FileMediaType.IMAGE_GIF.getMediaType());
             targetContentReferenceHandler.putInputStream(imageStream, sourceReference);
 
             // create the output file
             ContentReference targetReference = targetContentReferenceHandler.createContentReference(
                     getClass().getSimpleName() + "_init_target_.png",
-                    FileMediaType.MEDIATYPE_IMAGE_PNG.getMediaType());
+                    FileMediaType.IMAGE_PNG.getMediaType());
 
             // execute it
             transform(
@@ -414,13 +414,13 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
     {
         // Need a page source if we're transforming from PDF or TIFF to an image other than TIFF
         // or from PSD
-        return ((sourceMimetype.equals(FileMediaType.MEDIATYPE_PDF.getMediaType()) ||
-                sourceMimetype.equals(FileMediaType.MEDIATYPE_IMAGE_TIFF.getMediaType())) &&
-                ((!targetMimetype.equals(FileMediaType.MEDIATYPE_IMAGE_TIFF.getMediaType())
+        return ((sourceMimetype.equals(FileMediaType.PDF.getMediaType()) ||
+                sourceMimetype.equals(FileMediaType.IMAGE_TIFF.getMediaType())) &&
+                ((!targetMimetype.equals(FileMediaType.IMAGE_TIFF.getMediaType())
                 && targetMimetype.contains(FileMediaType.PREFIX_IMAGE)) ||
-                targetMimetype.equals(FileMediaType.MEDIATYPE_APPLICATION_PHOTOSHOP.getMediaType()) ||
-                targetMimetype.equals(FileMediaType.MEDIATYPE_APPLICATION_EPS.getMediaType())) ||
-                sourceMimetype.equals(FileMediaType.MEDIATYPE_APPLICATION_PHOTOSHOP.getMediaType()));
+                targetMimetype.equals(FileMediaType.APPLICATION_PHOTOSHOP.getMediaType()) ||
+                targetMimetype.equals(FileMediaType.APPLICATION_EPS.getMediaType())) ||
+                sourceMimetype.equals(FileMediaType.APPLICATION_PHOTOSHOP.getMediaType()));
     }
 
     /**

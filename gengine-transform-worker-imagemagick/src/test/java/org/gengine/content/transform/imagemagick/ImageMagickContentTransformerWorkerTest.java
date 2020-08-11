@@ -91,8 +91,8 @@ public class ImageMagickContentTransformerWorkerTest extends AbstractContentTran
         // Test empty source options
         ImageTransformationOptions options = new ImageTransformationOptions();
         this.transform(
-                FileMediaType.MEDIATYPE_PDF.getMediaType(),
-                FileMediaType.MEDIATYPE_IMAGE_PNG.getMediaType(),
+                FileMediaType.PDF.getMediaType(),
+                FileMediaType.IMAGE_PNG.getMediaType(),
                 options);
 
         // Test first page
@@ -101,8 +101,8 @@ public class ImageMagickContentTransformerWorkerTest extends AbstractContentTran
         sourceOptionsList.add(PagedSourceOptions.getPage1Instance());
         options.setSourceOptionsList(sourceOptionsList);
         this.transform(
-                FileMediaType.MEDIATYPE_PDF.getMediaType(),
-                FileMediaType.MEDIATYPE_IMAGE_PNG.getMediaType(),
+                FileMediaType.PDF.getMediaType(),
+                FileMediaType.IMAGE_PNG.getMediaType(),
                 options);
 
         // Test second page
@@ -114,8 +114,8 @@ public class ImageMagickContentTransformerWorkerTest extends AbstractContentTran
         sourceOptionsList.add(sourceOptions);
         options.setSourceOptionsList(sourceOptionsList);
         this.transform(
-                FileMediaType.MEDIATYPE_PDF.getMediaType(),
-                FileMediaType.MEDIATYPE_IMAGE_PNG.getMediaType(),
+                FileMediaType.PDF.getMediaType(),
+                FileMediaType.IMAGE_PNG.getMediaType(),
                 options);
 
         // Test page range invalid for target type
@@ -128,8 +128,8 @@ public class ImageMagickContentTransformerWorkerTest extends AbstractContentTran
         options.setSourceOptionsList(sourceOptionsList);
         try {
             this.transform(
-                    FileMediaType.MEDIATYPE_PDF.getMediaType(),
-                    FileMediaType.MEDIATYPE_IMAGE_PNG.getMediaType(),
+                    FileMediaType.PDF.getMediaType(),
+                    FileMediaType.IMAGE_PNG.getMediaType(),
                     options);
             fail("An exception regarding an invalid page range should have been thrown");
         }
@@ -148,8 +148,8 @@ public class ImageMagickContentTransformerWorkerTest extends AbstractContentTran
         options.setSourceOptionsList(sourceOptionsList);
         try {
             this.transform(
-                    FileMediaType.MEDIATYPE_PDF.getMediaType(),
-                    FileMediaType.MEDIATYPE_IMAGE_PNG.getMediaType(),
+                    FileMediaType.PDF.getMediaType(),
+                    FileMediaType.IMAGE_PNG.getMediaType(),
                     options);
             fail("An exception regarding an invalid page range should have been thrown");
         }

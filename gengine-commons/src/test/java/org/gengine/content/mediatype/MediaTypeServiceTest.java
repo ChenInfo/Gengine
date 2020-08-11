@@ -34,8 +34,8 @@ public class MediaTypeServiceTest
     @Test
     public void testFileMediaType()
     {
-        assertEquals("text/plain", FileMediaType.MEDIATYPE_TEXT_PLAIN.getMediaType());
-        assertEquals("application/pdf", FileMediaType.MEDIATYPE_PDF.getMediaType());
+        assertEquals("text/plain", FileMediaType.TEXT_PLAIN.getMediaType());
+        assertEquals("application/pdf", FileMediaType.PDF.getMediaType());
     }
 
 }

@@ -33,24 +33,24 @@ public class PagedSourceOptions extends AbstractTransformationSourceOptions
     protected static List<String> getDefaultApplicableMimetypes()
     {
         List<String> defaults = new ArrayList<String>(17);
-        defaults.add(FileMediaType.MEDIATYPE_PDF.getMediaType());
-        defaults.add(FileMediaType.MEDIATYPE_WORD.getMediaType());
-        defaults.add(FileMediaType.MEDIATYPE_PPT.getMediaType());
-        defaults.add(FileMediaType.MEDIATYPE_IMAGE_TIFF.getMediaType());
-        defaults.add(FileMediaType.MEDIATYPE_OPENDOCUMENT_PRESENTATION.getMediaType());
-        defaults.add(FileMediaType.MEDIATYPE_OPENDOCUMENT_PRESENTATION_TEMPLATE.getMediaType());
-        defaults.add(FileMediaType.MEDIATYPE_OPENDOCUMENT_TEXT_TEMPLATE.getMediaType());
-        defaults.add(FileMediaType.MEDIATYPE_OPENOFFICE1_WRITER.getMediaType());
-        defaults.add(FileMediaType.MEDIATYPE_OPENOFFICE1_IMPRESS.getMediaType());
-        defaults.add(FileMediaType.MEDIATYPE_OPENXML_PRESENTATION.getMediaType());
-        defaults.add(FileMediaType.MEDIATYPE_OPENXML_WORDPROCESSING.getMediaType());
+        defaults.add(FileMediaType.PDF.getMediaType());
+        defaults.add(FileMediaType.WORD.getMediaType());
+        defaults.add(FileMediaType.PPT.getMediaType());
+        defaults.add(FileMediaType.IMAGE_TIFF.getMediaType());
+        defaults.add(FileMediaType.OPENDOCUMENT_PRESENTATION.getMediaType());
+        defaults.add(FileMediaType.OPENDOCUMENT_PRESENTATION_TEMPLATE.getMediaType());
+        defaults.add(FileMediaType.OPENDOCUMENT_TEXT_TEMPLATE.getMediaType());
+        defaults.add(FileMediaType.OPENOFFICE1_WRITER.getMediaType());
+        defaults.add(FileMediaType.OPENOFFICE1_IMPRESS.getMediaType());
+        defaults.add(FileMediaType.OPENXML_PRESENTATION.getMediaType());
+        defaults.add(FileMediaType.OPENXML_WORDPROCESSING.getMediaType());
 //        defaults.add(MediaTypes.MIMETYPE_STAROFFICE5_IMPRESS);
 //        defaults.add(MediaTypes.MIMETYPE_STAROFFICE5_IMPRESS_PACKED);
 //        defaults.add(MediaTypes.MIMETYPE_STAROFFICE5_WRITER);
 //        defaults.add(MediaTypes.MIMETYPE_STAROFFICE5_WRITER_GLOBAL);
-        defaults.add(FileMediaType.MEDIATYPE_IWORK_KEYNOTE.getMediaType());
-        defaults.add(FileMediaType.MEDIATYPE_IWORK_PAGES.getMediaType());
-        defaults.add(FileMediaType.MEDIATYPE_WORDPERFECT.getMediaType());
+        defaults.add(FileMediaType.IWORK_KEYNOTE.getMediaType());
+        defaults.add(FileMediaType.IWORK_PAGES.getMediaType());
+        defaults.add(FileMediaType.WORDPERFECT.getMediaType());
         return defaults;
     }
 
