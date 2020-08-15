@@ -1,5 +1,6 @@
 package org.gengine.content.transform.options;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
@@ -74,5 +75,21 @@ public interface TransformationOptions
      *        than or equal to zero (the default) no limit is applied.
      */
     public void setPageLimit(int pageLimit);
+
+    /**
+     * Gets the additional transformation options not explicitly modeled in an
+     * implementation.
+     *
+     * @return the additional options map
+     */
+    public Map<String, Serializable> getAdditionalOptions();
+
+    /**
+     * Sets the additional transformation options not explicitly modeled in an
+     * implementation.
+     *
+     * @param additionalOptions the additional options map
+     */
+    public void setAdditionalOptions(Map<String, Serializable> additionalOptions);
 
 }

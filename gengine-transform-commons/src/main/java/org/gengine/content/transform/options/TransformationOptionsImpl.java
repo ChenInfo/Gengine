@@ -1,5 +1,6 @@
 package org.gengine.content.transform.options;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,8 @@ public class TransformationOptionsImpl implements TransformationOptions
 {
     /** Source options based on its mimetype */
     private Map<Class<? extends TransformationSourceOptions>, TransformationSourceOptions> sourceOptionsMap;
+
+    private Map<String, Serializable> additionalOptions;
 
     /** Time, KBytes and page limits */
     private TransformationOptionLimits limits = new TransformationOptionLimits();
@@ -125,5 +128,15 @@ public class TransformationOptionsImpl implements TransformationOptions
     public void setPageLimit(int pageLimit)
     {
         limits.setPageLimit(pageLimit);
+    }
+
+    public Map<String, Serializable> getAdditionalOptions()
+    {
+        return additionalOptions;
+    }
+
+    public void setAdditionalOptions(Map<String, Serializable> additionalOptions)
+    {
+        this.additionalOptions = additionalOptions;
     }
 }
