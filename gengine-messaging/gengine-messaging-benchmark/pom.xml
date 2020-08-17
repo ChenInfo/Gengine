@@ -4,15 +4,18 @@
 
     <parent>
         <groupId>org.gengine</groupId>
-        <artifactId>gengine-parent</artifactId>
+        <artifactId>gengine-messaging</artifactId>
         <version>0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>gengine-node-simple</artifactId>
+    <artifactId>gengine-messaging-benchmark</artifactId>
     
     <properties>
         <dependency.log4j.version>1.2.17</dependency.log4j.version>
+        <dependency.camel.version>2.11.0</dependency.camel.version>
+        <dependency.activemq.version>5.9.0</dependency.activemq.version>
+        <dependency.sl4j.version>1.7.5</dependency.sl4j.version>
     </properties>
 
     <dependencies>
@@ -23,33 +26,23 @@
         </dependency>
         <dependency>
             <groupId>org.gengine</groupId>
-            <artifactId>gengine-content-handler-webdav</artifactId>
+            <artifactId>gengine-messaging-camel</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.gengine</groupId>
-            <artifactId>gengine-transform-component</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-amqp</artifactId>
+            <version>${dependency.camel.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.gengine</groupId>
-            <artifactId>gengine-hash-component</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>${dependency.activemq.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.gengine</groupId>
-            <artifactId>gengine-transform-worker-imagemagick</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.gengine</groupId>
-            <artifactId>gengine-transform-worker-ffmpeg</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.gengine</groupId>
-            <artifactId>gengine-hash-worker-javase</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${dependency.sl4j.version}</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
@@ -61,32 +54,11 @@
         <build>
         <plugins>
             <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/config</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.gengine.content.node.SimpleAmqpNodeBootstrap</mainClass>
+                            <mainClass>org.gengine.messaging.benchmark.Bootstrap</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
