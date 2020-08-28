@@ -48,7 +48,7 @@ public class TransformerComponentBootstrapFromConfirguration
     }
 
     @Override
-    public HealthCheck getHealthCheck(BaseContentTransformerComponent component, AmqpDirectEndpoint endpoint)
+    public HealthCheck createHealthCheck(BaseContentTransformerComponent component, AmqpDirectEndpoint endpoint)
     {
         return new TransformerHealthCheck(component, endpoint);
     }

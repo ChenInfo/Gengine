@@ -19,7 +19,7 @@ public class BaseContentHashComponent extends AbstractComponent<ContentHashWorke
 {
     private static final Log logger = LogFactory.getLog(BaseContentHashComponent.class);
 
-    public void onReceive(Object message)
+    protected void onReceiveImpl(Object message)
     {
         HashRequest request = (HashRequest) message;
         if (logger.isDebugEnabled())

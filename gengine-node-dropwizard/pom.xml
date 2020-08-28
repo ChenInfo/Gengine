@@ -12,7 +12,7 @@
     <artifactId>gengine-node-dropwizard</artifactId>
     
     <properties>
-        <dependency.dropwizard.version>0.7.0-rc3</dependency.dropwizard.version>
+        <dependency.dropwizard.version>0.7.0</dependency.dropwizard.version>
     </properties>
 
     <dependencies>

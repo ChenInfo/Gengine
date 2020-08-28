@@ -38,6 +38,10 @@ public abstract class
     protected Environment environment;
     protected W worker;
 
+    protected C component;
+    protected AmqpDirectEndpoint endpoint;
+    protected HealthCheck healthCheck;
+
     public AbstractComponentBootstrapFromConfiguration(
             NodeConfiguration nodeConfig, Environment environment, W worker)
     {
@@ -92,18 +96,18 @@ public abstract class
      * @param componentConfig
      * @return the initialized AMQP endpoint
      */
-    public AmqpDirectEndpoint initComponentAndEndpoint(
+    public void init(
             NodeConfiguration nodeConfig, Environment environment,
             ComponentConfiguration componentConfig)
     {
         initWorker();
 
-        C component = createComponent();
+        component = createComponent();
         component.setWorker(worker);
 
         BrokerConfiguration brokerConfig = nodeConfig.getMessagingConfig().getBroker();
 
-        AmqpDirectEndpoint endpoint =
+        endpoint =
                 AmqpNodeBootstrapUtils.createEndpoint(component,
                         brokerConfig.getUrl(),
                         brokerConfig.getUsername(),
@@ -114,17 +118,31 @@ public abstract class
         {
             throw new ChenInfoRuntimeException("Could not create AMQP endpoint");
         }
+
         component.setMessageProducer(endpoint);
+        component.init();
+
+        healthCheck = createHealthCheck(component, endpoint);
 
         logger.debug("Initialized component " + component.toString());
+    }
 
-        environment.healthChecks().register(
-                componentConfig.getName(), getHealthCheck(component, endpoint));
+    protected abstract HealthCheck createHealthCheck(
+            C component, AmqpDirectEndpoint endpoint);
 
+    public C getComponent()
+    {
+        return component;
+    }
+
+    public AmqpDirectEndpoint getEndpoint()
+    {
         return endpoint;
     }
 
-    public abstract HealthCheck getHealthCheck(
-            C component, AmqpDirectEndpoint endpoint);
+    public HealthCheck getHealthCheck()
+    {
+        return healthCheck;
+    }
 
 }

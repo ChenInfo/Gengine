@@ -46,7 +46,7 @@ public class HashComponentBootstrapFromConfirguration
     }
 
     @Override
-    public HealthCheck getHealthCheck(BaseContentHashComponent component, AmqpDirectEndpoint endpoint)
+    public HealthCheck createHealthCheck(BaseContentHashComponent component, AmqpDirectEndpoint endpoint)
     {
         return new HashHealthCheck(component, endpoint);
     }

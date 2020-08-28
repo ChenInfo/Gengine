@@ -32,6 +32,17 @@ public abstract class AbstractComponent<W extends ContentWorker> implements Comp
         this.messageProducer = messageProducer;
     }
 
+    public void init()
+    {
+    }
+
+    public void onReceive(Object message)
+    {
+        onReceiveImpl(message);
+    }
+
+    protected abstract void onReceiveImpl(Object message);
+
     @Override
     public String toString()
     {

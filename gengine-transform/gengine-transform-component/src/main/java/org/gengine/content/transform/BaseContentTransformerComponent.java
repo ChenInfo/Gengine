@@ -17,7 +17,7 @@ public class BaseContentTransformerComponent extends AbstractComponent<ContentTr
 {
     private static final Log logger = LogFactory.getLog(BaseContentTransformerComponent.class);
 
-    public void onReceive(Object message)
+    protected void onReceiveImpl(Object message)
     {
         TransformationRequest request = (TransformationRequest) message;
         logger.info("Processing transformation request " + request.getRequestId());

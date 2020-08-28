@@ -123,10 +123,12 @@ public class NodeApplication extends Application<NodeConfiguration>
             AbstractComponentBootstrapFromConfiguration componentBootrap =
                 getComponentBootrap(worker, nodeConfig, environment);
 
-            AmqpDirectEndpoint endpoint = componentBootrap.initComponentAndEndpoint(
-                    nodeConfig, environment, componentConfig);
+            componentBootrap.init(nodeConfig, environment, componentConfig);
 
-            startEndpoint(endpoint);
+            startEndpoint(componentBootrap.getEndpoint());
+
+            environment.healthChecks().register(
+                    componentConfig.getName(), componentBootrap.getHealthCheck());
         }
 
         final NodeResource resource = new NodeResource();
