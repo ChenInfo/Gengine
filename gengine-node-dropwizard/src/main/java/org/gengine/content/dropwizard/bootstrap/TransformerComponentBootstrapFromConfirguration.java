@@ -7,7 +7,7 @@ import org.gengine.content.dropwizard.health.TransformerHealthCheck;
 import org.gengine.content.transform.AbstractContentTransformerWorker;
 import org.gengine.content.transform.BaseContentTransformerComponent;
 import org.gengine.content.transform.ContentTransformerWorker;
-import org.gengine.error.ChenInfoRuntimeException;
+import org.gengine.error.GengineRuntimeException;
 import org.gengine.messaging.amqp.AmqpDirectEndpoint;
 
 import com.codahale.metrics.health.HealthCheck;
@@ -37,7 +37,7 @@ public class TransformerComponentBootstrapFromConfirguration
     {
         if (!(worker instanceof AbstractContentTransformerWorker))
         {
-            throw new ChenInfoRuntimeException(
+            throw new GengineRuntimeException(
                     "Only " + AbstractContentTransformerWorker.class.getSimpleName() + " supported");
         }
         ((AbstractContentTransformerWorker) worker).setSourceContentReferenceHandler(

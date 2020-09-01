@@ -15,6 +15,7 @@ public class CamelMessageProducer implements MessageProducer
 {
     protected static final String HEADER_JMS_AMQP_MESSAGE_FORMAT = "JMS_AMQP_MESSAGE_FORMAT";
     protected static final Long HEADER_JMS_AMQP_MESSAGE_FORMAT_VALUE = 0L;
+    protected static final String ERROR_SENDING = "Could not send message";
 
     protected ProducerTemplate producer;
     protected String endpoint;
@@ -73,7 +74,7 @@ public class CamelMessageProducer implements MessageProducer
         }
         catch (Exception e)
         {
-            throw new MessagingException(e);
+            throw new MessagingException(ERROR_SENDING, e);
         }
     }
 
@@ -85,7 +86,7 @@ public class CamelMessageProducer implements MessageProducer
         }
         catch (Exception e)
         {
-            throw new MessagingException(e);
+            throw new MessagingException(ERROR_SENDING, e);
         }
     }
 
@@ -97,7 +98,7 @@ public class CamelMessageProducer implements MessageProducer
         }
         catch (Exception e)
         {
-            throw new MessagingException(e);
+            throw new MessagingException(ERROR_SENDING, e);
         }
     }
 
@@ -109,7 +110,7 @@ public class CamelMessageProducer implements MessageProducer
         }
         catch (Exception e)
         {
-            throw new MessagingException(e);
+            throw new MessagingException(ERROR_SENDING, e);
         }
     }
 

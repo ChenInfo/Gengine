@@ -7,7 +7,7 @@ import org.gengine.content.dropwizard.health.HashHealthCheck;
 import org.gengine.content.hash.AbstractContentHashWorker;
 import org.gengine.content.hash.BaseContentHashComponent;
 import org.gengine.content.hash.ContentHashWorker;
-import org.gengine.error.ChenInfoRuntimeException;
+import org.gengine.error.GengineRuntimeException;
 import org.gengine.messaging.amqp.AmqpDirectEndpoint;
 
 import com.codahale.metrics.health.HealthCheck;
@@ -37,7 +37,7 @@ public class HashComponentBootstrapFromConfirguration
     {
         if (!(worker instanceof AbstractContentHashWorker))
         {
-            throw new ChenInfoRuntimeException(
+            throw new GengineRuntimeException(
                     "Only " + AbstractContentHashWorker.class.getSimpleName() + " supported");
         }
         ((AbstractContentHashWorker) worker).setSourceContentReferenceHandler(

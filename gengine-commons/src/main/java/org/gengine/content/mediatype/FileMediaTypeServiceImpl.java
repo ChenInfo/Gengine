@@ -8,7 +8,7 @@ import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
-import org.gengine.error.ChenInfoRuntimeException;
+import org.gengine.error.GengineRuntimeException;
 
 public class FileMediaTypeServiceImpl implements FileMediaTypeService
 {
@@ -55,7 +55,7 @@ public class FileMediaTypeServiceImpl implements FileMediaTypeService
         }
         catch (MimeTypeException e)
         {
-            throw new ChenInfoRuntimeException("Could not get extension for mimetype", e);
+            throw new GengineRuntimeException("Could not get extension for mimetype", e);
         }
 
         return null;

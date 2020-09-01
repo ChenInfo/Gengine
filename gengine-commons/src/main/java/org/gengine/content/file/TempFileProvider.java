@@ -9,41 +9,21 @@ import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.gengine.error.GengineRuntimeException;
 
-/**
- * A helper class that provides temporary files, providing a common point to clean
- * them up.
- *
- * <p>
- * The contents of CHENINFO_TEMP_FILE_DIR [%java.io.tmpdir%/ChenInfo] are managed by this
- * class.  Temporary files and directories are cleaned by TempFileCleanerJob so that
- * after a delay [default 1 hour] the contents of the cheninfo temp dir,
- * both files and directories are removed.
- *
- * <p>
- * Some temporary files may need to live longer than 1 hour.   The temp file provider allows special sub folders which
- * are cleaned less frequently.    By default, files in the long life folders will remain for 24 hours
- * unless cleaned by the application code earlier.
- *
- * <p>
- * The other contents of %java.io.tmpdir% are not touched by the cleaner job.
- *
- * <p>TempFileCleanerJob Job Data: protectHours, number of hours to keep temporary files, default 1 hour.
- *
- */
-public class TempFileProvider implements FileProvider
+public class TempFileProvider
 {
     private static final int BUFFER_SIZE = 40 * 1024;
 
     /**
      * subdirectory in the temp directory where ChenInfo temporary files will go
      */
-    public static final String CHENINFO_TEMP_FILE_DIR = "ChenInfo";
+    public static final String APPLICATION_TEMP_FILE_DIR = "Gengine";
 
     /**
      * The prefix for the long life temporary files.
      */
-    public static final String CHENINFO_LONG_LIFE_FILE_DIR = "longLife";
+    public static final String APPLICATION_LONG_LIFE_FILE_DIR = "longLife";
 
     /** the system property key giving us the location of the temp directory */
     public static final String SYSTEM_KEY_TEMP_DIR = "java.io.tmpdir";
@@ -51,6 +31,13 @@ public class TempFileProvider implements FileProvider
     private static final Log logger = LogFactory.getLog(TempFileProvider.class);
 
     private static int MAX_RETRIES = 3;
+
+    /**
+     * Static class only
+     */
+    protected TempFileProvider()
+    {
+    }
 
     /**
      * Get the Java Temp dir e.g. java.io.tempdir
@@ -62,7 +49,7 @@ public class TempFileProvider implements FileProvider
         String systemTempDirPath = System.getProperty(SYSTEM_KEY_TEMP_DIR);
         if (systemTempDirPath == null)
         {
-            throw new RuntimeException("System property not available: " + SYSTEM_KEY_TEMP_DIR);
+            throw new GengineRuntimeException("System property not available: " + SYSTEM_KEY_TEMP_DIR);
         }
         File systemTempDir = new File(systemTempDirPath);
         if (logger.isDebugEnabled())
@@ -70,6 +57,16 @@ public class TempFileProvider implements FileProvider
             logger.debug("Created system temporary directory: " + systemTempDir);
         }
         return systemTempDir;
+    }
+
+    protected static String getApplicationTempFileDir()
+    {
+        return APPLICATION_TEMP_FILE_DIR;
+    }
+
+    protected static String getApplicationLongLifeFileDir()
+    {
+        return APPLICATION_TEMP_FILE_DIR;
     }
 
     /**
@@ -80,9 +77,22 @@ public class TempFileProvider implements FileProvider
      */
     public static File getTempDir()
     {
+        return getTempDir(getApplicationTempFileDir());
+    }
+
+    /**
+     * Get the specified temp dir, %java.io.tempdir%/dirName.
+     * Will create the temp dir on the fly if it does not already exist.
+     *
+     * @param dirName the name of sub-directory in %java.io.tempdir%
+     *
+     * @return Returns a temporary directory, i.e. <code>isDir == true</code>
+     */
+    public static File getTempDir(String dirName)
+    {
         File systemTempDir = getSystemTempDir();
         // append the ChenInfo directory
-        File tempDir = new File(systemTempDir, CHENINFO_TEMP_FILE_DIR);
+        File tempDir = new File(systemTempDir, dirName);
         // ensure that the temp directory exists
         if (tempDir.exists())
         {
@@ -93,7 +103,7 @@ public class TempFileProvider implements FileProvider
             // not there yet
             if (!tempDir.mkdirs())
             {
-                throw new RuntimeException("Failed to create temp directory: " + tempDir);
+                throw new GengineRuntimeException("Failed to create temp directory: " + tempDir);
             }
             if (logger.isDebugEnabled())
             {
@@ -102,6 +112,103 @@ public class TempFileProvider implements FileProvider
         }
         // done
         return tempDir;
+    }
+
+    public static File createTempFile(InputStream in, String namePrefix, String nameSufix) throws Exception
+    {
+        if (null == in)
+        {
+            return null;
+        }
+
+        File file = createTempFile(namePrefix, nameSufix);
+        OutputStream out = new BufferedOutputStream(new FileOutputStream(file), BUFFER_SIZE);
+        try
+        {
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int i;
+            while ((i = in.read(buffer)) > -1)
+            {
+                out.write(buffer, 0, i);
+            }
+        }
+        catch (Exception e)
+        {
+            file.delete();
+            throw e;
+        }
+        finally
+        {
+            in.close();
+            out.flush();
+            out.close();
+        }
+
+        return file;
+    }
+
+    /**
+     * Is this a long life folder ?
+     * @param file
+     * @return true, this is a long life folder.
+     */
+    protected static boolean isLongLifeTempDir(File file)
+    {
+        if(file.isDirectory())
+        {
+            if(file.getName().startsWith(getApplicationLongLifeFileDir()))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Create a temp file in the cheninfo temp dir.
+     *
+     * @return Returns a temp <code>File</code> that will be located in the
+     *         <b>ChenInfo</b> subdirectory of the default temp directory
+     *
+     * @see #APPLICATION_TEMP_FILE_DIR
+     * @see File#createTempFile(java.lang.String, java.lang.String)
+     */
+    public static File createTempFile(String prefix, String suffix)
+    {
+        File tempDir = getTempDir();
+        // we have the directory we want to use
+        return createTempFile(prefix, suffix, tempDir);
+    }
+
+    /**
+     * @return Returns a temp <code>File</code> that will be located in the
+     *         given directory
+     *
+     * @see #APPLICATION_TEMP_FILE_DIR
+     * @see File#createTempFile(java.lang.String, java.lang.String)
+     */
+    public static File createTempFile(String prefix, String suffix, File directory)
+    {
+        try
+        {
+            File tempFile = File.createTempFile(prefix, suffix, directory);
+            if (logger.isDebugEnabled())
+            {
+                logger.debug("Creating tmp file: " + tempFile);
+            }
+            return tempFile;
+        } catch (IOException e)
+        {
+            throw new GengineRuntimeException("Failed to created temp file: \n" +
+                    "   prefix: " + prefix + "\n"
+                    + "   suffix: " + suffix + "\n" +
+                    "   directory: " + directory,
+                    e);
+        }
     }
 
     /**
@@ -122,7 +229,7 @@ public class TempFileProvider implements FileProvider
          * Long life temporary directories have a prefix at the start of the
          * folder name.
          */
-        String folderName = CHENINFO_LONG_LIFE_FILE_DIR + "_" + key;
+        String folderName = getApplicationLongLifeFileDir() + "_" + key;
 
         File tempDir = getTempDir();
 
@@ -177,126 +284,7 @@ public class TempFileProvider implements FileProvider
                 }
             }
         }
-        throw new RuntimeException("Failed to create temp directory: " + longLifeDir);
-    }
-
-    public static File createTempFile(InputStream in, String namePrefix, String nameSufix) throws Exception
-    {
-        if (null == in)
-        {
-            return null;
-        }
-
-        File file = createTempFile(namePrefix, nameSufix);
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(file), BUFFER_SIZE);
-        try
-        {
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int i;
-            while ((i = in.read(buffer)) > -1)
-            {
-                out.write(buffer, 0, i);
-            }
-        }
-        catch (Exception e)
-        {
-            file.delete();
-            throw e;
-        }
-        finally
-        {
-            in.close();
-            out.flush();
-            out.close();
-        }
-
-        return file;
-    }
-
-//    /**
-//     * Is this a long life folder ?
-//     * @param file
-//     * @return true, this is a long life folder.
-//     */
-//    private static boolean isLongLifeTempDir(File file)
-//    {
-//        if(file.isDirectory())
-//        {
-//            if(file.getName().startsWith(CHENINFO_LONG_LIFE_FILE_DIR))
-//            {
-//                return true;
-//            }
-//            else
-//            {
-//                return false;
-//            }
-//        }
-//        return false;
-//    }
-
-    /**
-     * Create a temp file in the cheninfo temp dir.
-     *
-     * @return Returns a temp <code>File</code> that will be located in the
-     *         <b>ChenInfo</b> subdirectory of the default temp directory
-     *
-     * @see #CHENINFO_TEMP_FILE_DIR
-     * @see File#createTempFile(java.lang.String, java.lang.String)
-     */
-    public static File createTempFile(String prefix, String suffix)
-    {
-        File tempDir = TempFileProvider.getTempDir();
-        // we have the directory we want to use
-        return createTempFile(prefix, suffix, tempDir);
-    }
-
-    /**
-     * @return Returns a temp <code>File</code> that will be located in the
-     *         given directory
-     *
-     * @see #CHENINFO_TEMP_FILE_DIR
-     * @see File#createTempFile(java.lang.String, java.lang.String)
-     */
-    public static File createTempFile(String prefix, String suffix, File directory)
-    {
-        try
-        {
-            File tempFile = File.createTempFile(prefix, suffix, directory);
-            if (logger.isDebugEnabled())
-            {
-                logger.debug("Creating tmp file: " + tempFile);
-            }
-            return tempFile;
-        } catch (IOException e)
-        {
-            throw new RuntimeException("Failed to created temp file: \n" +
-                    "   prefix: " + prefix + "\n"
-                    + "   suffix: " + suffix + "\n" +
-                    "   directory: " + directory,
-                    e);
-        }
-    }
-
-    @Override
-    public File createFile(String prefix, String suffix)
-    {
-        return TempFileProvider.createTempFile(prefix, suffix);
-    }
-
-    @Override
-    public String toString()
-    {
-        StringBuilder builder = new StringBuilder(this.getClass().getSimpleName() + "[");
-        builder.append("tempDir: " + getTempDir().toString());
-        builder.append("]");
-        return builder.toString();
-    }
-
-    @Override
-    public boolean isAvailable()
-    {
-        File dir = getTempDir();
-        return dir != null && dir.exists();
+        throw new GengineRuntimeException("Failed to create temp directory: " + longLifeDir);
     }
 
 }

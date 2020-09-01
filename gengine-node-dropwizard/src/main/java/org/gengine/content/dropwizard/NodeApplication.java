@@ -17,7 +17,7 @@ import org.gengine.content.dropwizard.configuration.NodeConfiguration;
 import org.gengine.content.dropwizard.resources.NodeResource;
 import org.gengine.content.hash.AbstractContentHashWorker;
 import org.gengine.content.transform.AbstractContentTransformerWorker;
-import org.gengine.error.ChenInfoRuntimeException;
+import org.gengine.error.GengineRuntimeException;
 import org.gengine.messaging.amqp.AmqpDirectEndpoint;
 
 import io.dropwizard.Application;
@@ -90,7 +90,7 @@ public class NodeApplication extends Application<NodeConfiguration>
         }
         catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
         {
-            throw new ChenInfoRuntimeException("Could not load worker class: " + e.getMessage(), e);
+            throw new GengineRuntimeException("Could not load worker class: " + e.getMessage(), e);
         }
     }
 

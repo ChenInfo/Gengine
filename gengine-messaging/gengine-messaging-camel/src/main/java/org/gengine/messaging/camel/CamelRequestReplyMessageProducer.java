@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
-import org.cheninfo.service.cmr.repository.ContentIOException;
+import org.gengine.content.ContentIOException;
 import org.gengine.messaging.Reply;
 import org.gengine.messaging.Request;
 import org.gengine.messaging.RequestReplyMessageProducer;

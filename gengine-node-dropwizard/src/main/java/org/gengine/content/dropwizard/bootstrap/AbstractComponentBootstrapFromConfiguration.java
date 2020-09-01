@@ -11,10 +11,9 @@ import org.gengine.content.dropwizard.configuration.BrokerConfiguration;
 import org.gengine.content.dropwizard.configuration.ComponentConfiguration;
 import org.gengine.content.dropwizard.configuration.NodeConfiguration;
 import org.gengine.content.file.FileProviderImpl;
-import org.gengine.content.file.TempFileProvider;
 import org.gengine.content.handler.ContentReferenceHandler;
 import org.gengine.content.handler.FileContentReferenceHandlerImpl;
-import org.gengine.error.ChenInfoRuntimeException;
+import org.gengine.error.GengineRuntimeException;
 import org.gengine.messaging.amqp.AmqpDirectEndpoint;
 import org.gengine.messaging.amqp.AmqpNodeBootstrapUtils;
 
@@ -67,20 +66,6 @@ public abstract class
         return fileContentReferenceHandler;
     }
 
-    /**
-     * Constructs a {@link FileContentReferenceHandlerImpl} using a {@link TempFileProvider}.
-     *
-     * @return the ContentReferenceHandler
-     */
-    protected ContentReferenceHandler createTempFileContentReferenceHandler()
-    {
-        TempFileProvider fileProvider = new TempFileProvider();
-        FileContentReferenceHandlerImpl fileContentReferenceHandler =
-                new FileContentReferenceHandlerImpl();
-        fileContentReferenceHandler.setFileProvider(fileProvider);
-        return fileContentReferenceHandler;
-    }
-
     protected abstract C createComponent();
 
     protected abstract void initWorker();
@@ -116,7 +101,7 @@ public abstract class
                         componentConfig.getReplyQueue());
         if (endpoint == null)
         {
-            throw new ChenInfoRuntimeException("Could not create AMQP endpoint");
+            throw new GengineRuntimeException("Could not create AMQP endpoint");
         }
 
         component.setMessageProducer(endpoint);

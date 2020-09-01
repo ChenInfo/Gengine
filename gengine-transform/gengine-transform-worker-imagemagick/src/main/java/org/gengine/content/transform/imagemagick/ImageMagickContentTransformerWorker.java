@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.cheninfo.repo.content.transform.magick.ImageResizeOptions;
-import org.cheninfo.service.cmr.repository.ContentIOException;
 import org.cheninfo.service.cmr.repository.CropSourceOptions;
 import org.cheninfo.service.cmr.repository.PagedSourceOptions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.gengine.content.ContentIOException;
 import org.gengine.content.ContentReference;
 import org.gengine.content.mediatype.FileMediaType;
 import org.gengine.content.transform.AbstractFileContentTransformerWorker;
@@ -20,7 +20,7 @@ import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
 import org.gengine.content.transform.options.ImageTransformationOptions;
 import org.gengine.content.transform.options.TransformationOptions;
 import org.gengine.content.transform.options.TransformationOptionsImpl;
-import org.gengine.error.ChenInfoRuntimeException;
+import org.gengine.error.GengineRuntimeException;
 import org.gengine.util.exec.RuntimeExec;
 import org.gengine.util.exec.RuntimeExec.ExecutionResult;
 
@@ -132,7 +132,7 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
             InputStream imageStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
             if (imageStream == null)
             {
-                throw new ChenInfoRuntimeException("Sample image not found: " + resourcePath);
+                throw new GengineRuntimeException("Sample image not found: " + resourcePath);
             }
             // dump to a temp target reference (we may only be able to write to the target handler)
             ContentReference sourceReference = targetContentReferenceHandler.createContentReference(
@@ -451,7 +451,7 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
                     {
                         if (isSingleSourcePageRangeRequired(sourceMimetype, targetMimetype))
                         {
-                            throw new ChenInfoRuntimeException(
+                            throw new GengineRuntimeException(
                                     "A single page is required for targets of type " + targetMimetype);
                         }
                         return "[" + (pagedSourceOptions.getStartPageNumber() - 1) +

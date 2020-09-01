@@ -11,6 +11,7 @@ import static junit.framework.Assert.*;
 import org.cheninfo.service.cmr.repository.TemporalSourceOptions;
 import org.gengine.content.ContentReference;
 import org.gengine.content.file.FileProvider;
+import org.gengine.content.file.FileProviderImpl;
 import org.gengine.content.file.TempFileProvider;
 import org.gengine.content.handler.ContentReferenceHandler;
 import org.gengine.content.handler.FileContentReferenceHandlerImpl;
@@ -34,7 +35,7 @@ public class FfmpegContentTransformerWorkerTest
 
     @Before
     public void setUp() throws Exception {
-        FileProvider fileProvider = new TempFileProvider();
+        FileProvider fileProvider = new FileProviderImpl(TempFileProvider.getTempDir().getPath());
         ContentReferenceHandler contentReferenceHandler = new FileContentReferenceHandlerImpl();
         ((FileContentReferenceHandlerImpl) contentReferenceHandler).setFileProvider(fileProvider);
         transformerWorker = new FfmpegContentTransformerWorker();

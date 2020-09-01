@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.cheninfo.service.cmr.repository.ContentIOException;
+import org.gengine.content.ContentIOException;
 import org.gengine.content.ContentReference;
 import org.gengine.content.file.FileProvider;
 import org.gengine.content.file.FileProviderImpl;
@@ -22,7 +22,7 @@ import org.gengine.content.file.FileProviderImpl;
 /**
  * Java {@link File} content reference handler implementation.
  * <p>
- * Content reference creation is delegated to {@link TempFileProvider}.
+ * Content reference creation is delegated to {@link FileProvider}.
  *
  */
 public class FileContentReferenceHandlerImpl implements FileContentReferenceHandler

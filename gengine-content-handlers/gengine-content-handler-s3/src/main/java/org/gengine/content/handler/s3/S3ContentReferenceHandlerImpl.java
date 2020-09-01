@@ -2,9 +2,9 @@ package org.gengine.content.handler.s3;
 
 import java.io.InputStream;
 
-import org.cheninfo.service.cmr.repository.ContentIOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.gengine.content.ContentIOException;
 import org.gengine.content.ContentReference;
 import org.gengine.content.handler.AbstractUrlContentReferenceHandler;
 

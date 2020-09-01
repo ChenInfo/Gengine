@@ -2,7 +2,7 @@ package org.gengine.content.handler;
 
 import java.io.File;
 
-import org.cheninfo.service.cmr.repository.ContentIOException;
+import org.gengine.content.ContentIOException;
 import org.gengine.content.ContentReference;
 
 /**

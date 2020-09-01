@@ -8,11 +8,10 @@ import java.util.Properties;
 import org.gengine.content.AbstractComponent;
 import org.gengine.content.ContentWorker;
 import org.gengine.content.file.FileProviderImpl;
-import org.gengine.content.file.TempFileProvider;
 import org.gengine.content.handler.ContentReferenceHandler;
 import org.gengine.content.handler.FileContentReferenceHandlerImpl;
 import org.gengine.content.handler.webdav.WebDavContentReferenceHandlerImpl;
-import org.gengine.error.ChenInfoRuntimeException;
+import org.gengine.error.GengineRuntimeException;
 import org.gengine.messaging.amqp.AmqpDirectEndpoint;
 import org.gengine.messaging.amqp.AmqpNodeBootstrapUtils;
 
@@ -111,20 +110,6 @@ public abstract class AbstractComponentBootstrapFromProperties<W extends Content
         return fileContentReferenceHandler;
     }
 
-    /**
-     * Constructs a {@link FileContentReferenceHandlerImpl} using a {@link TempFileProvider}.
-     *
-     * @return the ContentReferenceHandler
-     */
-    protected ContentReferenceHandler createTempFileContentReferenceHandler()
-    {
-        TempFileProvider fileProvider = new TempFileProvider();
-        FileContentReferenceHandlerImpl fileContentReferenceHandler =
-                new FileContentReferenceHandlerImpl();
-        fileContentReferenceHandler.setFileProvider(fileProvider);
-        return fileContentReferenceHandler;
-    }
-
     protected abstract AbstractComponent<W> createComponent();
 
     protected abstract void initWorker();
@@ -140,7 +125,7 @@ public abstract class AbstractComponentBootstrapFromProperties<W extends Content
                 AmqpNodeBootstrapUtils.createEndpoint(component, properties);
         if (endpoint == null)
         {
-            throw new ChenInfoRuntimeException("Could not create AMQP endpoint");
+            throw new GengineRuntimeException("Could not create AMQP endpoint");
         }
 
         component.setMessageProducer(endpoint);

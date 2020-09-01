@@ -3,6 +3,7 @@ package org.gengine.content.handler;
 import org.apache.commons.lang.StringUtils;
 import org.gengine.content.ContentReference;
 import org.gengine.content.file.FileProvider;
+import org.gengine.content.file.FileProviderImpl;
 import org.gengine.content.file.TempFileProvider;
 import org.gengine.content.handler.ContentReferenceHandler;
 import org.gengine.content.handler.FileContentReferenceHandlerImpl;
@@ -18,7 +19,8 @@ public class FileContentReferenceHandlerImplTest
     @Before
     public void setUp()
     {
-        FileProvider fileProvider = new TempFileProvider();
+        FileProvider fileProvider = new FileProviderImpl(
+                TempFileProvider.getTempDir().getPath());
         handler = new FileContentReferenceHandlerImpl();
         ((FileContentReferenceHandlerImpl) handler).setFileProvider(fileProvider);
     }

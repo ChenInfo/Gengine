@@ -15,6 +15,7 @@
     <modules>
         <module>gengine-content-handler-s3</module>
         <module>gengine-content-handler-webdav</module>
+        <module>gengine-content-handler-tempfile</module>
     </modules>
 
 </project>

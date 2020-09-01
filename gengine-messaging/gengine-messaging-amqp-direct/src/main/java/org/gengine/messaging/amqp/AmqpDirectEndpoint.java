@@ -252,7 +252,7 @@ public class AmqpDirectEndpoint implements MessageProducer
         }
         catch (Exception e)
         {
-            throw new MessagingException(e);
+            throw new MessagingException("Error sending message", e);
         }
     }
 

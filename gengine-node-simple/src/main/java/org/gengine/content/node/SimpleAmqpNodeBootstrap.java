@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.gengine.content.ContentWorker;
 import org.gengine.content.hash.AbstractContentHashWorker;
 import org.gengine.content.transform.AbstractContentTransformerWorker;
-import org.gengine.error.ChenInfoRuntimeException;
+import org.gengine.error.GengineRuntimeException;
 
 /**
  * Boostrap class which loads a properties file from the path
@@ -58,7 +58,7 @@ public class SimpleAmqpNodeBootstrap
         }
         catch (IOException e)
         {
-            throw new ChenInfoRuntimeException("Could not load required " + propertiesFilePath);
+            throw new GengineRuntimeException("Could not load required " + propertiesFilePath);
         }
         finally
         {
@@ -93,7 +93,7 @@ public class SimpleAmqpNodeBootstrap
         }
         catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
         {
-            throw new ChenInfoRuntimeException("Could not load class", e);
+            throw new GengineRuntimeException("Could not load class", e);
         }
     }
 
