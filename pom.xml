@@ -100,6 +100,42 @@
                     <target>${maven.compile.target}</target>
                 </configuration>
             </plugin>
+            <!--  Check license headers -->
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>0.10</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <licenses>
+                        <license
+                            implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+                            <licenseFamilyCategory>GENGINE_LGPL</licenseFamilyCategory>
+                            <licenseFamilyName>Gengine LGPL License</licenseFamilyName>
+                            <notes></notes>
+                            <patterns>
+                                <pattern>Gengine is free software: you can redistribute it and/or modify</pattern>
+                            </patterns>
+                        </license>
+                    </licenses>
+                    <licenseFamilies>
+                        <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
+                            <familyName>Gengine LGPL License</familyName>
+                        </licenseFamily>
+                        <licenseFamily implementation="org.apache.rat.license.Apache20LicenseFamily" />
+                    </licenseFamilies>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
