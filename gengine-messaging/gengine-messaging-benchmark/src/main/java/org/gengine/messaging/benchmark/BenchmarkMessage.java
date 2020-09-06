@@ -8,6 +8,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * A simple message with a decent sized payload for benchmarking.
+ *
  */
 public class BenchmarkMessage
 {

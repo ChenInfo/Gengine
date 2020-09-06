@@ -1,5 +1,6 @@
 package org.gengine.content;
 
+import org.gengine.api.StableApi;
 import org.gengine.error.GengineRuntimeException;
 
 
@@ -10,6 +11,7 @@ import org.gengine.error.GengineRuntimeException;
  * @see Throwable#getCause()
  *
  */
+@StableApi
 public class ContentIOException extends GengineRuntimeException
 {
     private static final long serialVersionUID = 3258130249983276087L;

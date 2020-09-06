@@ -7,6 +7,7 @@ import org.gengine.health.ComponentUnavailableExceptionHandler;
 /**
  * Camel Processor and standard bean which provide methods to pass the exception
  * to the specified handler.
+ *
  */
 public class ExceptionProcessor implements Processor
 {

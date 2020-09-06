@@ -5,6 +5,12 @@ import org.junit.Test;
 
 import static junit.framework.Assert.*;
 
+/**
+ * Tests the media type service
+ *
+ * @see {@link FileMediaTypeService}
+ *
+ */
 public class MediaTypeServiceTest
 {
 

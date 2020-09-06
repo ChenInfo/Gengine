@@ -7,6 +7,7 @@ import org.gengine.messaging.Reply;
 
 /**
  * Represents a reply from a content transformer on the status of a transformation request.
+ *
  */
 public class TransformationReply implements Reply
 {

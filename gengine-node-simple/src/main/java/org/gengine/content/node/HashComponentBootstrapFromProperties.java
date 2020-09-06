@@ -7,6 +7,11 @@ import org.gengine.content.handler.ContentReferenceHandler;
 import org.gengine.content.hash.AbstractContentHashWorker;
 import org.gengine.content.hash.BaseContentHashComponent;
 
+/**
+ * Bootraps a hash component
+ *
+ * @param <W>
+ */
 public class HashComponentBootstrapFromProperties<W extends AbstractContentHashWorker> extends
         AbstractComponentBootstrapFromProperties<W>
 {

@@ -7,6 +7,7 @@ import org.gengine.content.ContentReference;
 
 /**
  * Adds file handling to the ContentReferenceHandler interface.
+ *
  */
 public interface FileContentReferenceHandler extends ContentReferenceHandler
 {

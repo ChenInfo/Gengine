@@ -14,6 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gengine.content.ContentIOException;
 import org.gengine.content.ContentReference;
+import org.gengine.content.file.TempFileProvider;
 import org.gengine.content.mediatype.FileMediaType;
 import org.gengine.content.transform.AbstractFileContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
@@ -79,6 +80,8 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
      */
     public void setExecuter(RuntimeExec executer)
     {
+        executer.setProcessProperty(
+                "MAGICK_TMPDIR", TempFileProvider.getTempDir().getAbsolutePath());
         this.executer = executer;
     }
 

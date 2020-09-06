@@ -5,6 +5,7 @@ import org.gengine.content.ContentReference;
 
 /**
  * A base ContentReferenceHandler implementation with convenience methods for dealing with URLs.
+ *
  */
 public abstract class AbstractUrlContentReferenceHandler implements ContentReferenceHandler
 {

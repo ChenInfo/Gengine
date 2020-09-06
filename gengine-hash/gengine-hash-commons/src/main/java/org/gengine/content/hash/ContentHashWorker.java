@@ -3,6 +3,7 @@ package org.gengine.content.hash;
 import java.util.List;
 import java.util.Map;
 
+import org.gengine.content.ContentIOException;
 import org.gengine.content.ContentReference;
 import org.gengine.content.ContentWorker;
 
@@ -26,6 +27,15 @@ public interface ContentHashWorker extends ContentWorker
      */
     public Map<ContentReference, String> generateHashes(
             List<ContentReference> sources,
-            String hashAlgorithm) throws Exception;
+            String hashAlgorithm) throws ContentIOException, InterruptedException, ContentHashException;
+
+    /**
+     * Determines whether or not the given hash algorithm is supported
+     * by the implementation.
+     *
+     * @param hashAlgorithm
+     * @return true if the algorithm is supported
+     */
+    public boolean isAlgorithmSupported(String hashAlgorithm);
 
 }

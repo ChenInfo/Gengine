@@ -2,6 +2,10 @@ package org.gengine.content.mediatype;
 
 import java.io.File;
 
+/**
+ * Defines a service for getting extensions for media types and vice versa.
+ *
+ */
 public interface FileMediaTypeService
 {
 

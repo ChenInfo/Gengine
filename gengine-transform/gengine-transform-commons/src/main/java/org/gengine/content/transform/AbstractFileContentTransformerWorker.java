@@ -14,9 +14,15 @@ import org.gengine.content.handler.FileContentReferenceHandler;
 import org.gengine.content.mediatype.FileMediaType;
 import org.gengine.content.transform.options.TransformationOptions;
 
+/**
+ * Extension of AbstractContentTransformerWorker for dealing with file
+ * content references
+ *
+ */
 public abstract class AbstractFileContentTransformerWorker extends AbstractContentTransformerWorker
 {
 
+    @Override
     public List<ContentReference> transform(
             List<ContentReference> sources,
             List<ContentReference> targets,
@@ -123,6 +129,12 @@ public abstract class AbstractFileContentTransformerWorker extends AbstractConte
         return results;
     }
 
+    /**
+     * Creates a temp file from the given content reference
+     *
+     * @param contentReference
+     * @return the temp file
+     */
     protected File createTempFile(ContentReference contentReference)
     {
         return TempFileProvider.createTempFile(

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Configuration for messaging
+ *
  */
 public class MessagingConfiguration
 {

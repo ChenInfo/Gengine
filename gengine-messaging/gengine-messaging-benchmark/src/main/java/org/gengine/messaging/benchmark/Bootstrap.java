@@ -35,6 +35,7 @@ import org.gengine.messaging.jackson.ObjectMapperFactory;
  *  <li><code>tcp</code>: creates a Camel-based endpoint using JSON object marshaling/unmarshaling</li>
  *  <li><code>amqp</code>: creates an {@link AmqpDirectEndpoint} without object marshaling</li>
  * </ul>
+ *
  */
 public class Bootstrap
 {

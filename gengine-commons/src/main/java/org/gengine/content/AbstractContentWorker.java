@@ -5,6 +5,7 @@ import org.gengine.content.handler.ContentReferenceHandler;
 /**
  * Base implementation of a content worker with a <code>sourceContentReferenceHandler</code>
  * field.
+ *
  */
 public abstract class AbstractContentWorker implements ContentWorker
 {

@@ -11,12 +11,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gengine.error.GengineRuntimeException;
 
+
+/**
+ * A helper class that provides temporary files, providing a common point to clean
+ * them up.
+ *
+ * <p>
+ * The contents of APPLICATION_TEMP_FILE_DIR [%java.io.tmpdir%/Gengine] are managed by this
+ * class.
+ *
+ */
 public class TempFileProvider
 {
     private static final int BUFFER_SIZE = 40 * 1024;
 
     /**
-     * subdirectory in the temp directory where ChenInfo temporary files will go
+     * subdirectory in the temp directory where Gengine temporary files will go
      */
     public static final String APPLICATION_TEMP_FILE_DIR = "Gengine";
 
@@ -59,18 +69,28 @@ public class TempFileProvider
         return systemTempDir;
     }
 
+    /**
+     * Gets the temp file directory
+     *
+     * @return the temp file directory
+     */
     protected static String getApplicationTempFileDir()
     {
         return APPLICATION_TEMP_FILE_DIR;
     }
 
+    /**
+     * Gets the longer life file directory
+     *
+     * @return the longer life file directory
+     */
     protected static String getApplicationLongLifeFileDir()
     {
         return APPLICATION_TEMP_FILE_DIR;
     }
 
     /**
-     * Get the ChenInfo temp dir, by defaut %java.io.tempdir%/ChenInfo.
+     * Get the Gengine temp dir, by defaut %java.io.tempdir%/Gengine.
      * Will create the temp dir on the fly if it does not already exist.
      *
      * @return Returns a temporary directory, i.e. <code>isDir == true</code>
@@ -91,7 +111,7 @@ public class TempFileProvider
     public static File getTempDir(String dirName)
     {
         File systemTempDir = getSystemTempDir();
-        // append the ChenInfo directory
+        // append the Gengine directory
         File tempDir = new File(systemTempDir, dirName);
         // ensure that the temp directory exists
         if (tempDir.exists())
@@ -172,7 +192,7 @@ public class TempFileProvider
      * Create a temp file in the cheninfo temp dir.
      *
      * @return Returns a temp <code>File</code> that will be located in the
-     *         <b>ChenInfo</b> subdirectory of the default temp directory
+     *         <b>Gengine</b> subdirectory of the default temp directory
      *
      * @see #APPLICATION_TEMP_FILE_DIR
      * @see File#createTempFile(java.lang.String, java.lang.String)

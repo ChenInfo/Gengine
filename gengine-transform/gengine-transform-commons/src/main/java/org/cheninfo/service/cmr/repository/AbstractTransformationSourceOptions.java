@@ -15,14 +15,6 @@ public abstract class AbstractTransformationSourceOptions implements Transformat
     /** The list of applicable mimetypes */
     private List<String> applicableMimetypes;
 
-//    /**
-//     * @deprecated
-//     */
-//    public List<String> getApplicabledMimetypes()
-//    {
-//        return this.getApplicableMimetypes();
-//    }
-
     /**
      * Gets the list of applicable mimetypes
      *

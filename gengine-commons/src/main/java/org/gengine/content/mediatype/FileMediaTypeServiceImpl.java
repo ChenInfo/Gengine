@@ -10,6 +10,11 @@ import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 import org.gengine.error.GengineRuntimeException;
 
+/**
+ * Implementation of FileMediaTypeService which delegates to Apache Tika
+ * to do the actual work.
+ *
+ */
 public class FileMediaTypeServiceImpl implements FileMediaTypeService
 {
 

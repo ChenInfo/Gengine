@@ -7,6 +7,7 @@ import com.codahale.metrics.health.HealthCheck;
 
 /**
  * Transformer health check
+ *
  */
 public class TransformerHealthCheck extends HealthCheck
 {

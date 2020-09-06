@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Configuration POJO for a component
+ *
  */
 public class ComponentConfiguration
 {

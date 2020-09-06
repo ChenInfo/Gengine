@@ -7,6 +7,10 @@ import javax.ws.rs.core.MediaType;
 
 import org.gengine.content.dropwizard.views.NodeView;
 
+/**
+ * Status resource placeholder
+ *
+ */
 @Path("/status")
 @Produces(MediaType.TEXT_HTML)
 public class NodeResource

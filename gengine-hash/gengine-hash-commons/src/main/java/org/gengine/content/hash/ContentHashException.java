@@ -1,5 +1,10 @@
 package org.gengine.content.hash;
 
+/**
+ * Thrown when an implementation can not perform the requested hashing due
+ * to configuration or environment.
+ *
+ */
 public class ContentHashException extends Exception
 {
     private static final long serialVersionUID = -5334480453136472986L;

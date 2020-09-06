@@ -15,6 +15,12 @@ import org.gengine.error.GengineRuntimeException;
 import org.gengine.messaging.amqp.AmqpDirectEndpoint;
 import org.gengine.messaging.amqp.AmqpNodeBootstrapUtils;
 
+/**
+ * Base bootstrap which creates a component, configures it with a worker, and creates
+ * an endpoint for sending and receiving messages
+ *
+ * @param <W>
+ */
 public abstract class AbstractComponentBootstrapFromProperties<W extends ContentWorker>
 {
     private static final Log logger = LogFactory.getLog(AbstractComponentBootstrapFromProperties.class);

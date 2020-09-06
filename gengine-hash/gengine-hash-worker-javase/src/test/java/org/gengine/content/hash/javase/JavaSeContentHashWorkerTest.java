@@ -8,10 +8,15 @@ import java.util.Map;
 import org.gengine.content.ContentReference;
 import org.gengine.content.handler.FileContentReferenceHandlerImpl;
 import org.gengine.content.hash.ContentHashWorker;
-import org.gengine.content.hash.javase.JavaSeContentHashNodeWorker;
+import org.gengine.content.hash.javase.JavaSeContentHashWorker;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test of the Java SE content hash worker
+ *
+ * @see {@link JavaSeContentHashWorker}
+ */
 public class JavaSeContentHashWorkerTest
 {
 
@@ -24,8 +29,8 @@ public class JavaSeContentHashWorkerTest
 
     @Before
     public void setUp() throws Exception {
-        worker = new JavaSeContentHashNodeWorker();
-        ((JavaSeContentHashNodeWorker) worker).setSourceContentReferenceHandler(
+        worker = new JavaSeContentHashWorker();
+        ((JavaSeContentHashWorker) worker).setSourceContentReferenceHandler(
                 new FileContentReferenceHandlerImpl());
     }
 

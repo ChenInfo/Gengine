@@ -7,6 +7,11 @@ import org.gengine.content.handler.ContentReferenceHandler;
 import org.gengine.content.transform.AbstractContentTransformerWorker;
 import org.gengine.content.transform.BaseContentTransformerComponent;
 
+/**
+ * Bootstraps a transformer component
+ *
+ * @param <W>
+ */
 public class TransformerComponentBootstrapFromProperties<W extends AbstractContentTransformerWorker> extends
         AbstractComponentBootstrapFromProperties<W>
 {

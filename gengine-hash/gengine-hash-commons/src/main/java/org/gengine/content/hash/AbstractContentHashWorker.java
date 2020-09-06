@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.gengine.content.AbstractContentWorker;
+import org.gengine.content.ContentIOException;
 import org.gengine.content.ContentReference;
 
 /**
@@ -24,7 +25,7 @@ public abstract class AbstractContentHashWorker extends AbstractContentWorker im
     @Override
     public Map<ContentReference, String> generateHashes(
             List<ContentReference> sources,
-            String hashAlgorithm) throws Exception
+            String hashAlgorithm) throws ContentIOException, InterruptedException, ContentHashException
     {
         Map<ContentReference, String> values = new HashMap<ContentReference, String>();
         if (sources == null || sources.size() == 0)
@@ -34,8 +35,8 @@ public abstract class AbstractContentHashWorker extends AbstractContentWorker im
         for (ContentReference source : sources)
         {
             String value = generateHashInternal(
-                    sourceContentReferenceHandler.getInputStream(source, true),
-                    hashAlgorithm);
+                        sourceContentReferenceHandler.getInputStream(source, true),
+                        hashAlgorithm);
             values.put(source, value);
         }
         return values;
@@ -47,11 +48,13 @@ public abstract class AbstractContentHashWorker extends AbstractContentWorker im
      * @param sourceFile
      * @param hashAlgorithm
      * @return the hex encoded hash value
-     * @throws Exception
+     * @throws ContentIOException
+     * @throws InterruptedException
+     * @throws ContentHashException
      */
     public abstract String generateHashInternal(
             InputStream sourceFile,
-            String hashAlgorithm) throws Exception;
+            String hashAlgorithm) throws ContentIOException, InterruptedException, ContentHashException;
 
     @Override
     public String toString()

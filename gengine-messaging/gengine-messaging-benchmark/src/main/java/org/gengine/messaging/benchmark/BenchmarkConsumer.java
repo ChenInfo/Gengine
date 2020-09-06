@@ -7,6 +7,7 @@ import org.gengine.messaging.MessageConsumer;
 
 /**
  * Consumer of {@link BenchmarkMessage}s which maintains a count of messages received.
+ *
  */
 public class BenchmarkConsumer implements MessageConsumer
 {

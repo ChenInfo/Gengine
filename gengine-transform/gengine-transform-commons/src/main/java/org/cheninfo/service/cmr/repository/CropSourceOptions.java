@@ -160,7 +160,7 @@ public class CropSourceOptions extends AbstractTransformationSourceOptions
         return this.gravity;
     }
 
-//    @Override
+    @Override
     public TransformationSourceOptionsSerializer getSerializer()
     {
         return CropSourceOptions.createSerializerInstance();
@@ -299,7 +299,7 @@ public class CropSourceOptions extends AbstractTransformationSourceOptions
          */
         public static final String PARAM_IS_PERCENT_CROP = "percent_crop";
 
-//        @Override
+        @Override
         public TransformationSourceOptions deserialize(SerializedTransformationOptionsAccessor serializedOptions)
         {
             int newWidth = serializedOptions.getIntegerParam(PARAM_CROP_WIDTH, -1);
@@ -325,7 +325,7 @@ public class CropSourceOptions extends AbstractTransformationSourceOptions
             return cropOptions;
         }
 
-//        @Override
+        @Override
         public void serialize(TransformationSourceOptions sourceOptions,
                 Map<String, Serializable> parameters)
         {

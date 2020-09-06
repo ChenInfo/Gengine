@@ -3,7 +3,7 @@ package org.gengine.messaging;
 import java.util.UUID;
 
 /**
- * Represents a request for content transformation from source to target with transformation options
+ * Represents a generic messaging request
  *
  */
 public abstract class AbstractRequest

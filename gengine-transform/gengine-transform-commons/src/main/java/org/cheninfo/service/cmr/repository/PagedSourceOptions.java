@@ -44,10 +44,10 @@ public class PagedSourceOptions extends AbstractTransformationSourceOptions
         defaults.add(FileMediaType.OPENOFFICE1_IMPRESS.getMediaType());
         defaults.add(FileMediaType.OPENXML_PRESENTATION.getMediaType());
         defaults.add(FileMediaType.OPENXML_WORDPROCESSING.getMediaType());
-//        defaults.add(MediaTypes.MIMETYPE_STAROFFICE5_IMPRESS);
-//        defaults.add(MediaTypes.MIMETYPE_STAROFFICE5_IMPRESS_PACKED);
-//        defaults.add(MediaTypes.MIMETYPE_STAROFFICE5_WRITER);
-//        defaults.add(MediaTypes.MIMETYPE_STAROFFICE5_WRITER_GLOBAL);
+        defaults.add(FileMediaType.STAROFFICE5_IMPRESS.getMediaType());
+        defaults.add(FileMediaType.STAROFFICE5_IMPRESS_PACKED.getMediaType());
+        defaults.add(FileMediaType.STAROFFICE5_WRITER.getMediaType());
+        defaults.add(FileMediaType.STAROFFICE5_WRITER_GLOBAL.getMediaType());
         defaults.add(FileMediaType.IWORK_KEYNOTE.getMediaType());
         defaults.add(FileMediaType.IWORK_PAGES.getMediaType());
         defaults.add(FileMediaType.WORDPERFECT.getMediaType());

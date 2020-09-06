@@ -12,6 +12,11 @@ import org.junit.Test;
 
 import static junit.framework.Assert.*;
 
+/**
+ * Tests of the file content reference handler
+ *
+ * @see {@link FileContentReferenceHandler}
+ */
 public class FileContentReferenceHandlerImplTest
 {
     private ContentReferenceHandler handler;

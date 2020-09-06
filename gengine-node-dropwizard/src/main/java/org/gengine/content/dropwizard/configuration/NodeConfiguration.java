@@ -13,6 +13,7 @@ import io.dropwizard.Configuration;
 
 /**
  * Configuration for the Gengine node
+ *
  */
 public class NodeConfiguration extends Configuration
 {

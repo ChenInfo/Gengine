@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.cheninfo.service.cmr.repository.AbstractTransformationSourceOptions;
 import org.gengine.content.mediatype.FileMediaType;
+import org.gengine.error.GengineRuntimeException;
 
 /**
  * Time-based content conversion options to specify an offset and duration.
@@ -93,7 +94,7 @@ public class TemporalSourceOptions extends AbstractTransformationSourceOptions
     {
         if (value != null && !value.matches(VALID_TIME_STRING_REGEX))
         {
-            throw new RuntimeException("'" + value + "' is not a valid time specification of the form hh:mm:ss[.xxx]");
+            throw new GengineRuntimeException("'" + value + "' is not a valid time specification of the form hh:mm:ss[.xxx]");
         }
     }
 
@@ -117,7 +118,7 @@ public class TemporalSourceOptions extends AbstractTransformationSourceOptions
         return null;
     }
 
-//    @Override
+    @Override
     public TransformationSourceOptionsSerializer getSerializer()
     {
         return TemporalSourceOptions.createSerializerInstance();
@@ -141,7 +142,7 @@ public class TemporalSourceOptions extends AbstractTransformationSourceOptions
         public static final String PARAM_SOURCE_TIME_OFFSET = "source_time_offset";
         public static final String PARAM_SOURCE_TIME_DURATION = "source_time_duration";
 
-//        @Override
+        @Override
         public TransformationSourceOptions deserialize(SerializedTransformationOptionsAccessor serializedOptions)
         {
             String offset = serializedOptions.getCheckedParam(PARAM_SOURCE_TIME_OFFSET, String.class);
@@ -158,7 +159,7 @@ public class TemporalSourceOptions extends AbstractTransformationSourceOptions
             return sourceOptions;
         }
 
-//        @Override
+        @Override
         public void serialize(TransformationSourceOptions sourceOptions,
                 Map<String, Serializable> parameters)
         {

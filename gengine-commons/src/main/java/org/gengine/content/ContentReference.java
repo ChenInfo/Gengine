@@ -1,7 +1,11 @@
 package org.gengine.content;
 
+import org.gengine.content.handler.ContentReferenceHandler;
+
 /**
- * URI implementation of the content reference interface.
+ * A reference to content by its URI and media type (mimetype).
+ *
+ * @see {@link ContentReferenceHandler}
  *
  */
 public class ContentReference
@@ -50,11 +54,21 @@ public class ContentReference
         this.uri = uri;
     }
 
+    /**
+     * Gets the media type (mimetype) of the content reference
+     *
+     * @return media type
+     */
     public String getMediaType()
     {
         return mediaType;
     }
 
+    /**
+     * Sets the media type (mimetype) of the content reference
+     *
+     * @param mediaType
+     */
     public void setMediaType(String mediaType)
     {
         this.mediaType = mediaType;
