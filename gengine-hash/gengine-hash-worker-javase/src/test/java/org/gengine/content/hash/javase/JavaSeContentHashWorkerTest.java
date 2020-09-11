@@ -3,9 +3,10 @@ package org.gengine.content.hash.javase;
 import static junit.framework.Assert.*;
 
 import java.util.Arrays;
-import java.util.Map;
+import java.util.List;
 
 import org.gengine.content.ContentReference;
+import org.gengine.content.ContentWorkResult;
 import org.gengine.content.handler.FileContentReferenceHandlerImpl;
 import org.gengine.content.hash.ContentHashWorker;
 import org.gengine.content.hash.javase.JavaSeContentHashWorker;
@@ -39,11 +40,22 @@ public class JavaSeContentHashWorkerTest
         ContentReference source = new ContentReference(
                 this.getClass().getResource("/quick/quick.mpg").toURI().toString(), "video/mpeg");
 
-        Map<ContentReference, String> values = worker.generateHashes(Arrays.asList(source), hashAlgorithm);
+        List<ContentWorkResult> results = worker.generateHashes(Arrays.asList(source), hashAlgorithm);
 
-        assertNotNull("Hash values was null", values);
-        assertFalse("Hash values was empty", values.size() == 0);
-        assertEquals(expectedValue, values.get(source));
+        assertNotNull("Hash values was null", results);
+        assertFalse("Hash values was empty", results.size() == 0);
+        ContentWorkResult foundResult = null;
+        for (ContentWorkResult result : results)
+        {
+            if (result.getContentReference().equals(source))
+            {
+                foundResult = result;
+                break;
+            }
+        }
+        assertNotNull("Hash values was null", foundResult);
+        assertEquals(expectedValue,
+                foundResult.getDetails().get(ContentHashWorker.RESULT_DETAIL_HEX_ENCODED_VALUE));
     }
 
     @Test

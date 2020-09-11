@@ -1,5 +1,9 @@
 package org.gengine.content.transform;
 
+import java.util.List;
+
+import org.gengine.content.ContentWorkResult;
+
 /**
  * Defines methods for reporting progress on a content transformation.
  * <p>
@@ -24,6 +28,8 @@ public interface ContentTransformerWorkerProgressReporter
 
     /**
      * Called when the transformation has completed
+     *
+     * @param results
      */
-    public void onTransformationComplete();
+    public void onTransformationComplete(List<ContentWorkResult> results);
 }

@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.gengine.content.ContentReference;
+import org.gengine.content.ContentWorkResult;
 import org.gengine.content.file.TempFileProvider;
 import org.gengine.content.handler.FileContentReferenceHandler;
 import org.gengine.content.mediatype.FileMediaType;
@@ -23,7 +24,7 @@ public abstract class AbstractFileContentTransformerWorker extends AbstractConte
 {
 
     @Override
-    public List<ContentReference> transform(
+    public List<ContentWorkResult> transform(
             List<ContentReference> sources,
             List<ContentReference> targets,
             TransformationOptions options,
@@ -98,7 +99,7 @@ public abstract class AbstractFileContentTransformerWorker extends AbstractConte
                     "did not match the number of expected targets (" + targets.size() + ")");
         }
 
-        List<ContentReference> results = new ArrayList<ContentReference>(resultFiles.size());
+        List<ContentWorkResult> results = new ArrayList<ContentWorkResult>(resultFiles.size());
 
         for (int i = 0; i < resultFiles.size(); i++)
         {
@@ -124,7 +125,7 @@ public abstract class AbstractFileContentTransformerWorker extends AbstractConte
                 target = targets.get(i);
             }
             target.setSize(resultFile.length());
-            results.add(target);
+            results.add(new ContentWorkResult(target, null));
         }
         return results;
     }

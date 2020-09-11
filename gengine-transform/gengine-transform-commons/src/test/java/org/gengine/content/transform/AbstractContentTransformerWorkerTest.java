@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gengine.content.ContentReference;
+import org.gengine.content.ContentWorkResult;
 import org.gengine.content.mediatype.FileMediaTypeService;
 import org.gengine.content.mediatype.FileMediaTypeServiceImpl;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
@@ -122,7 +124,7 @@ public abstract class AbstractContentTransformerWorkerTest
             }
         }
 
-        public void onTransformationComplete()
+        public void onTransformationComplete(List<ContentWorkResult> results)
         {
             if (logger.isDebugEnabled())
             {

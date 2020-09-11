@@ -1,83 +1,33 @@
 package org.gengine.content.transform;
 
-import java.util.List;
 
-import org.gengine.content.ContentReference;
-import org.gengine.messaging.Reply;
+import org.gengine.content.AbstractContentReply;
+import org.gengine.messaging.Request;
 
 /**
  * Represents a reply from a content transformer on the status of a transformation request.
  *
  */
-public class TransformationReply implements Reply
+public class TransformationReply extends AbstractContentReply
 {
     public static final String STATUS_PENDING = "pending";
     public static final String STATUS_IN_PROGRESS = "in-progress";
     public static final String STATUS_COMPLETE = "complete";
     public static final String STATUS_ERROR = "error";
 
-    private String requestId;
-    private List<ContentReference> targetContentReferences;
     private String status;
     private String jobId;
     private Float progress;
-    private String detail;
+    private String statusDetail;
 
-    public TransformationReply() {
-        super();
-    }
-
-    public TransformationReply(TransformationRequest request)
+    public TransformationReply()
     {
         super();
-        this.requestId = request.getRequestId();
-        this.targetContentReferences = request.getTargetContentReferences();
     }
 
-    /**
-     * Gets the UUID for the original transformation request
-     *
-     * @return the transformation request ID
-     */
-    public String getRequestId()
+    public TransformationReply(Request<?> request)
     {
-        return requestId;
-    }
-
-    /**
-     * Sets the UUID for the original transformation request
-     *
-     * @param requestId
-     */
-    public void setRequestId(String requestId)
-    {
-        this.requestId = requestId;
-    }
-
-    /**
-     * Gets the target content reference objects.
-     * <p>
-     * This is usually the same as the content references provided in the original
-     * transformation request.
-     *
-     * @return the target content references
-     */
-    public List<ContentReference> getTargetContentReferences()
-    {
-        return targetContentReferences;
-    }
-
-    /**
-     * Sets the target content reference objects.
-     * <p>
-     * This is usually the same as the content references provided in the original
-     * transformation request.
-     *
-     * @param targetContentReferences
-     */
-    public void setTargetContentReferences(List<ContentReference> targetContentReferences)
-    {
-        this.targetContentReferences = targetContentReferences;
+        super(request);
     }
 
     /**
@@ -147,19 +97,19 @@ public class TransformationReply implements Reply
      *
      * @return the transformation status detail
      */
-    public String getDetail()
+    public String getStatusDetail()
     {
-        return detail;
+        return statusDetail;
     }
 
     /**
      * Sets further detail on the status of the transformation, possibly messages relating to an error
      *
-     * @param detail
+     * @param statusDetail
      */
-    public void setDetail(String detail)
+    public void setStatusDetail(String statusDetail)
     {
-        this.detail = detail;
+        this.statusDetail = statusDetail;
     }
 
 }

@@ -5,11 +5,13 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import static junit.framework.Assert.*;
 
 import org.cheninfo.service.cmr.repository.TemporalSourceOptions;
 import org.gengine.content.ContentReference;
+import org.gengine.content.ContentWorkResult;
 import org.gengine.content.file.FileProvider;
 import org.gengine.content.file.FileProviderImpl;
 import org.gengine.content.file.TempFileProvider;
@@ -103,7 +105,7 @@ public class FfmpegContentTransformerWorkerTest
             }
         }
 
-        public void onTransformationComplete()
+        public void onTransformationComplete(List<ContentWorkResult> results)
         {
             if (logger.isDebugEnabled())
             {
