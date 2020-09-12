@@ -2,6 +2,7 @@ package org.gengine.content.transform.imagemagick;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -239,14 +240,32 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
                 sourcePairs.iterator().next(),
                 targetPair,
                 options, progressReporter);
-        return Arrays.asList(targetFile);
+
+        if (targetFile.exists() && targetFile.length() > 0)
+        {
+            return Arrays.asList(targetFile);
+        }
+        else
+        {
+            return getMultipleTargetSiblings(targetFile);
+        }
+
         // TODO: Other transform types, i.e.:
         //   - Layer multiple sources into one target
-        //   - PDF/TIFF pages: one source into multiple images
     }
 
     /**
-     * Transform the image content from the source file to the target file
+     * Transform the image content from the source file to the target file.
+     * <p>
+     * Note that ImageMagick may create multiple outputs for paged file types
+     * if no page limit or paged source options are present in the transformation
+     * options to constrain that behavior.
+     *
+     * @param sourcePair
+     * @param targetPair
+     * @param options
+     * @param progressReporter
+     * @throws Exception
      */
     protected void singleTransformInternal(
             FileContentReferencePair sourcePair,
@@ -302,6 +321,45 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
         {
             logger.debug("ImageMagic executed successfully: \n" + executer);
         }
+    }
+
+    /**
+     * Gets the any siblings in the same directory as the targetFile with the same name
+     * prefix used by ImageMagick for multiple outputs.
+     * <p>
+     * For example, when requesting a conversion of a 2 page PDF to JPEG:
+     *
+     *     convert source.pdf result.jpg
+     *
+     * ImageMagick will create:
+     *
+     *     result-0.jpg
+     *     result-1.jpg
+     *
+     * @param targetFile
+     * @return the list of siblings with the same name prefix as the target file
+     */
+    protected List<File> getMultipleTargetSiblings(File targetFile)
+    {
+        // Check for multiple target files result
+        List<File> targetFiles = new ArrayList<File>();
+        String targetFileNameWithoutExtensions = targetFile.getName().split("\\.")[0];
+        File[] siblings = targetFile.getParentFile().listFiles();
+        for (int i = 0; i < siblings.length; i++)
+        {
+            File targetSibling = siblings[i];
+            String nameWithoutExtension = targetSibling.getName().split("\\.")[0];
+            if (nameWithoutExtension.startsWith(targetFileNameWithoutExtensions) &&
+                    !nameWithoutExtension.equals(targetFileNameWithoutExtensions))
+            {
+                targetFiles.add(targetSibling);
+            }
+        }
+        if (targetFiles.size() > 0)
+        {
+            return targetFiles;
+        }
+        return null;
     }
 
     /**
@@ -415,15 +473,11 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
      */
     private boolean isSingleSourcePageRangeRequired(String sourceMimetype, String targetMimetype)
     {
-        // Need a page source if we're transforming from PDF or TIFF to an image other than TIFF
-        // or from PSD
-        return ((sourceMimetype.equals(FileMediaType.PDF.getMediaType()) ||
-                sourceMimetype.equals(FileMediaType.IMAGE_TIFF.getMediaType())) &&
-                ((!targetMimetype.equals(FileMediaType.IMAGE_TIFF.getMediaType())
-                && targetMimetype.contains(FileMediaType.PREFIX_IMAGE)) ||
+        // Need a page source if we're transforming from or to PSD or to EPS
+        return (
                 targetMimetype.equals(FileMediaType.APPLICATION_PHOTOSHOP.getMediaType()) ||
                 targetMimetype.equals(FileMediaType.APPLICATION_EPS.getMediaType())) ||
-                sourceMimetype.equals(FileMediaType.APPLICATION_PHOTOSHOP.getMediaType()));
+                sourceMimetype.equals(FileMediaType.APPLICATION_PHOTOSHOP.getMediaType());
     }
 
     /**

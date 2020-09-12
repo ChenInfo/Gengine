@@ -17,23 +17,28 @@ import org.gengine.content.file.FileProviderImpl;
 import org.gengine.content.file.TempFileProvider;
 import org.gengine.content.handler.ContentReferenceHandler;
 import org.gengine.content.handler.FileContentReferenceHandlerImpl;
+import org.gengine.content.mediatype.FileMediaType;
+import org.gengine.content.transform.AbstractContentTransformerWorkerTest;
 import org.gengine.content.transform.ContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
 import org.gengine.content.transform.ffmpeg.FfmpegContentTransformerWorker;
 import org.gengine.content.transform.options.TransformationOptions;
 import org.gengine.content.transform.options.TransformationOptionsImpl;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * @see org.cheninfo.repo.content.transform.ffmpeg.FfmpegContentTransformerWorker
  *
  */
-public class FfmpegContentTransformerWorkerTest
+public class FfmpegContentTransformerWorkerTest extends AbstractContentTransformerWorkerTest
 {
     private static final Log logger = LogFactory.getLog(FfmpegContentTransformerWorkerTest.class);
 
     private ContentTransformerWorker transformerWorker;
+    private ContentTransformerWorkerProgressReporter progressReporter;
+    private ContentReference source;
 
     @Before
     public void setUp() throws Exception {
@@ -46,7 +51,14 @@ public class FfmpegContentTransformerWorkerTest
         ((FfmpegContentTransformerWorker) transformerWorker).setTargetContentReferenceHandler(
                 contentReferenceHandler);
         ((FfmpegContentTransformerWorker) transformerWorker).initialize();
+
+        progressReporter = new LoggingProgressReporterImpl();
+
+        File sourceFile = new File(this.getClass().getResource("/quick/quick.mpg").toURI());
+        source = new ContentReference(
+                sourceFile.toURI().toString(), "video/mpeg", sourceFile.length());
     }
+
 
     @Test
     public void testTrimTransformation() throws Exception
@@ -57,60 +69,44 @@ public class FfmpegContentTransformerWorkerTest
         TransformationOptions options = new TransformationOptionsImpl();
         options.addSourceOptions(temporalSourceOptions);
 
-            String sourceExtension = "mpg";
-            String targetExtension = "mp4";
+        String sourceExtension = "mpg";
+        String targetExtension = "mp4";
 
-            File sourceFile = new File(this.getClass().getResource("/quick/quick.mpg").toURI());
-            long origSize = sourceFile.length();
+        // make a writer for the target file
+        File targetFile = TempFileProvider.createTempFile(
+                getClass().getSimpleName() + "_quick_" + sourceExtension + "_",
+                "." + targetExtension);
 
-            ContentReference source = new ContentReference(
-                    this.getClass().getResource("/quick/quick.mpg").toURI().toString(), "video/mpeg");
+        ContentReference target = new ContentReference(
+                targetFile.toURI().toString(), "video/mp4");
 
-            // make a writer for the target file
-            File targetFile = TempFileProvider.createTempFile(
-                    getClass().getSimpleName() + "_quick_" + sourceExtension + "_",
-                    "." + targetExtension);
+        transformerWorker.transform(
+                Arrays.asList(source),
+                Arrays.asList(target),
+                options,
+                progressReporter);
 
-            ContentReference target = new ContentReference(
-                    targetFile.toURI().toString(), "video/mp4");
+        long targetSize = targetFile.length();
 
-            transformerWorker.transform(
-                    Arrays.asList(source), Arrays.asList(target),
-                    options, new LoggingProgressReporterImpl());
-
-            long targetSize = targetFile.length();
-
-            assertTrue("Target file size is zero", targetSize > 0);
-            assertTrue("Trimmed target file size should be less than 1/2 original size of " + origSize +
-                    " but was " + targetSize, targetSize < origSize/2);
-
+        assertTrue("Target file size is zero", targetSize > 0);
+        assertTrue("Trimmed target file size should be less than 1/2 original size of " + source.getSize() +
+                " but was " + targetSize, targetSize < source.getSize()/2);
     }
 
-    public class LoggingProgressReporterImpl implements ContentTransformerWorkerProgressReporter
+    @Test
+    @Ignore
+    public void testStoryboardThumbnails() throws Exception
     {
-
-        public void onTransformationStarted()
+        TransformationOptions options = new TransformationOptionsImpl();
+        List<ContentWorkResult> results = transformerWorker.transform(
+                Arrays.asList(source),
+                FileMediaType.IMAGE_JPEG.getMediaType(),
+                options,
+                progressReporter);
+        assertEquals(4, results.size());
+        for (ContentWorkResult result : results)
         {
-            if (logger.isDebugEnabled())
-            {
-                logger.debug("Starting transformation");
-            }
-        }
-
-        public void onTransformationProgress(float progress)
-        {
-            if (logger.isDebugEnabled())
-            {
-                logger.debug(progress*100 + "% progress on transformation");
-            }
-        }
-
-        public void onTransformationComplete(List<ContentWorkResult> results)
-        {
-            if (logger.isDebugEnabled())
-            {
-                logger.debug("Completed transformation");
-            }
+            assertTrue("Target file size is zero", result.getContentReference().getSize() > 0);
         }
     }
 }
