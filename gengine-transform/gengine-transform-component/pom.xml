@@ -15,7 +15,7 @@
         <dependency>
             <groupId>org.gengine</groupId>
             <artifactId>gengine-transform-messaging</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     

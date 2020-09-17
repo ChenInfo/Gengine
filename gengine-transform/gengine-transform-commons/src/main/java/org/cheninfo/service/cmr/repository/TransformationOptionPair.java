@@ -266,6 +266,8 @@ public class TransformationOptionPair implements Serializable
     {
         return new TransformationOptionPair()
         {
+            private static final long serialVersionUID = 7899487072073043465L;
+
             /**
              * Combines max values of this TransformationOptionPair and the supplied
              * one to return the max to be used in a transformation. When 'lower' the max

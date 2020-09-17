@@ -23,7 +23,7 @@ public class TransformerHealthCheck extends HealthCheck
     @Override
     protected Result check() throws Exception
     {
-        if (endpoint == null || !endpoint.isInitialized())
+        if (component == null || endpoint == null || !endpoint.isInitialized())
         {
             return Result.unhealthy("AMQP endpoint could not be initialized, "
                     + "please check the logs for additional information");

@@ -8,8 +8,6 @@ import java.util.List;
 
 import org.cheninfo.service.cmr.repository.PagedSourceOptions;
 import org.cheninfo.service.cmr.repository.TransformationSourceOptions;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.gengine.content.ContentReference;
 import org.gengine.content.ContentWorkResult;
 import org.gengine.content.file.FileProvider;
@@ -32,8 +30,6 @@ import org.junit.Test;
  */
 public class ImageMagickContentTransformerWorkerTest extends AbstractContentTransformerWorkerTest
 {
-    private static final Log logger = LogFactory.getLog(ImageMagickContentTransformerWorkerTest.class);
-
     private ContentTransformerWorker transformerWorker;
     private ContentReferenceHandler contentReferenceHandler;
     private ContentTransformerWorkerProgressReporter progressReporter;

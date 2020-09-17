@@ -1,8 +1,5 @@
 package org.gengine.content.transform.ffmpeg;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +31,6 @@ import org.junit.Test;
  */
 public class FfmpegContentTransformerWorkerTest extends AbstractContentTransformerWorkerTest
 {
-    private static final Log logger = LogFactory.getLog(FfmpegContentTransformerWorkerTest.class);
 
     private ContentTransformerWorker transformerWorker;
     private ContentTransformerWorkerProgressReporter progressReporter;

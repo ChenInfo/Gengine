@@ -20,7 +20,7 @@ components:
     requestQueue: cheninfo.transform.request.video
     replyQueue: cheninfo.transform.reply.video
   - name: hash
-    workerClass: org.gengine.content.hash.javase.JavaSeContentHashNodeWorker
+    workerClass: org.gengine.content.hash.javase.JavaSeContentHashWorker
     enabled: true
     requestQueue: cheninfo.hash.request
     replyQueue: cheninfo.hash.reply

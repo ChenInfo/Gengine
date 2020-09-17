@@ -133,8 +133,8 @@ public class RuntimeExecTest extends TestCase
         ExecutionResult ret = exec.execute(Collections.<String,String>emptyMap(), timeout);
         time = System.currentTimeMillis()-time;
 
-        String out = ret.getStdOut();
-        String err = ret.getStdErr();
+        ret.getStdOut();
+        ret.getStdErr();
 
         assertTrue("Command was too fast "+time+"ms", time >= minTime);
         assertTrue("Command was too slow "+time+"ms", time <= maxTime);
