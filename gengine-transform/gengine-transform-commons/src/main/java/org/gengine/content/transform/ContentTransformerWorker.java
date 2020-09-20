@@ -62,4 +62,19 @@ public interface ContentTransformerWorker extends ContentWorker
             String targetMediaType,
             TransformationOptions options,
             ContentTransformerWorkerProgressReporter progressReporter) throws Exception;
+
+    /**
+     * Determines whether or not the worker can handle the transformation from the
+     * given source media types to the given target media type with the given options.
+     *
+     * @param sourceMediaTypes
+     * @param targetMediaType
+     * @param options
+     * @return if the worker can perform the transformation
+     */
+    public boolean isTransformable(
+            List<String> sourceMediaTypes,
+            String targetMediaType,
+            TransformationOptions options);
+
 }

@@ -5,8 +5,6 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.dropwizard.Configuration;
@@ -17,44 +15,19 @@ import io.dropwizard.Configuration;
  */
 public class NodeConfiguration extends Configuration
 {
-    @NotEmpty
-    private String sourceDirectory;
-
-    @NotEmpty
-    private String targetDirectory;
 
     @Valid
     @NotNull
     private MessagingConfiguration messagingConfig;
 
     @Valid
+    @NotNull
+    private ContentReferenceHandlersConfiguration contentReferenceHandlersConfig;
+
+    @Valid
     private List<ComponentConfiguration> components;
 
     private String version;
-
-    @JsonProperty
-    public String getSourceDirectory()
-    {
-        return sourceDirectory;
-    }
-
-    @JsonProperty
-    public void setSourceDirectory(String sourceDirectory)
-    {
-        this.sourceDirectory = sourceDirectory;
-    }
-
-    @JsonProperty
-    public String getTargetDirectory()
-    {
-        return targetDirectory;
-    }
-
-    @JsonProperty
-    public void setTargetDirectory(String targetDirectory)
-    {
-        this.targetDirectory = targetDirectory;
-    }
 
     @JsonProperty("messaging")
     public MessagingConfiguration getMessagingConfig()
@@ -66,6 +39,18 @@ public class NodeConfiguration extends Configuration
     public void setMessagingConfig(MessagingConfiguration messagingConfig)
     {
         this.messagingConfig = messagingConfig;
+    }
+
+    @JsonProperty("contentReferenceHandlers")
+    public ContentReferenceHandlersConfiguration getContentReferenceHandlersConfig()
+    {
+        return contentReferenceHandlersConfig;
+    }
+
+    @JsonProperty("contentReferenceHandlers")
+    public void setContentReferenceHandlersConfig(ContentReferenceHandlersConfiguration contentReferenceHandlersConfig)
+    {
+        this.contentReferenceHandlersConfig = contentReferenceHandlersConfig;
     }
 
     @JsonProperty()

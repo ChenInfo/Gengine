@@ -1,5 +1,12 @@
 package org.gengine.content;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import org.gengine.content.handler.ContentReferenceHandler;
 
 /**
@@ -9,7 +16,16 @@ import org.gengine.content.handler.ContentReferenceHandler;
  */
 public abstract class AbstractContentWorker implements ContentWorker
 {
+    private static final Log logger = LogFactory.getLog(AbstractContentWorker.class);
+
+    protected static final String FRAMEWORK_PROPERTY_NAME = "name";
+    protected static final String FRAMEWORK_PROPERTY_VERSION = "version";
+
     protected ContentReferenceHandler sourceContentReferenceHandler;
+    private boolean isAvailable;
+    private Properties properties;
+    protected String versionString;
+    protected String versionDetailsString;
 
     /**
      * Sets the content reference handler to be used for retrieving
@@ -25,5 +41,90 @@ public abstract class AbstractContentWorker implements ContentWorker
     /**
      * Performs any initialization needed after content reference handlers are set
      */
-    public abstract void initialize();
+    public void initialize()
+    {
+        loadProperties();
+        initializeVersionString();
+        initializeVersionDetailsString();
+    }
+
+    @Override
+    public boolean isAvailable()
+    {
+        return isAvailable;
+    }
+
+    protected void setIsAvailable(boolean isAvailable)
+    {
+        this.isAvailable = isAvailable;
+    }
+
+    protected Properties getProperties()
+    {
+        return properties;
+    }
+
+    protected void loadProperties()
+    {
+        String propertiesFilePath = "/" +
+                this.getClass().getCanonicalName().replaceAll("\\.", "/") + ".properties";
+        InputStream inputStream = this.getClass().getResourceAsStream(propertiesFilePath);
+        if (inputStream == null)
+        {
+            logger.debug(propertiesFilePath + " not found");
+            return;
+        }
+        try
+        {
+            properties = new Properties();
+            properties.load(inputStream);
+        }
+        catch (IOException e)
+        {
+            logger.error(e.getMessage(), e);
+            properties = null;
+        }
+        finally
+        {
+            try
+            {
+                inputStream.close();
+            }
+            catch (IOException e)
+            {
+                logger.error(e.getMessage(), e);
+            }
+        }
+    }
+
+    protected void initializeVersionString()
+    {
+        if (getProperties() == null)
+        {
+            versionString = this.getClass().getSimpleName();
+        }
+        else
+        {
+            versionString = getProperties().getProperty(FRAMEWORK_PROPERTY_NAME) + " " +
+                getProperties().getProperty(FRAMEWORK_PROPERTY_VERSION);
+        }
+    }
+
+    @Override
+    public String getVersionString()
+    {
+        return versionString;
+    }
+
+    protected void initializeVersionDetailsString()
+    {
+        versionDetailsString = "JVM: " + System.getProperty("java.version");
+    }
+
+    @Override
+    public String getVersionDetailsString()
+    {
+        return versionDetailsString;
+    }
+
 }

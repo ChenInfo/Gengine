@@ -33,6 +33,14 @@ public class JavaSeContentHashWorkerTest
         worker = new JavaSeContentHashWorker();
         ((JavaSeContentHashWorker) worker).setSourceContentReferenceHandler(
                 new FileContentReferenceHandlerImpl());
+        ((JavaSeContentHashWorker) worker).initialize();
+    }
+
+    @Test
+    public void testVersion() throws Exception
+    {
+        assertTrue(worker.getVersionString().contains("Gengine JavaSE Content Hash Worker"));
+        assertTrue(worker.getVersionDetailsString().contains("JVM: 1"));
     }
 
     protected void testHash(String hashAlgorithm, String expectedValue) throws Exception

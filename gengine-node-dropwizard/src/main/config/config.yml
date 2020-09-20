@@ -1,12 +1,39 @@
 
-sourceDirectory: /Users/rgauss/Desktop
-targetDirectory: /Users/rgauss/Desktop
-
 messaging:
     broker:
         url: tcp://localhost:5672
         # username: guest
         # password: password
+
+contentReferenceHandlers:
+    source:
+        contentReferenceHandlerClass: org.gengine.content.handler.FileContentReferenceHandlerImpl
+        directoryPath: /tmp/gengine
+    target:
+        contentReferenceHandlerClass: org.gengine.content.handler.FileContentReferenceHandlerImpl
+        directoryPath: /tmp/gengine
+#    source:
+#        contentReferenceHandlerClass: org.gengine.content.handler.webdav.WebDavContentReferenceHandlerImpl
+#        remoteBaseUrl: http://localhost:8888/tmp
+#        username: gengine
+#        password: gengine
+#    target:
+#        contentReferenceHandlerClass: org.gengine.content.handler.webdav.WebDavContentReferenceHandlerImpl
+#        remoteBaseUrl: http://localhost:8888/tmp
+#        username: gengine
+#        password: gengine
+#    source:
+#        contentReferenceHandlerClass: org.gengine.content.handler.s3.S3ContentReferenceHandlerImpl
+#        s3AccessKey: <key>
+#        s3SecretKey: <secret>
+#        s3BucketName: gengine
+#        s3BucketRegion: US_EAST_1
+#    target:
+#        contentReferenceHandlerClass: org.gengine.content.handler.s3.S3ContentReferenceHandlerImpl
+#        s3AccessKey: <key>
+#        s3SecretKey: <secret>
+#        s3BucketName: gengine
+#        s3BucketRegion: US_EAST_1
 
 components:
   - name: imagemagick

@@ -55,6 +55,38 @@ public class FfmpegContentTransformerWorkerTest extends AbstractContentTransform
                 sourceFile.toURI().toString(), "video/mpeg", sourceFile.length());
     }
 
+    @Test
+    public void testVersion() throws Exception
+    {
+        assertTrue(transformerWorker.getVersionString().contains("Gengine FFmpeg Content Transformer Worker"));
+        assertTrue(transformerWorker.getVersionDetailsString().contains("ffmpeg version"));
+    }
+
+    @Test
+    public void testIsTransformable() throws Exception
+    {
+        boolean isTransformable = transformerWorker.isTransformable(
+                Arrays.asList(FileMediaType.VIDEO_MP4.getMediaType()),
+                FileMediaType.IMAGE_PNG.getMediaType(),
+                new TransformationOptionsImpl());
+        assertTrue("Should be supported with standard options", isTransformable);
+        isTransformable = transformerWorker.isTransformable(
+                Arrays.asList(FileMediaType.VIDEO_MPG.getMediaType()),
+                FileMediaType.VIDEO_MPG.getMediaType(),
+                new TransformationOptionsImpl());
+        assertTrue("Should be supported with standard options", isTransformable);
+
+        isTransformable = transformerWorker.isTransformable(
+                Arrays.asList("audio/vnd.adobe.soundbooth"),
+                FileMediaType.MP3.getMediaType(),
+                new TransformationOptionsImpl());
+        assertFalse("Should *not* be supported with standard options", isTransformable);
+        isTransformable = transformerWorker.isTransformable(
+                Arrays.asList(FileMediaType.MP3.getMediaType()),
+                FileMediaType.IMAGE_PNG.getMediaType(),
+                new TransformationOptionsImpl());
+        assertFalse("Should *not* be supported with standard options", isTransformable);
+    }
 
     @Test
     public void testTrimTransformation() throws Exception

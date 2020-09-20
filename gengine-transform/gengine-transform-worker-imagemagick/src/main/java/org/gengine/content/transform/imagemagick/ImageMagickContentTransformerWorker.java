@@ -1,7 +1,6 @@
 package org.gengine.content.transform.imagemagick;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,23 +13,20 @@ import org.cheninfo.service.cmr.repository.PagedSourceOptions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gengine.content.ContentIOException;
-import org.gengine.content.ContentReference;
 import org.gengine.content.file.TempFileProvider;
 import org.gengine.content.mediatype.FileMediaType;
-import org.gengine.content.transform.AbstractFileContentTransformerWorker;
+import org.gengine.content.transform.AbstractRuntimeExecContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
 import org.gengine.content.transform.options.ImageTransformationOptions;
 import org.gengine.content.transform.options.TransformationOptions;
-import org.gengine.content.transform.options.TransformationOptionsImpl;
 import org.gengine.error.GengineRuntimeException;
 import org.gengine.util.exec.RuntimeExec;
-import org.gengine.util.exec.RuntimeExec.ExecutionResult;
 
 /**
  * Executes a statement to implement
  *
  */
-public class ImageMagickContentTransformerWorker extends AbstractFileContentTransformerWorker
+public class ImageMagickContentTransformerWorker extends AbstractRuntimeExecContentTransformerWorker
 {
     /** options variable name */
     private static final String KEY_OPTIONS = "options";
@@ -39,23 +35,9 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
     /** target variable name */
     private static final String VAR_TARGET = "target";
 
-    /** the prefix for mimetypes supported by the transformer */
-    public static final String MIMETYPE_IMAGE_PREFIX = "image/";
-
     private static final Log logger = LogFactory.getLog(ImageMagickContentTransformerWorker.class);
 
-    /** the system command executer */
-    private RuntimeExec executer;
-
     private String imgExe = "convert";
-
-    /** the check command executer */
-    private RuntimeExec checkCommand;
-
-    /** the output from the check command */
-    private String versionString;
-
-    private boolean available;
 
     /**
      * Default constructor
@@ -86,106 +68,9 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
         this.executer = executer;
     }
 
-
-    /**
-     * Sets the command that must be executed in order to retrieve version information from the converting executable
-     * and thus test that the executable itself is present.
-     *
-     * @param checkCommand
-     *            command executer to retrieve version information
-     */
-    public void setCheckCommand(RuntimeExec checkCommand)
-    {
-        this.checkCommand = checkCommand;
-    }
-
-    /**
-     * Gets the version string captured from the check command.
-     *
-     * @return the version string
-     */
-    public String getVersionString()
-    {
-        return this.versionString;
-    }
-
-    /**
-     * @return Returns true if the transformer is functioning otherwise false
-     */
-    public boolean isAvailable()
-    {
-        return available;
-    }
-
-    /**
-     * Make the transformer available
-     * @param available
-     */
-    protected void setAvailable(boolean available)
-    {
-        this.available = available;
-    }
-
-
-    public void initConversion()
-    {
-        try
-        {
-            // load, into memory the sample gif
-            String resourcePath = "org/cheninfo/repo/content/transform/magick/cheninfo.gif";
-            InputStream imageStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
-            if (imageStream == null)
-            {
-                throw new GengineRuntimeException("Sample image not found: " + resourcePath);
-            }
-            // dump to a temp target reference (we may only be able to write to the target handler)
-            ContentReference sourceReference = targetContentReferenceHandler.createContentReference(
-                    getClass().getSimpleName() + "_init_source_.gif",
-                    FileMediaType.IMAGE_GIF.getMediaType());
-            targetContentReferenceHandler.putInputStream(imageStream, sourceReference);
-
-            // create the output file
-            ContentReference targetReference = targetContentReferenceHandler.createContentReference(
-                    getClass().getSimpleName() + "_init_target_.png",
-                    FileMediaType.IMAGE_PNG.getMediaType());
-
-            // execute it
-            transform(
-                    Arrays.asList(sourceReference),
-                    Arrays.asList(targetReference),
-                    new TransformationOptionsImpl(),
-                    null);
-
-            // check that the file exists
-
-            if (targetReference.getSize() == null || targetReference.getSize() == 0)
-            {
-                throw new Exception("Image conversion failed: \n" +
-                        "   from: " + sourceReference + "\n" +
-                        "   to: " + targetReference);
-            }
-            // we can be sure that it works
-            setAvailable(true);
-        }
-        catch (Throwable e)
-        {
-            logger.error(
-                    getClass().getSimpleName() + " not available: " +
-                    (e.getMessage() != null ? e.getMessage() : ""));
-            // debug so that we can trace the issue if required
-            logger.debug(e);
-        }
-    }
-
-    /**
-     * Checks for the JMagick and ImageMagick dependencies, using the common
-     * {@link #transformInternal(File, File) transformation method} to check
-     * that the sample image can be converted.
-     */
     @Override
-    public void initialize()
+    protected void initializeExecuter()
     {
-        super.initialize();
         if (executer == null)
         {
             if (System.getProperty("img.exe") != null)
@@ -202,24 +87,122 @@ public class ImageMagickContentTransformerWorker extends AbstractFileContentTran
             });
             executer.setCommandsAndArguments(commandsAndArguments);
         }
-        if (isAvailable())
-        {
-            try
-            {
-                // On some platforms / versions, the -version command seems to return an error code whilst still
-                // returning output, so let's not worry about the exit code!
-                ExecutionResult result = this.checkCommand.execute();
-                this.versionString = result.getStdOut().trim();
-            }
-            catch (Throwable e)
-            {
-                setAvailable(false);
-                logger.error(getClass().getSimpleName() + " not available: "
-                        + (e.getMessage() != null ? e.getMessage() : ""));
-                // debug so that we can trace the issue if required
-                logger.debug(e);
-            }
+    }
 
+    @Override
+    protected void initializeVersionDetailsExecuter()
+    {
+        if (versionDetailsExecuter == null)
+        {
+            versionDetailsExecuter = new RuntimeExec();
+            Map<String, String[]> checkCommandsAndArguments = new HashMap<>();
+            checkCommandsAndArguments.put(".*", new String[] {
+                imgExe,
+                "-version",
+            });
+            versionDetailsExecuter.setCommandsAndArguments(checkCommandsAndArguments);
+        }
+    }
+
+    @Override
+    protected void initializationTest()
+    {
+        try
+        {
+            initializationTest(
+                    "org/gengine/content/transform/imagemagick/cheninfo.gif",
+                    FileMediaType.IMAGE_PNG.getMediaType(),
+                    new ImageTransformationOptions());
+        }
+        catch (Exception e)
+        {
+            throw new GengineRuntimeException("Could not initialize worker: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Some image formats are not supported by ImageMagick, or at least appear not to work.
+     *
+     * @param mediaType the mimetype to check
+     * @return Returns true if ImageMagic can handle the given image format
+     */
+    protected boolean isSupported(String mediaType)
+    {
+        // There are a few mimetypes in the system that do not start with "image/" but which
+        // nevertheless are supported by this transformer.
+        if (mediaType.equals(FileMediaType.APPLICATION_EPS.getMediaType()))
+        {
+            return true;
+        }
+        else if (mediaType.equals(FileMediaType.APPLICATION_PHOTOSHOP.getMediaType()))
+        {
+            return true;
+        }
+
+        else if (!mediaType.startsWith(FileMediaType.PREFIX_IMAGE))
+        {
+            return false;   // not an image
+        }
+        else if (mediaType.equals(FileMediaType.IMAGE_RGB.getMediaType()))
+        {
+            return false;   // rgb extension doesn't work
+        }
+        else if (mediaType.equals(FileMediaType.IMAGE_SVG.getMediaType()))
+        {
+            return false;   // svg extension doesn't work
+        }
+        else if (mediaType.equals(FileMediaType.IMG_DWG.getMediaType()))
+        {
+            return false;   // dwg extension doesn't work
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+
+    @Override
+    public boolean isTransformable(List<String> sourceMediaTypes, String targetMediaType, TransformationOptions options)
+    {
+        if (!isAvailable())
+        {
+            return false;
+        }
+
+        // TODO: Other transform types, i.e.:
+        //   - Layer multiple sources into one target
+        if (sourceMediaTypes.size() > 1)
+        {
+            return false;
+        }
+        String sourceMediaType = sourceMediaTypes.get(0);
+
+        // Add limited support (so lots of other transforms are not supported) for PDF to PNG. An ALF-14303 workaround.
+        // Will only be used as part of failover transformer.PdfToImage. Note .ai is the same format as .pdf
+        if ( (FileMediaType.PDF.getMediaType().equals(sourceMediaType) ||
+              FileMediaType.APPLICATION_ILLUSTRATOR.equals(sourceMediaType)) &&
+              FileMediaType.IMAGE_PNG.equals(targetMediaType))
+        {
+            return true;
+        }
+
+        // Add extra support for tiff to pdf to allow multiple page preview (ALF-7278)
+        if (FileMediaType.IMAGE_TIFF.getMediaType().equals(sourceMediaType) &&
+                FileMediaType.PDF.getMediaType().equals(targetMediaType))
+        {
+            return true;
+        }
+
+        if (!isSupported(sourceMediaType) ||
+                !isSupported(targetMediaType))
+        {
+            // only support IMAGE -> IMAGE (excl. RGB)
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 

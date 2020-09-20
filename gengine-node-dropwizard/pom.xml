@@ -33,6 +33,16 @@
         </dependency>
         <dependency>
             <groupId>org.gengine</groupId>
+            <artifactId>gengine-content-handler-webdav</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.gengine</groupId>
+            <artifactId>gengine-content-handler-s3</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.gengine</groupId>
             <artifactId>gengine-transform-component</artifactId>
             <version>${project.version}</version>
         </dependency>

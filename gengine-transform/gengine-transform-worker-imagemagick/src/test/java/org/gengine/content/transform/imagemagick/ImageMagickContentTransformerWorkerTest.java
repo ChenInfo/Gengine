@@ -21,6 +21,7 @@ import org.gengine.content.transform.ContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
 import org.gengine.content.transform.options.ImageTransformationOptions;
 import org.gengine.content.transform.options.TransformationOptions;
+import org.gengine.content.transform.options.TransformationOptionsImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,6 +48,32 @@ public class ImageMagickContentTransformerWorkerTest extends AbstractContentTran
         ((ImageMagickContentTransformerWorker) transformerWorker).setTargetContentReferenceHandler(
                 contentReferenceHandler);
         ((ImageMagickContentTransformerWorker) transformerWorker).initialize();
+    }
+
+    @Test
+    public void testVersion() throws Exception
+    {
+        assertTrue(transformerWorker.getVersionString().contains("Gengine ImageMagick Content Transformer Worker"));
+        assertTrue(transformerWorker.getVersionDetailsString().contains("Version: ImageMagick"));
+    }
+
+    @Test
+    public void testIsTransformable() throws Exception
+    {
+        if (!transformerWorker.isAvailable())
+        {
+            fail("worker not available");
+        }
+        boolean isTransformable = transformerWorker.isTransformable(
+                Arrays.asList(FileMediaType.IMAGE_GIF.getMediaType()),
+                FileMediaType.TEXT_PLAIN.getMediaType(),
+                new TransformationOptionsImpl());
+        assertFalse("Mimetype should not be supported", isTransformable);
+        isTransformable = transformerWorker.isTransformable(
+                Arrays.asList(FileMediaType.IMAGE_GIF.getMediaType()),
+                FileMediaType.IMAGE_JPEG.getMediaType(),
+                new TransformationOptionsImpl());
+        assertTrue("Mimetype should be supported", isTransformable);
     }
 
     protected List<ContentWorkResult> transform(

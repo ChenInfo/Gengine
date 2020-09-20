@@ -10,17 +10,20 @@ import org.cheninfo.repo.content.transform.magick.ImageResizeOptions;
 import org.cheninfo.service.cmr.repository.TemporalSourceOptions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.gengine.content.transform.AbstractFileContentTransformerWorker;
+import org.gengine.content.mediatype.FileMediaType;
+import org.gengine.content.transform.AbstractRuntimeExecContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
 import org.gengine.content.transform.options.ImageTransformationOptions;
 import org.gengine.content.transform.options.TransformationOptions;
+import org.gengine.content.transform.options.VideoTransformationOptions;
+import org.gengine.error.GengineRuntimeException;
 import org.gengine.util.exec.RuntimeExec;
 
 /**
  * An FFmpeg command line implementation of a content hash node worker
  *
  */
-public class FfmpegContentTransformerWorker extends AbstractFileContentTransformerWorker
+public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTransformerWorker
 {
     private static final Log logger = LogFactory.getLog(FfmpegContentTransformerWorker.class);
 
@@ -56,14 +59,11 @@ public class FfmpegContentTransformerWorker extends AbstractFileContentTransform
     private static final String PREFIX_IMAGE = "image/";
     private static final String PREFIX_AUDIO = "audio/";
 
-    /** the system command executer */
-    private RuntimeExec executer;
     private String ffmpegExe = "ffmpeg";
 
     @Override
-    public void initialize()
+    protected void initializeExecuter()
     {
-        super.initialize();
         if (executer == null)
         {
             if (System.getProperty("ffmpeg.exe") != null)
@@ -82,6 +82,117 @@ public class FfmpegContentTransformerWorker extends AbstractFileContentTransform
             });
             executer.setCommandsAndArguments(commandsAndArguments);
         }
+    }
+
+    @Override
+    protected void initializeVersionDetailsExecuter()
+    {
+        if (versionDetailsExecuter == null)
+        {
+            versionDetailsExecuter = new RuntimeExec();
+            Map<String, String[]> checkCommandsAndArguments = new HashMap<>();
+            checkCommandsAndArguments.put(".*", new String[] {
+                ffmpegExe,
+                "-version",
+            });
+            versionDetailsExecuter.setCommandsAndArguments(checkCommandsAndArguments);
+        }
+    }
+
+    @Override
+    protected void initializationTest()
+    {
+        try
+        {
+            initializationTest(
+                    "org/gengine/content/transform/ffmpeg/test.mp4",
+                    FileMediaType.VIDEO_AVI.getMediaType(),
+                    new VideoTransformationOptions());
+        }
+        catch (Exception e)
+        {
+            throw new GengineRuntimeException("Could not initialize worker: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Determines if the source mimetype is supported by ffmpeg
+     *
+     * @param mediaType the mimetype to check
+     * @return Returns true if ffmpeg can handle the given mimetype format
+     */
+    public static boolean isSupportedSource(String mediaType)
+    {
+        return ((mediaType.startsWith(FileMediaType.PREFIX_VIDEO) && !(
+                mediaType.equals("video/x-rad-screenplay") ||
+                mediaType.equals("video/x-sgi-movie") ||
+                mediaType.equals("video/mpeg2"))) ||
+                (mediaType.startsWith(FileMediaType.PREFIX_AUDIO) && !(
+                mediaType.equals("audio/vnd.adobe.soundbooth"))));
+    }
+
+    /**
+     * Determines if FFmpeg can be made to support the given target mimetype.
+     *
+     * @param mimetype the mimetype to check
+     * @return Returns true if ffmpeg can handle the given mimetype format
+     * @see #setUnsupportedMimetypes(String)
+     */
+    public static boolean isSupportedTarget(String mimetype)
+    {
+        return ((mimetype.startsWith(FileMediaType.PREFIX_VIDEO) && !(
+                mimetype.equals("video/x-rad-screenplay") ||
+                mimetype.equals("video/x-sgi-movie") ||
+                mimetype.equals("video/mpeg2") ||
+                mimetype.equals(FileMediaType.VIDEO_QUICKTIME.getMediaType()) ||
+                mimetype.equals(FileMediaType.VIDEO_MP4.getMediaType()))) || // TODO: Move mp4, mov exclusion to properties when MM-108 is complete
+                (mimetype.startsWith(FileMediaType.PREFIX_IMAGE) && !(
+                mimetype.equals(FileMediaType.IMAGE_SVG.getMediaType()) ||
+                mimetype.equals(FileMediaType.APPLICATION_PHOTOSHOP.getMediaType()) ||
+                mimetype.equals(FileMediaType.IMG_DWG.getMediaType()) ||
+                mimetype.equals("image/vnd.adobe.premiere") ||
+                mimetype.equals("image/x-portable-anymap") ||
+                mimetype.equals("image/x-xpixmap") ||
+                mimetype.equals("image/x-dwt") ||
+                mimetype.equals("image/cgm") ||
+                mimetype.equals("image/ief"))) ||
+                (mimetype.startsWith(FileMediaType.PREFIX_AUDIO) && !(
+                mimetype.equals("audio/vnd.adobe.soundbooth") ||
+                mimetype.equals(FileMediaType.AUDIO_MP4.getMediaType())))); // TODO: Move m4a exclusion to properties when MM-108 is complete
+    }
+
+    @Override
+    public boolean isTransformable(List<String> sourceMediaTypes, String targetMediaType, TransformationOptions options)
+    {
+        if (!isAvailable())
+        {
+            return false;
+        }
+
+        // TODO: Other transform types, i.e.:
+        //   - Layer multiple sources into one target
+        if (sourceMediaTypes.size() > 1)
+        {
+            return false;
+        }
+
+        String sourceMediaType = sourceMediaTypes.get(0);
+
+        if (logger.isDebugEnabled() && options != null)
+        {
+            logger.debug("checking support of " +
+                    "sourceMediaType=" + sourceMediaType + " " +
+                    "targetMediaType=" + targetMediaType + " " +
+                    options.getClass().getCanonicalName() + "=" + options.toString());
+        }
+
+        if (sourceMediaType.startsWith(FileMediaType.PREFIX_AUDIO) &&
+                targetMediaType.startsWith(FileMediaType.PREFIX_IMAGE))
+        {
+            // Might be able to support audio to waveform image in the future, but for now...
+            return false;
+        }
+        return (isSupportedSource(sourceMediaType) && isSupportedTarget(targetMediaType));
     }
 
     protected List<File> transformInternal(
