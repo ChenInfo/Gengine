@@ -29,7 +29,7 @@ import org.junit.Test;
  * @see org.cheninfo.repo.content.transform.ffmpeg.FfmpegContentTransformerWorker
  *
  */
-public class FfmpegContentTransformerWorkerTest extends AbstractContentTransformerWorkerTest
+public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformerWorkerTest
 {
 
     private ContentTransformerWorker transformerWorker;
