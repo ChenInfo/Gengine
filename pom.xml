@@ -31,7 +31,8 @@
         <maven.scm.connection>scm:git:https://github.com/ChenInfo/gengine.git</maven.scm.connection>
         <maven.scm.developerConnection>scm:git:git@github.com:ChenInfo/gengine.git</maven.scm.developerConnection>
         <maven.scm.url>https://github.com/ChenInfo/gengine</maven.scm.url>
-        <maven.repository.url>https://artifacts.cheninfo.com/nexus/content/groups/public</maven.repository.url>
+        <maven.distributionManagement.snapshot.url>https://artifacts.cheninfo.com/nexus/content/repositories/internal-snapshots</maven.distributionManagement.snapshot.url>
+        <maven.distributionManagement.url>https://artifacts.cheninfo.com/nexus/content/repositories/internal-3rdparty</maven.distributionManagement.url>
         <maven.compile.source>1.7</maven.compile.source>
         <maven.compile.target>1.7</maven.compile.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -89,6 +90,24 @@
             <url>https://artifacts.cheninfo.com/nexus/content/groups/public</url>
         </repository>
     </repositories>
+    
+    <distributionManagement>
+        <!-- For now internal releases repositories -->
+        <repository>
+            <id>cheninfo-internal</id>
+            <url>${maven.distributionManagement.url}</url>
+        </repository>
+        <!-- For now internal snapshot repositories -->
+        <snapshotRepository>
+            <id>cheninfo-internal-snapshots</id>
+            <url>${maven.distributionManagement.snapshot.url}</url>
+        </snapshotRepository>
+        <site>
+            <id>cheninfo-site</id>
+            <name>ChenInfo Maven site</name>
+            <url>http://localhost/</url>
+        </site>
+    </distributionManagement>
 
     <build>
         <resources>
