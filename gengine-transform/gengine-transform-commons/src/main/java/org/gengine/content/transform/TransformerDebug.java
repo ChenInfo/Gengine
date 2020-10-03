@@ -1,6 +1,6 @@
 package org.gengine.content.transform;
 
-import org.cheninfo.service.cmr.repository.TransformationOptionPair;
+import org.gengine.content.transform.options.TransformationOptionPair;
 
 /**
  * Generates logging for transformers.

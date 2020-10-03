@@ -6,14 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.cheninfo.repo.content.transform.magick.ImageResizeOptions;
-import org.cheninfo.service.cmr.repository.TemporalSourceOptions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.gengine.content.mediatype.FileMediaType;
 import org.gengine.content.transform.AbstractRuntimeExecContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
+import org.gengine.content.transform.options.ImageResizeOptions;
 import org.gengine.content.transform.options.ImageTransformationOptions;
+import org.gengine.content.transform.options.TemporalSourceOptions;
 import org.gengine.content.transform.options.TransformationOptions;
 import org.gengine.content.transform.options.VideoTransformationOptions;
 import org.gengine.error.GengineRuntimeException;

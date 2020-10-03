@@ -1,4 +1,4 @@
-package org.cheninfo.service.cmr.repository;
+package org.gengine.content.transform.options;
 
 //import java.io.IOException;
 import java.io.IOException;
@@ -6,8 +6,6 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.gengine.content.transform.TransformerDebug;
-
-//import org.cheninfo.repo.content.transform.TransformerDebug;
 
 /**
  * A pair of transformation options that specify

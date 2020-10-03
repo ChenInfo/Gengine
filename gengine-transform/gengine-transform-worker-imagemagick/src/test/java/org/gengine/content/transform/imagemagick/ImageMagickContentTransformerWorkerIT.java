@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.cheninfo.service.cmr.repository.PagedSourceOptions;
-import org.cheninfo.service.cmr.repository.TransformationSourceOptions;
 import org.gengine.content.ContentReference;
 import org.gengine.content.ContentWorkResult;
 import org.gengine.content.file.FileProvider;
@@ -20,13 +18,15 @@ import org.gengine.content.transform.AbstractContentTransformerWorkerTest;
 import org.gengine.content.transform.ContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
 import org.gengine.content.transform.options.ImageTransformationOptions;
+import org.gengine.content.transform.options.PagedSourceOptions;
 import org.gengine.content.transform.options.TransformationOptions;
 import org.gengine.content.transform.options.TransformationOptionsImpl;
+import org.gengine.content.transform.options.TransformationSourceOptions;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @see org.cheninfo.repo.content.transform.ffmpeg.FfmpegContentTransformerWorker
+ * @see {@link ImageMagickContentTransformerWorker}
  *
  */
 public class ImageMagickContentTransformerWorkerIT extends AbstractContentTransformerWorkerTest

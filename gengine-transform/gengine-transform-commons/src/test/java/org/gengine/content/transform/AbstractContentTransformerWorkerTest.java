@@ -17,7 +17,7 @@ import org.gengine.content.mediatype.FileMediaTypeServiceImpl;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
 
 /**
- * @see org.cheninfo.repo.content.transform.ffmpeg.FfmpegContentTransformerWorker
+ * Base content transformer worker class
  *
  */
 public abstract class AbstractContentTransformerWorkerTest

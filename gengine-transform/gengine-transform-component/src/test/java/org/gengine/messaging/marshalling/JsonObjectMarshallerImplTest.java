@@ -6,11 +6,11 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 
-import org.cheninfo.repo.content.transform.magick.ImageResizeOptions;
-import org.cheninfo.service.cmr.repository.PagedSourceOptions;
 import org.gengine.content.ContentReference;
 import org.gengine.content.transform.TransformationRequest;
+import org.gengine.content.transform.options.ImageResizeOptions;
 import org.gengine.content.transform.options.ImageTransformationOptions;
+import org.gengine.content.transform.options.PagedSourceOptions;
 import org.gengine.messaging.jackson.ObjectMapperFactory;
 import org.junit.Before;
 import org.junit.Test;

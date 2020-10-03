@@ -1,4 +1,4 @@
-package org.cheninfo.service.cmr.repository;
+package org.gengine.content.transform.options;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,20 +16,20 @@ public interface TransformationSourceOptions
 {
 
     /**
-     * Gets the list of applicable mimetypes
+     * Gets the list of applicable media types (mimetypes)
      *
-     * @return the applicable mimetypes
+     * @return the applicable media types
      */
-    public List<String> getApplicableMimetypes();
+    public List<String> getApplicableMediaTypes();
 
     /**
      * Gets whether or not these transformation source options apply for the
-     * given mimetype
+     * given media type (mimetype)
      *
-     * @param mimetype the mimetype of the source
+     * @param mediaType the media type of the source
      * @return if these transformation source options apply
      */
-    public boolean isApplicableForMimetype(String mimetype);
+    public boolean isApplicableForMediaType(String mediaType);
 
     /**
      * Creates a new <code>TransformationSourceOptions</code> object from this

@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-import org.cheninfo.service.cmr.repository.TransformationSourceOptions;
-
 /**
  * Interface defining values of options that are passed to content transformers.  These options
  * are used during the transformation process to provide context or parameter values.
@@ -14,8 +12,20 @@ import org.cheninfo.service.cmr.repository.TransformationSourceOptions;
 public interface TransformationOptions
 {
 
+    /**
+     * Gets the map of {@link TransformationSourceOptions} class to an object of that class holding
+     * the source options values.
+     *
+     * @return the source options map
+     */
     public Map<Class<? extends TransformationSourceOptions>, TransformationSourceOptions> getSourceOptionsMap();
 
+    /**
+     * Sets the map of {@link TransformationSourceOptions} class to an object of that class holding
+     * the source options values.
+     *
+     * @param sourceOptionsMap
+     */
     public void setSourceOptionsMap(
             Map<Class<? extends TransformationSourceOptions>, TransformationSourceOptions> sourceOptionsMap);
 
@@ -75,6 +85,28 @@ public interface TransformationOptions
      *        than or equal to zero (the default) no limit is applied.
      */
     public void setPageLimit(int pageLimit);
+
+    /**
+     * If the source content includes embedded resources,
+     *  should the transformer attempt to transform these
+     *  as well?
+     * Not many transformers do support embedded resources,
+     *  so this option will only affect those that can.
+     *
+     * @param includeEmbedded the include embedded flag.
+     */
+    public void setIncludeEmbedded(Boolean includeEmbedded);
+
+    /**
+     * If the source content includes embedded resources,
+     *  should the transformer attempt to transform these
+     *  as well?
+     * Not many transformers do support embedded resources,
+     *  so this option will only affect those that can.
+     *
+     * @return true, false, or null for the default for the transformer
+     */
+    public Boolean getIncludeEmbedded();
 
     /**
      * Gets the additional transformation options not explicitly modeled in an

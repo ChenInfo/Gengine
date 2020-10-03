@@ -6,7 +6,6 @@ import java.util.List;
 
 import static junit.framework.Assert.*;
 
-import org.cheninfo.service.cmr.repository.TemporalSourceOptions;
 import org.gengine.content.ContentReference;
 import org.gengine.content.ContentWorkResult;
 import org.gengine.content.file.FileProvider;
@@ -19,6 +18,7 @@ import org.gengine.content.transform.AbstractContentTransformerWorkerTest;
 import org.gengine.content.transform.ContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
 import org.gengine.content.transform.ffmpeg.FfmpegContentTransformerWorker;
+import org.gengine.content.transform.options.TemporalSourceOptions;
 import org.gengine.content.transform.options.TransformationOptions;
 import org.gengine.content.transform.options.TransformationOptionsImpl;
 import org.junit.Before;
@@ -26,7 +26,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * @see org.cheninfo.repo.content.transform.ffmpeg.FfmpegContentTransformerWorker
+ * @see {@link FfmpegContentTransformerWorker}
  *
  */
 public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformerWorkerTest

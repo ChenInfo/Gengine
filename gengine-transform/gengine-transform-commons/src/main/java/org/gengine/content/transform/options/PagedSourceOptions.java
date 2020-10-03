@@ -1,12 +1,12 @@
-package org.cheninfo.service.cmr.repository;
+package org.gengine.content.transform.options;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.cheninfo.service.cmr.repository.AbstractTransformationSourceOptions;
 import org.gengine.content.mediatype.FileMediaType;
+import org.gengine.content.transform.options.AbstractTransformationSourceOptions;
 
 /**
  * Paged content conversion options to specify a page number range.
@@ -57,7 +57,7 @@ public class PagedSourceOptions extends AbstractTransformationSourceOptions
     public PagedSourceOptions()
     {
         super();
-        setApplicableMimetypes(PagedSourceOptions.getDefaultApplicableMimetypes());
+        setApplicableMediaTypes(PagedSourceOptions.getDefaultApplicableMimetypes());
     }
 
     /**

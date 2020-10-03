@@ -10,7 +10,7 @@ import org.gengine.util.exec.RuntimeExec.ExecutionResult;
 import junit.framework.TestCase;
 
 /**
- * @see org.cheninfo.util.exec.RuntimeExec
+ * @see {@link RuntimeExec}
  *
  */
 public class RuntimeExecTest extends TestCase

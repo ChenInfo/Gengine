@@ -1,4 +1,4 @@
-package org.cheninfo.service.cmr.repository;
+package org.gengine.content.transform.options;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,39 +12,39 @@ import java.util.Map;
 public abstract class AbstractTransformationSourceOptions implements TransformationSourceOptions, Cloneable
 {
 
-    /** The list of applicable mimetypes */
-    private List<String> applicableMimetypes;
+    /** The list of applicable media types */
+    private List<String> applicableMediaTypes;
 
     /**
-     * Gets the list of applicable mimetypes
+     * Gets the list of applicable media types
      *
-     * @return the applicable mimetypes
+     * @return the applicable media types
      */
-    public List<String> getApplicableMimetypes()
+    public List<String> getApplicableMediaTypes()
     {
-        return applicableMimetypes;
+        return applicableMediaTypes;
     }
 
     /**
-     * Sets the list of applicable mimetypes
+     * Sets the list of applicable media types
      *
-     * @param applicableMimetypes the applicable mimetypes
+     * @param applicableMimetypes the applicable media types
      */
-    public void setApplicableMimetypes(List<String> applicableMimetypes)
+    public void setApplicableMediaTypes(List<String> applicableMediaTypes)
     {
-        this.applicableMimetypes = applicableMimetypes;
+        this.applicableMediaTypes = applicableMediaTypes;
     }
 
     /**
      * Gets whether or not these transformation source options apply for the
-     * given mimetype
+     * given media type
      *
-     * @param mimetype the mimetype of the source
+     * @param mediaType the media type of the source
      * @return if these transformation source options apply
      */
-    public boolean isApplicableForMimetype(String mimetype)
+    public boolean isApplicableForMediaType(String mediaType)
     {
-        if (mimetype != null && applicableMimetypes != null) { return applicableMimetypes.contains(mimetype); }
+        if (mediaType != null && applicableMediaTypes != null) { return applicableMediaTypes.contains(mediaType); }
         return false;
     }
 
@@ -67,7 +67,7 @@ public abstract class AbstractTransformationSourceOptions implements Transformat
         try
         {
             AbstractTransformationSourceOptions mergedOptions = this.clone();
-            mergedOptions.setApplicableMimetypes(this.getApplicableMimetypes());
+            mergedOptions.setApplicableMediaTypes(this.getApplicableMediaTypes());
 
             return mergedOptions;
         }

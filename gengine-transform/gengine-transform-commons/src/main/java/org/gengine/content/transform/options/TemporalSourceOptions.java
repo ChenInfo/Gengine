@@ -1,10 +1,10 @@
-package org.cheninfo.service.cmr.repository;
+package org.gengine.content.transform.options;
 
 import java.io.Serializable;
 import java.util.Map;
 
-import org.cheninfo.service.cmr.repository.AbstractTransformationSourceOptions;
 import org.gengine.content.mediatype.FileMediaType;
+import org.gengine.content.transform.options.AbstractTransformationSourceOptions;
 import org.gengine.error.GengineRuntimeException;
 
 /**
@@ -31,12 +31,12 @@ public class TemporalSourceOptions extends AbstractTransformationSourceOptions
     private String duration;
 
     @Override
-    public boolean isApplicableForMimetype(String sourceMimetype)
+    public boolean isApplicableForMediaType(String sourceMimetype)
     {
         return ((sourceMimetype != null &&
                 sourceMimetype.startsWith(FileMediaType.PREFIX_VIDEO) ||
                 sourceMimetype.startsWith(FileMediaType.PREFIX_AUDIO)) ||
-                super.isApplicableForMimetype(sourceMimetype));
+                super.isApplicableForMediaType(sourceMimetype));
     }
 
     /**

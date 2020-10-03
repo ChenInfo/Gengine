@@ -1,6 +1,5 @@
 package org.gengine.content.transform.options;
 
-import org.cheninfo.repo.content.transform.magick.ImageResizeOptions;
 
 /**
  * Image transformation options

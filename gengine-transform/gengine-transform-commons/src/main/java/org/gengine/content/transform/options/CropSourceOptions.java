@@ -1,4 +1,4 @@
-package org.cheninfo.service.cmr.repository;
+package org.gengine.content.transform.options;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -19,11 +19,11 @@ public class CropSourceOptions extends AbstractTransformationSourceOptions
     private String gravity = null;
 
     @Override
-    public boolean isApplicableForMimetype(String sourceMimetype)
+    public boolean isApplicableForMediaType(String sourceMimetype)
     {
         return ((sourceMimetype != null &&
                 sourceMimetype.startsWith(FileMediaType.PREFIX_IMAGE)) ||
-                super.isApplicableForMimetype(sourceMimetype));
+                super.isApplicableForMediaType(sourceMimetype));
     }
 
     /**
