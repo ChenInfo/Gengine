@@ -16,6 +16,7 @@
         <module>gengine-messaging-commons</module>
         <module>gengine-messaging-amqp-direct</module>
         <module>gengine-messaging-camel</module>
+        <module>gengine-messaging-benchmark</module>
     </modules>
 
 </project>
