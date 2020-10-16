@@ -4,7 +4,7 @@
 
     <groupId>org.gengine</groupId>
     <artifactId>messaging-broker-activemq</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
 
     <properties>
         <dependency.activemq.version>5.8.0</dependency.activemq.version>
