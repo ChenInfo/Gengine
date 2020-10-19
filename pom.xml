@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.gengine</groupId>
     <artifactId>gengine-parent</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <organization>
@@ -23,7 +22,8 @@
         <connection>${maven.scm.connection}</connection>
         <developerConnection>${maven.scm.developerConnection}</developerConnection>
         <url>${maven.scm.url}</url>
-    </scm>
+      <tag>HEAD</tag>
+  </scm>
     
     <properties>
         <maven.license.name>GNU Lesser General Public License v3.0 or later</maven.license.name>
@@ -195,11 +195,10 @@
                                 <include>**/*.java</include>
                             </includes>
                             <licenses>
-                                <license
-                                    implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+                                <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
                                     <licenseFamilyCategory>GENGINE_LGPL</licenseFamilyCategory>
                                     <licenseFamilyName>Gengine LGPL License</licenseFamilyName>
-                                    <notes></notes>
+                                    <notes />
                                     <patterns>
                                         <pattern>Gengine is free software: you can redistribute it and/or modify</pattern>
                                     </patterns>
