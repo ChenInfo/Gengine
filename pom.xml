@@ -102,11 +102,6 @@
             <id>cheninfo-internal-snapshots</id>
             <url>${maven.distributionManagement.snapshot.url}</url>
         </snapshotRepository>
-        <site>
-            <id>cheninfo-site</id>
-            <name>ChenInfo Maven site</name>
-            <url>http://localhost/</url>
-        </site>
     </distributionManagement>
 
     <build>
