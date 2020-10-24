@@ -40,6 +40,7 @@
         
         <dependency.junit.version>4.10</dependency.junit.version>
         <dependency.log4j.version>1.2.17</dependency.log4j.version>
+        <dependency.jackson2.version>2.3.2</dependency.jackson2.version>
     </properties>
 
     <modules>

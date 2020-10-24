@@ -10,10 +10,6 @@
 
     <artifactId>gengine-messaging-commons</artifactId>
 
-    <properties>
-        <dependency.jackson2.version>2.1.4</dependency.jackson2.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.gengine</groupId>

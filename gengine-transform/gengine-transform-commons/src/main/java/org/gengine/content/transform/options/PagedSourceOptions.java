@@ -8,6 +8,8 @@ import java.util.Map;
 import org.gengine.content.mediatype.FileMediaType;
 import org.gengine.content.transform.options.AbstractTransformationSourceOptions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Paged content conversion options to specify a page number range.
  * <p>
@@ -132,7 +134,8 @@ public class PagedSourceOptions extends AbstractTransformationSourceOptions
         return sourceOptions;
     }
 
-//    @Override
+    @Override
+    @JsonIgnore
     public TransformationSourceOptionsSerializer getSerializer()
     {
         return PagedSourceOptions.createSerializerInstance();

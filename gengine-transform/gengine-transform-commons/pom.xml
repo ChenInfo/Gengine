@@ -16,6 +16,11 @@
             <artifactId>gengine-commons</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${dependency.jackson2.version}</version>
+        </dependency>
     </dependencies>
     
     <build>

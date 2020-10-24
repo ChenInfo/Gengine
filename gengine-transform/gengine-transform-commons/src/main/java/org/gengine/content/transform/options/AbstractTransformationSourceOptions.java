@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Base implementation of TransformationSourceOptions which holds applicable mimetypes
  * and handles merge of options.
@@ -20,6 +22,7 @@ public abstract class AbstractTransformationSourceOptions implements Transformat
      *
      * @return the applicable media types
      */
+    @JsonIgnore
     public List<String> getApplicableMediaTypes()
     {
         return applicableMediaTypes;
