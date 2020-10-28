@@ -32,4 +32,11 @@ public interface ContentTransformerWorkerProgressReporter
      * @param results
      */
     public void onTransformationComplete(List<ContentWorkResult> results);
+
+    /**
+     * Called when there was an error performing the transformation
+     *
+     * @param errorMessage
+     */
+    public void onTransformationError(String errorMessage);
 }

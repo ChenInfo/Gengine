@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 
 import org.gengine.content.ContentIOException;
 import org.gengine.content.ContentReference;
@@ -32,18 +33,35 @@ public class FileContentReferenceHandlerImpl implements FileContentReferenceHand
     public static final String URI_SCHEME_FILE = "file:/";
 
     private static final long DEFAULT_TRANSFER_CHECK_PERIOD_MS = 2000;
+    private static final long DEFAULT_TRANSFER_CHECK_TIMEOUT_MS = 10000;
 
     private FileProvider fileProvider;
     private long transferCheckPeriodMs = DEFAULT_TRANSFER_CHECK_PERIOD_MS;
+    private long transferCheckTimeoutMs = DEFAULT_TRANSFER_CHECK_TIMEOUT_MS;
 
     public void setFileProvider(FileProvider fileProvider)
     {
         this.fileProvider = fileProvider;
     }
 
+    /**
+     * Sets the interval to check for transfer
+     *
+     * @param transferCheckPeriodMs
+     */
     public void setTransferCheckPeriodMs(long transferCheckPeriodMs)
     {
         this.transferCheckPeriodMs = transferCheckPeriodMs;
+    }
+
+    /**
+     * Sets the transfer check timeout
+     *
+     * @param transferCheckTimeoutMs
+     */
+    public void setTransferCheckTimeoutMs(long transferCheckTimeoutMs)
+    {
+        this.transferCheckTimeoutMs = transferCheckTimeoutMs;
     }
 
     public void setFileProviderDirectoryPath(String directoryPath)
@@ -113,14 +131,22 @@ public class FileContentReferenceHandlerImpl implements FileContentReferenceHand
             logger.debug("Expected file size unknown, skipping size check");
             return file;
         }
+        long startTime = (new Date()).getTime();
+        long endTime = (new Date()).getTime();
         long expectedSize = contentReference.getSize();
         long actualSize = file.length();
         while (actualSize < expectedSize)
         {
+            if (((endTime - startTime) > transferCheckTimeoutMs))
+            {
+                throw new ContentIOException("Could not get file for content reference: " +
+                        contentReference.getUri());
+            }
             logger.trace("Checked file, expectedSize=" + expectedSize + " actualSize=" + actualSize +
                     ", waiting " + transferCheckPeriodMs + "ms");
             Thread.sleep(transferCheckPeriodMs);
             actualSize = file.length();
+            endTime = (new Date()).getTime();
         }
         logger.debug("File expectedSize=" + expectedSize + " actualSize=" + actualSize + ", ending check");
         return file;

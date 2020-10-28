@@ -131,5 +131,14 @@ public abstract class AbstractContentTransformerWorkerTest
                 logger.debug("Completed transformation");
             }
         }
+
+        @Override
+        public void onTransformationError(String errorMessage)
+        {
+            if (logger.isDebugEnabled())
+            {
+                logger.debug("Error performing transformation: " + errorMessage);
+            }
+        }
     }
 }
