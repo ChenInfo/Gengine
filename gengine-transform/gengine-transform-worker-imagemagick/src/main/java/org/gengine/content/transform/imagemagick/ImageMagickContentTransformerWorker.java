@@ -107,6 +107,10 @@ public class ImageMagickContentTransformerWorker extends AbstractRuntimeExecCont
     @Override
     protected void initializationTest()
     {
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("ImageMagick initialization test...");
+        }
         try
         {
             initializationTest(

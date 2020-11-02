@@ -3,6 +3,7 @@ package org.gengine.content.dropwizard;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,9 +36,14 @@ public class NodeApplication extends Application<NodeConfiguration>
     private static final Log logger = LogFactory.getLog(NodeApplication.class);
 
     protected ExecutorService executorService;
+    protected List<AmqpDirectEndpoint> endpoints;
 
     public static void main(String[] args) throws Exception {
-        new NodeApplication().run(args);
+        NodeApplication nodeApplication = new NodeApplication();
+        nodeApplication.run(args);
+        // Let Dropwizard come up
+        Thread.sleep(2000);
+        nodeApplication.startEndpoints();
     }
 
     @Override
@@ -49,6 +55,21 @@ public class NodeApplication extends Application<NodeConfiguration>
         executorService = Executors.newCachedThreadPool();
     }
 
+    /**
+     * Initializes all configured endpoints
+     */
+    protected void startEndpoints()
+    {
+        if (endpoints == null)
+        {
+            return;
+        }
+        logger.debug("Starting endpoints");
+        for (AmqpDirectEndpoint endpoint : endpoints)
+        {
+            startEndpoint(endpoint);
+        }
+    }
 
     /**
      * Initializes the given endpoint, running its listener using the executor service.
@@ -115,6 +136,10 @@ public class NodeApplication extends Application<NodeConfiguration>
     @Override
     public void run(NodeConfiguration nodeConfig, Environment environment) throws Exception
     {
+        final NodeResource resource = new NodeResource();
+        environment.jersey().register(resource);
+
+        endpoints = new ArrayList<AmqpDirectEndpoint>();
         List<ComponentConfiguration> components = nodeConfig.getComponents();
         for (ComponentConfiguration componentConfig : components)
         {
@@ -126,15 +151,11 @@ public class NodeApplication extends Application<NodeConfiguration>
 
             componentBootrap.init(nodeConfig, environment, componentConfig);
 
-            startEndpoint(componentBootrap.getEndpoint());
+            endpoints.add(componentBootrap.getEndpoint());
 
             environment.healthChecks().register(
                     componentConfig.getName(), componentBootrap.getHealthCheck());
         }
-
-        final NodeResource resource = new NodeResource();
-        environment.jersey().register(resource);
-        logger.info("Startup complete [Version " + nodeConfig.getVersion() + "]");
     }
 
 }

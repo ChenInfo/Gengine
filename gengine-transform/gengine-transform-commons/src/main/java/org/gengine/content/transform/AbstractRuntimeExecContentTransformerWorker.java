@@ -76,6 +76,14 @@ public abstract class AbstractRuntimeExecContentTransformerWorker extends Abstra
     @Override
     protected void initializeVersionDetailsString()
     {
+        if (this.versionDetailsExecuter == null)
+        {
+            return;
+        }
+        if (logger.isDebugEnabled())
+        {
+            logger.debug(this.getClass().getSimpleName() + " version details check...");
+        }
         try
         {
             // On some platforms / versions, the -version command seems to return an error code whilst still

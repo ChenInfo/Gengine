@@ -102,6 +102,10 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     @Override
     protected void initializationTest()
     {
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("FFmpeg initialization test...");
+        }
         try
         {
             initializationTest(

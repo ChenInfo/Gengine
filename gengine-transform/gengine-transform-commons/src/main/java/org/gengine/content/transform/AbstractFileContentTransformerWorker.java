@@ -129,6 +129,11 @@ public abstract class AbstractFileContentTransformerWorker extends AbstractConte
         List<FileContentReferencePair> sourcePairs = getSourcePairs(sources);
         List<FileContentReferencePair> targetPairs = getTargetPairs(targets);
 
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("Files obtained, calling " +
+                    this.getClass().getSimpleName() + ".transformInternal...");
+        }
         List<File> resultFiles = transformInternal(
                 sourcePairs,
                 targetPairs,
