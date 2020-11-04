@@ -9,7 +9,7 @@ import java.util.Map;
  * are used during the transformation process to provide context or parameter values.
  *
  */
-public interface TransformationOptions
+public interface TransformationOptions extends Serializable
 {
 
     /**

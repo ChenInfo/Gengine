@@ -1,10 +1,12 @@
 package org.gengine.content.transform.options;
 
+import java.io.Serializable;
+
 /**
  * Image resize options
  *
  */
-public class ImageResizeOptions
+public class ImageResizeOptions implements Serializable
 {
     /** The width */
     private int width = -1;

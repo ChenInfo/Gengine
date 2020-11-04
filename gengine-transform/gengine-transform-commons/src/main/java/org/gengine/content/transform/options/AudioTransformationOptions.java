@@ -13,9 +13,10 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
     public static final String AUDIO_CODEC_WMA = "wma";
 
     private String targetAudioCodec;
-    private Integer targetAudioBitrate;
-    private Integer targetAudioSamplingrate;
+    private Long targetAudioBitrate;
+    private Integer targetAudioSamplingRate;
     private Integer targetAudioChannels;
+    private boolean targetFastStartEnabled = true;
 
     /**
      * Gets the audio codec to use for the target of the transformation
@@ -42,7 +43,7 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
      *
      * @return the target audio bitrate
      */
-    public Integer getTargetAudioBitrate()
+    public Long getTargetAudioBitrate()
     {
         return targetAudioBitrate;
     }
@@ -52,7 +53,7 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
      *
      * @param targetAudioBitrate
      */
-    public void setTargetAudioBitrate(Integer targetAudioBitrate)
+    public void setTargetAudioBitrate(Long targetAudioBitrate)
     {
         this.targetAudioBitrate = targetAudioBitrate;
     }
@@ -62,19 +63,19 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
      *
      * @return the target audio sampling rate
      */
-    public Integer getTargetAudioSamplingrate()
+    public Integer getTargetAudioSamplingRate()
     {
-        return targetAudioSamplingrate;
+        return targetAudioSamplingRate;
     }
 
     /**
      * Sets the audio sampling rate to use for the target of the transformation
      *
-     * @param targetAudioSamplingrate
+     * @param targetAudioSamplingRate
      */
-    public void setTargetAudioSamplingrate(Integer targetAudioSamplingrate)
+    public void setTargetAudioSamplingRate(Integer targetAudioSamplingRate)
     {
-        this.targetAudioSamplingrate = targetAudioSamplingrate;
+        this.targetAudioSamplingRate = targetAudioSamplingRate;
     }
 
     /**
@@ -95,6 +96,26 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
     public void setTargetAudioChannels(Integer targetAudioChannels)
     {
         this.targetAudioChannels = targetAudioChannels;
+    }
+
+    /**
+     * Gets whether or not the moov atom should be moved to the start of the file if supported.
+     *
+     * @return true if moving the moov atom should be attempted
+     */
+    public boolean getTargetFastStartEnabled()
+    {
+        return targetFastStartEnabled;
+    }
+
+    /**
+     * Sets whether or not the moov atom should be moved to the start of the file if supported.
+     *
+     * @param targetFastStartEnabled
+     */
+    public void setTargetFastStartEnabled(boolean targetFastStartEnabled)
+    {
+        this.targetFastStartEnabled = targetFastStartEnabled;
     }
 
 }

@@ -64,6 +64,8 @@ public enum FileMediaType
 
     VIDEO_MP4("video/mp4"),
 
+    VIDEO_WEBM("video/webm"),
+
     IMAGE_GIF("image/gif"),
 
     IMAGE_JPEG("image/jpeg"),

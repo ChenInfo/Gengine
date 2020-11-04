@@ -30,14 +30,11 @@ public class ImageMagickContentTransformerWorker extends AbstractRuntimeExecCont
 {
     /** options variable name */
     private static final String KEY_OPTIONS = "options";
-    /** source variable name */
-    private static final String VAR_SOURCE = "source";
-    /** target variable name */
-    private static final String VAR_TARGET = "target";
 
     private static final Log logger = LogFactory.getLog(ImageMagickContentTransformerWorker.class);
 
     private String imgExe = "convert";
+    private String identifyExe = "identity";
 
     /**
      * Default constructor
@@ -101,6 +98,21 @@ public class ImageMagickContentTransformerWorker extends AbstractRuntimeExecCont
                 "-version",
             });
             versionDetailsExecuter.setCommandsAndArguments(checkCommandsAndArguments);
+        }
+    }
+
+    @Override
+    protected void initializeFileDetailsExecuter()
+    {
+        if (fileDetailsExecuter == null)
+        {
+            fileDetailsExecuter = new RuntimeExec();
+            Map<String, String[]> checkCommandsAndArguments = new HashMap<>();
+            checkCommandsAndArguments.put(".*", new String[] {
+                identifyExe,
+                "-verbose",
+            });
+            fileDetailsExecuter.setCommandsAndArguments(checkCommandsAndArguments);
         }
     }
 

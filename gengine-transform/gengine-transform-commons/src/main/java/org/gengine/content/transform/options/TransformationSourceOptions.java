@@ -12,7 +12,7 @@ import java.util.Map;
  * describes the page number that should be used from the source content.
  *
  */
-public interface TransformationSourceOptions
+public interface TransformationSourceOptions extends Serializable
 {
 
     /**
