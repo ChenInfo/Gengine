@@ -14,6 +14,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public abstract class AbstractTransformationSourceOptions implements TransformationSourceOptions, Cloneable
 {
 
+    private static final long serialVersionUID = 2017077314384548215L;
+
     /** The list of applicable media types */
     private List<String> applicableMediaTypes;
 

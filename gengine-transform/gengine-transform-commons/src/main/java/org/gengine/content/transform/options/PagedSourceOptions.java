@@ -24,6 +24,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class PagedSourceOptions extends AbstractTransformationSourceOptions
 {
+    private static final long serialVersionUID = 1272460998965414717L;
+
     public static final Integer PAGE_1 = new Integer(1);
 
     /** The start of the page range in the source document */

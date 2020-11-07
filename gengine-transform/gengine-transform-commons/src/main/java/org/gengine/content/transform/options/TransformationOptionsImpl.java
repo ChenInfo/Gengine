@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public class TransformationOptionsImpl implements TransformationOptions
 {
+    private static final long serialVersionUID = -4466824587314591239L;
+
     /** Source options based on its mimetype */
     private Map<Class<? extends TransformationSourceOptions>, TransformationSourceOptions> sourceOptionsMap;
 

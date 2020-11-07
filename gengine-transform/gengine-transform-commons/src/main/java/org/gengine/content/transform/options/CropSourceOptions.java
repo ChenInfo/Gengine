@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class CropSourceOptions extends AbstractTransformationSourceOptions
 {
+    private static final long serialVersionUID = -2781602556526484879L;
+
     private int height = -1;
     private int width = -1;
     private int xOffset = 0;

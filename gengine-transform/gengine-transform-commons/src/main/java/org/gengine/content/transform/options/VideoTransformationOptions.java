@@ -6,6 +6,7 @@ package org.gengine.content.transform.options;
  */
 public class VideoTransformationOptions extends AudioTransformationOptions
 {
+    private static final long serialVersionUID = -5599964613344815742L;
 
     public static final String VIDEO_CODEC_H264 = "h264";
     public static final String VIDEO_CODEC_MPEG4 = "mpeg4";

@@ -8,6 +8,8 @@ import java.io.Serializable;
  */
 public class ImageResizeOptions implements Serializable
 {
+    private static final long serialVersionUID = -6251308339825657974L;
+
     /** The width */
     private int width = -1;
 

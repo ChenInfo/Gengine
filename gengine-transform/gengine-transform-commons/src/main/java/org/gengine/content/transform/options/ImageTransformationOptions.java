@@ -7,6 +7,8 @@ package org.gengine.content.transform.options;
  */
 public class ImageTransformationOptions extends TransformationOptionsImpl
 {
+    private static final long serialVersionUID = -609731059750625205L;
+
     public static final String OPT_COMMAND_OPTIONS = "commandOptions";
     public static final String OPT_IMAGE_RESIZE_OPTIONS = "imageResizeOptions";
     public static final String OPT_IMAGE_AUTO_ORIENTATION = "imageAutoOrient";

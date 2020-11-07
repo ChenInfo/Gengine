@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class TemporalSourceOptions extends AbstractTransformationSourceOptions
 {
+    private static final long serialVersionUID = 7255206141096239901L;
 
     /** Validation regex for hh:mm:ss[.xxx], ignoring leap seconds and allowing up to 99 hours */
     private static final String VALID_TIME_STRING_REGEX = "\\d{2}:[0-5][0-9]:[0-5][0-9](\\.\\d{1,3})?";
