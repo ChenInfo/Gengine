@@ -229,9 +229,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         return ((mimetype.startsWith(FileMediaType.PREFIX_VIDEO) && !(
                 mimetype.equals("video/x-rad-screenplay") ||
                 mimetype.equals("video/x-sgi-movie") ||
-                mimetype.equals("video/mpeg2") ||
-                mimetype.equals(FileMediaType.VIDEO_QUICKTIME.getMediaType()) ||
-                mimetype.equals(FileMediaType.VIDEO_MP4.getMediaType()))) || // TODO: Move mp4, mov exclusion to properties when MM-108 is complete
+                mimetype.equals("video/mpeg2"))) ||
                 (mimetype.startsWith(FileMediaType.PREFIX_IMAGE) && !(
                 mimetype.equals(FileMediaType.IMAGE_SVG.getMediaType()) ||
                 mimetype.equals(FileMediaType.APPLICATION_PHOTOSHOP.getMediaType()) ||
@@ -243,8 +241,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
                 mimetype.equals("image/cgm") ||
                 mimetype.equals("image/ief"))) ||
                 (mimetype.startsWith(FileMediaType.PREFIX_AUDIO) && !(
-                mimetype.equals("audio/vnd.adobe.soundbooth") ||
-                mimetype.equals(FileMediaType.AUDIO_MP4.getMediaType())))); // TODO: Move m4a exclusion to properties when MM-108 is complete
+                mimetype.equals("audio/vnd.adobe.soundbooth"))));
     }
 
     @Override
