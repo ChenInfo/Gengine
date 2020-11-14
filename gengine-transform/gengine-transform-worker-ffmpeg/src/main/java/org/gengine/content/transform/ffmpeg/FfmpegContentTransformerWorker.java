@@ -360,7 +360,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         properties.put(VAR_TARGET, targetFile.getAbsolutePath());
 
         // execute the statement
-        RuntimeExec.ExecutionResult result = executer.execute(properties);
+        RuntimeExec.ExecutionResult result = executer.execute(
+                properties, -1, null, new FfmpegInputStreamReaderThreadFactory(progressReporter));
         if (result.getExitValue() != 0 && result.getStdErr() != null && result.getStdErr().length() > 0)
         {
             throw new Exception("Failed to perform ffmpeg transformation: \n" + result.getStdErr());

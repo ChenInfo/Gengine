@@ -41,7 +41,7 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
     private static final Log logger = LogFactory.getLog(FfmpegContentTransformerWorkerIT.class);
 
     private ContentTransformerWorker transformerWorker;
-    private ContentTransformerWorkerProgressReporter progressReporter;
+    private StringListProgressReporter testProgressReporter;
     private File sourceFile;
     private ContentReference source;
 
@@ -57,7 +57,7 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
                 contentReferenceHandler);
         ((FfmpegContentTransformerWorker) transformerWorker).initialize();
 
-        progressReporter = new LoggingProgressReporterImpl();
+        testProgressReporter = new StringListProgressReporter();
 
         sourceFile = new File(this.getClass().getResource("/quick/quick.mpg").toURI());
         source = new ContentReference(
@@ -122,7 +122,7 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
                 Arrays.asList(source),
                 Arrays.asList(target),
                 options,
-                progressReporter);
+                testProgressReporter);
 
         long targetSize = targetFile.length();
 
@@ -170,6 +170,15 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
             FileMediaType targetMediaType,
             VideoTransformationOptions options) throws Exception
     {
+        return testTransformation(source, targetMediaType, options, testProgressReporter);
+    }
+
+    protected List<String> testTransformation(
+            ContentReference sourceReference,
+            FileMediaType targetMediaType,
+            VideoTransformationOptions options,
+            ContentTransformerWorkerProgressReporter progressReporter) throws Exception
+    {
         String sourceDetails = ((FfmpegContentTransformerWorker) transformerWorker).getDetails(sourceFile);
         List<String> sourceStreams = getStreamDetails(sourceDetails);
         for (String stream : sourceStreams)
@@ -189,7 +198,7 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
                 targetFile.toURI().toString(), targetMediaType.getMediaType());
 
         transformerWorker.transform(
-                Arrays.asList(source),
+                Arrays.asList(sourceReference),
                 Arrays.asList(target),
                 options,
                 progressReporter);
@@ -283,6 +292,9 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
         assertSomeStreamMatches("Target audio sampling rate incorrect", targetStreams, ".*Audio: .*11025 Hz.*");
         assertSomeStreamMatches("Target audio bitrate incorrect", targetStreams, ".*Audio: .*22 kb\\/s.*");
         assertSomeStreamMatches("Target audio codec incorrect", targetStreams, ".*Audio: .*stereo.*");
+
+        List<String> progressEvents = testProgressReporter.getProgressEvents();
+        assertTrue(progressEvents.size() > 0);
     }
 
     @Test
@@ -312,11 +324,52 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
                 Arrays.asList(source),
                 FileMediaType.IMAGE_JPEG.getMediaType(),
                 options,
-                progressReporter);
+                testProgressReporter);
         assertEquals(4, results.size());
         for (ContentWorkResult result : results)
         {
             assertTrue("Target file size is zero", result.getContentReference().getSize() > 0);
+        }
+    }
+
+    protected class StringListProgressReporter implements ContentTransformerWorkerProgressReporter
+    {
+        protected static final String PREFIX_STARTED = "STARTED";
+        protected static final String PREFIX_PROGRESS = "PROGRESS: ";
+        protected static final String PREFIX_COMPLETE = "COMPLETE: ";
+        protected static final String PREFIX_ERROR = "ERROR: ";
+
+        private List<String> progressEvents = new ArrayList<String>();
+
+        @Override
+        public void onTransformationStarted()
+        {
+            progressEvents.add(PREFIX_STARTED);
+        }
+
+        @Override
+        public void onTransformationProgress(float progress)
+        {
+            String progressEvent = PREFIX_PROGRESS + progress;
+            progressEvents.add(PREFIX_PROGRESS + progress);
+            logger.debug("**** progressEvent=" + progressEvent);
+        }
+
+        @Override
+        public void onTransformationComplete(List<ContentWorkResult> results)
+        {
+            progressEvents.add(PREFIX_COMPLETE);
+        }
+
+        @Override
+        public void onTransformationError(String errorMessage)
+        {
+            progressEvents.add(PREFIX_ERROR + errorMessage);
+        }
+
+        public List<String> getProgressEvents()
+        {
+            return progressEvents;
         }
     }
 }

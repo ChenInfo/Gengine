@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
@@ -92,6 +93,7 @@ public class RuntimeExec
     private String[] processProperties;
     private File processDirectory;
     private Set<Integer> errCodes;
+    private InputStreamReaderThreadFactory defaultInputStreamReaderThreadFactory;
     private Timer timer = new Timer(true);
 
     /**
@@ -109,6 +111,8 @@ public class RuntimeExec
         this.errCodes = new HashSet<Integer>(2);
         errCodes.add(1);
         errCodes.add(2);
+
+        this.defaultInputStreamReaderThreadFactory = new InputStreamReaderThreadFactory();
     }
 
     public String toString()
@@ -457,6 +461,11 @@ public class RuntimeExec
         }
     }
 
+    public void setDefaultInputStreamReaderThreadFactory(InputStreamReaderThreadFactory defaultInputStreamReaderThreadFactory)
+    {
+        this.defaultInputStreamReaderThreadFactory = defaultInputStreamReaderThreadFactory;
+    }
+
     /**
      * Executes the command using the default properties
      *
@@ -496,12 +505,48 @@ public class RuntimeExec
      */
     public ExecutionResult execute(Map<String, String> properties, final long timeoutMs)
     {
+        return execute(properties, timeoutMs,
+                defaultInputStreamReaderThreadFactory, defaultInputStreamReaderThreadFactory);
+    }
+
+    /**
+     * Executes the statement that this instance was constructed with an optional
+     * timeout after which the command is asked to
+     *
+     * @param properties the properties that the command might be executed with.
+     * <code>null</code> properties will be treated as an empty string for substitution
+     * purposes.
+     * @param timeoutMs a timeout after which {@link Process#destroy()} is called.
+     *        ignored if less than or equal to zero. Note this method does not guarantee
+     *        to terminate the process (it is not a kill -9).
+     * @param stdOutGobblerFactory the object used to create the output input stream reader
+     *        If null the defaultInputStreamReaderThreadFactory will be used
+     * @param stdErrGobblerFactory the object used to create the error input stream reader
+     *        If null the defaultInputStreamReaderThreadFactory will be used
+     *
+     * @return Returns the full execution results
+     */
+    public ExecutionResult execute(
+            Map<String, String> properties,
+            final long timeoutMs,
+            InputStreamReaderThreadFactory stdOutGobblerFactory,
+            InputStreamReaderThreadFactory stdErrGobblerFactory)
+    {
         int defaultFailureExitValue = errCodes.size() > 0 ? ((Integer)errCodes.toArray()[0]) : 1;
 
         // check that the command has been set
         if (command == null)
         {
             throw new GengineRuntimeException("Runtime command has not been set: \n" + this);
+        }
+
+        if (stdOutGobblerFactory == null)
+        {
+            stdOutGobblerFactory = defaultInputStreamReaderThreadFactory;
+        }
+        if (stdErrGobblerFactory == null)
+        {
+            stdErrGobblerFactory = defaultInputStreamReaderThreadFactory;
         }
 
         // create the properties
@@ -553,8 +598,10 @@ public class RuntimeExec
         }
 
         // create the stream gobblers
-        InputStreamReaderThread stdOutGobbler = new InputStreamReaderThread(process.getInputStream(), charset);
-        InputStreamReaderThread stdErrGobbler = new InputStreamReaderThread(process.getErrorStream(), charset);
+        InputStreamReaderThread stdOutGobbler = stdOutGobblerFactory.createInstance(
+                process.getInputStream(), charset);
+        InputStreamReaderThread stdErrGobbler = stdErrGobblerFactory.createInstance(
+                process.getErrorStream(), charset);
 
         // start gobbling
         stdOutGobbler.start();
@@ -868,6 +915,17 @@ public class RuntimeExec
     }
 
     /**
+     * Class for instantiating InputStreamReaderThreads
+     */
+    public static class InputStreamReaderThreadFactory
+    {
+        public InputStreamReaderThread createInstance(InputStream is, Charset charset)
+        {
+            return new InputStreamReaderThread(is, charset);
+        }
+    }
+
+    /**
      * Gobbles an <code>InputStream</code> and writes it into a
      * <code>StringBuffer</code>
      * <p>
@@ -876,7 +934,7 @@ public class RuntimeExec
     public static class InputStreamReaderThread extends Thread
     {
         private final InputStream is;
-        private final Charset charset;
+        protected final Charset charset;
         private final StringBuffer buffer;          // we require the synchronization
         private boolean completed;
 
@@ -894,6 +952,12 @@ public class RuntimeExec
             this.completed = false;
         }
 
+        protected void processBytes(byte[] bytes, int count) throws UnsupportedEncodingException
+        {
+            String toWrite = new String(bytes, 0, count, charset.name());
+            buffer.append(toWrite);
+        }
+
         public synchronized void run()
         {
             completed = false;
@@ -909,8 +973,7 @@ public class RuntimeExec
                     // do we have something previously read?
                     if (count > 0)
                     {
-                        String toWrite = new String(bytes, 0, count, charset.name());
-                        buffer.append(toWrite);
+                        processBytes(bytes, count);
                     }
                     // read the next set of bytes
                     count = tempIs.read(bytes);
