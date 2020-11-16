@@ -505,8 +505,10 @@ public class RuntimeExec
      */
     public ExecutionResult execute(Map<String, String> properties, final long timeoutMs)
     {
-        return execute(properties, timeoutMs,
-                defaultInputStreamReaderThreadFactory, defaultInputStreamReaderThreadFactory);
+        return execute(properties,
+                defaultInputStreamReaderThreadFactory,
+                defaultInputStreamReaderThreadFactory,
+                timeoutMs);
     }
 
     /**
@@ -528,9 +530,9 @@ public class RuntimeExec
      */
     public ExecutionResult execute(
             Map<String, String> properties,
-            final long timeoutMs,
             InputStreamReaderThreadFactory stdOutGobblerFactory,
-            InputStreamReaderThreadFactory stdErrGobblerFactory)
+            InputStreamReaderThreadFactory stdErrGobblerFactory,
+            final long timeoutMs)
     {
         int defaultFailureExitValue = errCodes.size() > 0 ? ((Integer)errCodes.toArray()[0]) : 1;
 

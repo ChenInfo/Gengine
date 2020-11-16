@@ -261,9 +261,9 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
 
         String sourceMediaType = sourceMediaTypes.get(0);
 
-        if (logger.isDebugEnabled() && options != null)
+        if (logger.isTraceEnabled() && options != null)
         {
-            logger.debug("checking support of " +
+            logger.trace("checking support of " +
                     "sourceMediaType=" + sourceMediaType + " " +
                     "targetMediaType=" + targetMediaType + " " +
                     options.getClass().getCanonicalName() + "=" + options.toString());
@@ -361,7 +361,10 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
 
         // execute the statement
         RuntimeExec.ExecutionResult result = executer.execute(
-                properties, -1, null, new FfmpegInputStreamReaderThreadFactory(progressReporter));
+                properties,
+                null,
+                new FfmpegInputStreamReaderThreadFactory(progressReporter),
+                -1);
         if (result.getExitValue() != 0 && result.getStdErr() != null && result.getStdErr().length() > 0)
         {
             throw new Exception("Failed to perform ffmpeg transformation: \n" + result.getStdErr());

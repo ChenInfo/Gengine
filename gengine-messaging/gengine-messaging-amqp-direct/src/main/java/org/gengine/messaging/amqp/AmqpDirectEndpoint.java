@@ -13,6 +13,11 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
@@ -38,6 +43,8 @@ public class AmqpDirectEndpoint implements MessageProducer
     private static final String DEFAULT_USERNAME = "guest";
     private static final String DEFAULT_PASSWORD = "password";
 
+    private static final long SEND_TIMEOUT_MS = 2000;
+
     private String host;
     private int port = DEFAULT_PORT;
     private String username = DEFAULT_USERNAME;
@@ -52,6 +59,8 @@ public class AmqpDirectEndpoint implements MessageProducer
     private MessageConsumer messageConsumer;
     private AmqpListener listener;
     private ObjectMapper objectMapper;
+
+    ExecutorService executor = Executors.newSingleThreadExecutor();
 
     protected class AmqpListener implements Runnable
     {
@@ -241,14 +250,25 @@ public class AmqpDirectEndpoint implements MessageProducer
             {
                 queueName = sendQueueName;
             }
+            final String destination = queueName;
 
-            TextMessage textMessage = getSession().createTextMessage(stringMessage);
+            final TextMessage textMessage = getSession().createTextMessage(stringMessage);
 
             if (logger.isTraceEnabled())
             {
                 logger.trace("Sending message to " + host + ":" + queueName + ": " + stringMessage);
             }
-            getMessageProducer(queueName).send(textMessage);
+            Callable<Void> sendRunnable = new Callable<Void>()
+            {
+                @Override
+                public Void call() throws Exception
+                {
+                    getMessageProducer(destination).send(textMessage);
+                    return null;
+                }
+            };
+            Future<Void> future = executor.submit(sendRunnable);
+            future.get(SEND_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         }
         catch (Exception e)
         {
