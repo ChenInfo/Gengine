@@ -112,7 +112,19 @@ public class FfmpegInputStreamReaderThreadFactory extends InputStreamReaderThrea
                     scanner.close();
                     return;
                 }
-                durationTotalSecs = getTotalSeconds(duration);
+                try
+                {
+                    durationTotalSecs = getTotalSeconds(duration);
+                }
+                catch (Exception e)
+                {
+                    logger.info("could not report progress: " + e.getMessage());
+                    return;
+                }
+                finally
+                {
+                    scanner.close();
+                }
             }
 
             String match;
