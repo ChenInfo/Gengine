@@ -119,11 +119,8 @@ public class FfmpegInputStreamReaderThreadFactory extends InputStreamReaderThrea
                 catch (Exception e)
                 {
                     logger.info("could not report progress: " + e.getMessage());
-                    return;
-                }
-                finally
-                {
                     scanner.close();
+                    return;
                 }
             }
 
