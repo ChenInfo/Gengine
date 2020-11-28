@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.gengine.content.AbstractComponent;
+import org.gengine.content.AbstractAsyncComponent;
 import org.gengine.content.ContentWorkResult;
 import org.gengine.content.transform.TransformationReply;
 import org.gengine.content.transform.TransformationRequest;
@@ -15,13 +15,13 @@ import org.gengine.messaging.MessageProducer;
  * to perform the transformation, then uses a {@link MessageProducer} to send the reply.
  *
  */
-public class BaseContentTransformerComponent extends AbstractComponent<ContentTransformerWorker>
+public class BaseContentTransformerComponent
+    extends AbstractAsyncComponent<ContentTransformerWorker, TransformationRequest, TransformationReply>
 {
     private static final Log logger = LogFactory.getLog(BaseContentTransformerComponent.class);
 
-    protected void onReceiveImpl(Object message)
+    protected void processRequest(TransformationRequest request)
     {
-        TransformationRequest request = (TransformationRequest) message;
         logger.info("Processing transformation request " + request.getRequestId());
         ContentTransformerWorkerProgressReporterImpl progressReporter =
                 new ContentTransformerWorkerProgressReporterImpl(request);

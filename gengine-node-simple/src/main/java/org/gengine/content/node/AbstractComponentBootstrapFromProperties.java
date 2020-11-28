@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Properties;
+import java.util.concurrent.Executors;
 
 import org.gengine.content.AbstractComponent;
 import org.gengine.content.ContentWorker;
@@ -126,6 +127,8 @@ public abstract class AbstractComponentBootstrapFromProperties<W extends Content
 
         AbstractComponent<W> component = createComponent();
         component.setWorker(worker);
+        // TODO allow more config
+        component.setExecutorService(Executors.newCachedThreadPool());
 
         AmqpDirectEndpoint endpoint =
                 AmqpNodeBootstrapUtils.createEndpoint(component, properties);
@@ -135,6 +138,7 @@ public abstract class AbstractComponentBootstrapFromProperties<W extends Content
         }
 
         component.setMessageProducer(endpoint);
+        component.init();
 
         logger.debug("Initialized component " + component.toString());
 

@@ -1,5 +1,7 @@
 package org.gengine.content;
 
+import java.util.concurrent.ExecutorService;
+
 import org.gengine.messaging.MessageProducer;
 
 /**
@@ -11,6 +13,7 @@ public abstract class AbstractComponent<W extends ContentWorker> implements Comp
 {
     protected W worker;
     protected MessageProducer messageProducer;
+    protected ExecutorService executorService;
 
     /**
      * Sets the transformer worker which does the actual work of the transformation
@@ -30,6 +33,17 @@ public abstract class AbstractComponent<W extends ContentWorker> implements Comp
     public void setMessageProducer(MessageProducer messageProducer)
     {
         this.messageProducer = messageProducer;
+    }
+
+    /**
+     * Sets the executor service components may optionally need for running
+     * separate threads.
+     *
+     * @param executorService
+     */
+    public void setExecutorService(ExecutorService executorService)
+    {
+        this.executorService = executorService;
     }
 
     public void init()
