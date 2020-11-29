@@ -98,4 +98,10 @@ public abstract class AbstractTransformationSourceOptions implements Transformat
         }
     }
 
+    @Override
+    public String toString()
+    {
+        return TransformationOptionsImpl.toString(this);
+    }
+
 }

@@ -64,6 +64,7 @@ public class ImageTransformationOptions extends TransformationOptionsImpl
      * @return Will the image be automatically oriented(rotated) based on the EXIF "Orientation" data.
      * Defaults to TRUE
      */
+    @ToStringProperty
     public boolean isAutoOrient()
     {
         return this.autoOrient;
@@ -77,4 +78,18 @@ public class ImageTransformationOptions extends TransformationOptionsImpl
         this.autoOrient = autoOrient;
     }
 
+    @Override
+    public String toString()
+    {
+        StringBuilder output = new StringBuilder();
+        output.append(TO_STR_OBJ_START);
+        output.append("\"").append("resizeOptions").append("\"").append(TO_STR_KEY_VAL).
+            append(TO_STR_OBJ_START).append(toString(getResizeOptions())).append(TO_STR_OBJ_END);
+        output.append(TO_STR_DEL);
+        output.append(toString(this));
+        output.append(TO_STR_DEL);
+        output.append(toStringSourceOptions());
+        output.append(TO_STR_OBJ_END);
+        return output.toString();
+    }
 }

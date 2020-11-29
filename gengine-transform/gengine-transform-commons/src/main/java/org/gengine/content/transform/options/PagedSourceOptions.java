@@ -69,6 +69,7 @@ public class PagedSourceOptions extends AbstractTransformationSourceOptions
      *
      * @return the start page number
      */
+    @ToStringProperty
     public Integer getStartPageNumber()
     {
         return startPageNumber;
@@ -89,6 +90,7 @@ public class PagedSourceOptions extends AbstractTransformationSourceOptions
      *
      * @return the start page number
      */
+    @ToStringProperty
     public Integer getEndPageNumber()
     {
         return endPageNumber;

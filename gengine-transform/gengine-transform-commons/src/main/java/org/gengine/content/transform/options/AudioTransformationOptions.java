@@ -24,6 +24,7 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
      *
      * @return the target audio codec
      */
+    @ToStringProperty
     public String getTargetAudioCodec()
     {
         return targetAudioCodec;
@@ -44,6 +45,7 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
      *
      * @return the target audio bitrate
      */
+    @ToStringProperty
     public Long getTargetAudioBitrate()
     {
         return targetAudioBitrate;
@@ -64,6 +66,7 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
      *
      * @return the target audio sampling rate
      */
+    @ToStringProperty
     public Integer getTargetAudioSamplingRate()
     {
         return targetAudioSamplingRate;
@@ -84,6 +87,7 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
      *
      * @return the number of target audio channels
      */
+    @ToStringProperty
     public Integer getTargetAudioChannels()
     {
         return targetAudioChannels;
@@ -104,6 +108,7 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
      *
      * @return true if moving the moov atom should be attempted
      */
+    @ToStringProperty
     public boolean getTargetFastStartEnabled()
     {
         return targetFastStartEnabled;
@@ -117,6 +122,18 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
     public void setTargetFastStartEnabled(boolean targetFastStartEnabled)
     {
         this.targetFastStartEnabled = targetFastStartEnabled;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder output = new StringBuilder();
+        output.append(TO_STR_OBJ_START);
+        output.append(toString(this));
+        output.append(TO_STR_DEL);
+        output.append(toStringSourceOptions());
+        output.append(TO_STR_OBJ_END);
+        return output.toString();
     }
 
 }
