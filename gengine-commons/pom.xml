@@ -15,6 +15,7 @@
         <dependency.commons-io.version>2.4</dependency.commons-io.version>
         <dependency.commons-lang.version>2.6</dependency.commons-lang.version>
         <dependency.tika.version>1.5</dependency.tika.version>
+        <dependency.maven-artifact.version>3.2.1</dependency.maven-artifact.version>
     </properties>
 
     <dependencies>
@@ -37,6 +38,11 @@
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
             <version>${dependency.tika.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-artifact</artifactId>
+            <version>${dependency.maven-artifact.version}</version>
         </dependency>
     </dependencies>
 

@@ -5,9 +5,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.gengine.content.mediatype.FileMediaType;
 import org.gengine.content.transform.AbstractRuntimeExecContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
@@ -44,6 +47,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected static final String CMD_OPT_FORMAT = "-f";
     protected static final String CMD_OPT_DURATION = "-t";
     protected static final String CMD_OPT_OFFSET = "-ss";
+    protected static final String CMD_OPT_SIZE = "-s";
     protected static final String CMD_OPT_SCALE = "-vf scale";
     protected static final String CMD_OPT_FRAME_RATE = "-r";
     protected static final String CMD_OPT_MOV_FLAGS = "-movflags";
@@ -376,6 +380,36 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         }
     }
 
+    protected String getFfmpegVersionNumber()
+    {
+        Pattern verisonNumPattern = Pattern.compile("(FFmpeg version |ffmpeg version )((\\d|\\.)+\\d)(.*)");
+        try
+        {
+            Matcher versionNumMatcher = verisonNumPattern.matcher(this.versionDetailsString);
+            if (versionNumMatcher.find())
+            {
+                return versionNumMatcher.group(2);
+            }
+        }
+        catch (Throwable e)
+        {
+            logger.info("Could not determine version of FFmpeg: " + e.getMessage());
+        }
+        return null;
+    }
+
+    protected boolean isFilterSupported()
+    {
+        String ffmpegVersionNumber = getFfmpegVersionNumber();
+        if (ffmpegVersionNumber == null)
+        {
+            return false;
+        }
+        DefaultArtifactVersion filtersSupportedVersion = new DefaultArtifactVersion("0.7");
+        DefaultArtifactVersion thisVersion = new DefaultArtifactVersion(ffmpegVersionNumber);
+        return thisVersion.compareTo(filtersSupportedVersion) >= 0;
+    }
+
     protected String getResolution(String details)
     {
         if (details == null)
@@ -480,11 +514,22 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             }
         }
 
-        builder.append(CMD_OPT_SCALE);
-        builder.append(CMD_OPT_ASSIGNMENT);
-        builder.append(width);
-        builder.append(":");
-        builder.append(height);
+        if (isFilterSupported())
+        {
+            builder.append(CMD_OPT_SCALE);
+            builder.append(CMD_OPT_ASSIGNMENT);
+            builder.append(width);
+            builder.append(":");
+            builder.append(height);
+        }
+        else
+        {
+            builder.append(CMD_OPT_SIZE);
+            builder.append(CMD_OPT_ASSIGNMENT);
+            builder.append(width);
+            builder.append("x");
+            builder.append(height);
+        }
 
         return builder.toString();
     }
