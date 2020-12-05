@@ -32,7 +32,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
 {
     private static final Log logger = LogFactory.getLog(FfmpegContentTransformerWorker.class);
 
-    protected static final String CMD_OPT_ASSIGNMENT = "=";
+    protected static final String CMD_OPT_ASSIGNMENT = " ";
+    protected static final String CMD_OPT_PARAM_ASSIGNMENT = "=";
     protected static final String CMD_OPT_DELIMITER = " ";
     protected static final String CMD_OPT_NUM_VIDEO_FRAMES = "-vframes";
     protected static final String CMD_OPT_DISABLE_AUDIO = "-an";
@@ -517,7 +518,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         if (isFilterSupported())
         {
             builder.append(CMD_OPT_SCALE);
-            builder.append(CMD_OPT_ASSIGNMENT);
+            builder.append(CMD_OPT_PARAM_ASSIGNMENT);
             builder.append(width);
             builder.append(":");
             builder.append(height);
