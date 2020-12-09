@@ -39,10 +39,14 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected static final String CMD_OPT_DISABLE_AUDIO = "-an";
     protected static final String CMD_OPT_DISABLE_VIDEO = "-vn";
     protected static final String CMD_OPT_DISABLE_SUBTITLES = "-sn";
-    protected static final String CMD_OPT_VIDEO_CODEC = "-c:v";
-    protected static final String CMD_OPT_VIDEO_BITRATE = "-b:v";
-    protected static final String CMD_OPT_AUDIO_CODEC = "-c:a";
-    protected static final String CMD_OPT_AUDIO_BITRATE = "-b:a";
+    protected static final String CMD_OPT_VIDEO_CODEC_v0 = "-vcodec";
+    protected static final String CMD_OPT_VIDEO_CODEC_v1 = "-c:v";
+    protected static final String CMD_OPT_VIDEO_BITRATE_v0 = "-vb";
+    protected static final String CMD_OPT_VIDEO_BITRATE_v1 = "-b:v";
+    protected static final String CMD_OPT_AUDIO_CODEC_v0 = "-acodec";
+    protected static final String CMD_OPT_AUDIO_CODEC_v1 = "-c:a";
+    protected static final String CMD_OPT_AUDIO_BITRATE_v0 = "-ab";
+    protected static final String CMD_OPT_AUDIO_BITRATE_v1 = "-b:a";
     protected static final String CMD_OPT_AUDIO_SAMPLING_RATE = "-ar";
     protected static final String CMD_OPT_AUDIO_CHANNELS = "-ac";
     protected static final String CMD_OPT_FORMAT = "-f";
@@ -411,6 +415,18 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         return thisVersion.compareTo(filtersSupportedVersion) >= 0;
     }
 
+    protected boolean isVersion1()
+    {
+        String ffmpegVersionNumber = getFfmpegVersionNumber();
+        if (ffmpegVersionNumber == null)
+        {
+            return false;
+        }
+        DefaultArtifactVersion version1 = new DefaultArtifactVersion("1.0");
+        DefaultArtifactVersion thisVersion = new DefaultArtifactVersion(ffmpegVersionNumber);
+        return thisVersion.compareTo(version1) >= 0;
+    }
+
     protected String getResolution(String details)
     {
         if (details == null)
@@ -564,6 +580,26 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         return null;
     }
 
+    protected String getCmdOptVideoBitrate()
+    {
+        return (isVersion1() ? CMD_OPT_VIDEO_BITRATE_v1 : CMD_OPT_VIDEO_BITRATE_v0);
+    }
+
+    protected String getCmdOptVideoCodec()
+    {
+        return (isVersion1() ? CMD_OPT_VIDEO_CODEC_v1 : CMD_OPT_VIDEO_CODEC_v0);
+    }
+
+    protected String getCmdOptAudioBitrate()
+    {
+        return (isVersion1() ? CMD_OPT_AUDIO_BITRATE_v1 : CMD_OPT_AUDIO_BITRATE_v0);
+    }
+
+    protected String getCmdOptAudioCodec()
+    {
+        return (isVersion1() ? CMD_OPT_AUDIO_CODEC_v1 : CMD_OPT_AUDIO_CODEC_v0);
+    }
+
     protected String getTargetVideoCommandOptions(TransformationOptions options)
     {
         String commandOptions = "";
@@ -587,12 +623,12 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         if (videoBitrate != null)
         {
             commandOptions = commandOptions + CMD_OPT_DELIMITER +
-                    CMD_OPT_VIDEO_BITRATE + CMD_OPT_DELIMITER + (videoBitrate / 1000) + "k";
+                    getCmdOptVideoBitrate() + CMD_OPT_DELIMITER + (videoBitrate / 1000) + "k";
         }
         if (videoCodec != null)
         {
             commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
-                    CMD_OPT_VIDEO_CODEC + CMD_OPT_DELIMITER + getFfmpegVideoCodec(videoCodec);
+                    getCmdOptVideoCodec() + CMD_OPT_DELIMITER + getFfmpegVideoCodec(videoCodec);
         }
         return commandOptions.trim();
     }
@@ -657,7 +693,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         if (audioBitrate != null)
         {
             commandOptions = commandOptions +
-                    CMD_OPT_AUDIO_BITRATE + CMD_OPT_DELIMITER + (audioBitrate / 1000) + "k";
+                    getCmdOptAudioBitrate() + CMD_OPT_DELIMITER + (audioBitrate / 1000) + "k";
         }
         if (audioSamplingRate != null)
         {
@@ -672,7 +708,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         if (audioCodec != null)
         {
             commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
-                    CMD_OPT_AUDIO_CODEC + CMD_OPT_DELIMITER + getFfmpegAudioCodec(audioCodec);
+                    getCmdOptAudioCodec() + CMD_OPT_DELIMITER + getFfmpegAudioCodec(audioCodec);
         }
         if (fastStartEnabled)
         {

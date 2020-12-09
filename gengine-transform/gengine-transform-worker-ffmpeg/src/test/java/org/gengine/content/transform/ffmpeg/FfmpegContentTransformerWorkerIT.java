@@ -69,7 +69,7 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
     {
         assertTrue(transformerWorker.getVersionString().contains("Gengine FFmpeg Content Transformer Worker"));
         assertTrue(transformerWorker.getVersionDetailsString().contains("ffmpeg version") ||
-                transformerWorker.getVersionDetailsString().contains("FFmpeg 0"));
+                transformerWorker.getVersionDetailsString().contains("FFmpeg version 0"));
     }
 
     @Test
