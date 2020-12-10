@@ -376,7 +376,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
                 -1);
         if (result.getExitValue() != 0 && result.getStdErr() != null && result.getStdErr().length() > 0)
         {
-            throw new Exception("Failed to perform ffmpeg transformation: \n" + result.getStdErr());
+            throw new Exception("Failed to perform ffmpeg transformation: \n" + result.toString());
         }
         // success
         if (logger.isDebugEnabled())
