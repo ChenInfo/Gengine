@@ -43,6 +43,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected static final String CMD_OPT_VIDEO_CODEC_v1 = "-c:v";
     protected static final String CMD_OPT_VIDEO_BITRATE_v0 = "-vb";
     protected static final String CMD_OPT_VIDEO_BITRATE_v1 = "-b:v";
+    protected static final String CMD_OPT_VIDEO_PRESET = "-vpre";
     protected static final String CMD_OPT_AUDIO_CODEC_v0 = "-acodec";
     protected static final String CMD_OPT_AUDIO_CODEC_v1 = "-c:a";
     protected static final String CMD_OPT_AUDIO_BITRATE_v0 = "-ab";
@@ -58,6 +59,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected static final String CMD_OPT_MOV_FLAGS = "-movflags";
     protected static final String CMD_OPT_MOV_FLAGS_FASTSTART = "+faststart";
     protected static final String CMD_OPT_PAIR_1_FRAME = CMD_OPT_NUM_VIDEO_FRAMES + CMD_OPT_DELIMITER + "1";
+
+    protected static final String DEFAULT_VIDEO_PRESET = "default";
 
     public static final String VAR_OPTIONS = "options";
 
@@ -376,8 +379,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
                 -1);
         if (result.getExitValue() != 0 && result.getStdErr() != null && result.getStdErr().length() > 0)
         {
-            throw new Exception("Failed to perform ffmpeg transformation: \n\n" +
-                    result.toString() + "-------- Full Error --------\n" +
+            throw new Exception("Failed to perform ffmpeg transformation: \n" +
+                    result.toString() + "\n\n-------- Full Error --------\n" +
                     result.getStdErr() + "\n----------------------------\n");
         }
         // success
@@ -631,6 +634,11 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         {
             commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
                     getCmdOptVideoCodec() + CMD_OPT_DELIMITER + getFfmpegVideoCodec(videoCodec);
+            if (!isVersion1() && videoCodec.equals(VideoTransformationOptions.VIDEO_CODEC_H264))
+            {
+                commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
+                        CMD_OPT_VIDEO_PRESET + CMD_OPT_DELIMITER + DEFAULT_VIDEO_PRESET;
+            }
         }
         return commandOptions.trim();
     }
