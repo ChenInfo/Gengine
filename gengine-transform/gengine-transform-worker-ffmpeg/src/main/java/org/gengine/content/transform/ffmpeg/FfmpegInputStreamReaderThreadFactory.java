@@ -27,25 +27,30 @@ public class FfmpegInputStreamReaderThreadFactory extends InputStreamReaderThrea
 
     private static final long PROGRESS_REPORT_FREQUENCY_MS = 2000;
     protected static final Pattern DURATION_PATTERN = Pattern.compile("(?<=Duration: )[^,]*");
-    protected static final Pattern TIME_PATTERN = Pattern.compile("(?<=time=)[\\d:.]*");
+    protected static final Pattern TIME_PATTERN_V0 = Pattern.compile("(?<=time=)[\\d.]*");
+    protected static final Pattern TIME_PATTERN_V1 = Pattern.compile("(?<=time=)[\\d:.]*");
 
     /** The progress reporter */
     protected ContentTransformerWorkerProgressReporter progressReporter;
+    protected boolean isFfmpegVersion1;
 
     /**
      * Constructor specifying a progress reporter
      *
      * @param progressReporter
      */
-    public FfmpegInputStreamReaderThreadFactory(ContentTransformerWorkerProgressReporter progressReporter)
+    public FfmpegInputStreamReaderThreadFactory(
+            ContentTransformerWorkerProgressReporter progressReporter,
+            boolean isFfmpegVersion1)
     {
         this.progressReporter = progressReporter;
+        this.isFfmpegVersion1 = isFfmpegVersion1;
     }
 
     @Override
     public InputStreamReaderThread createInstance(InputStream is, Charset charset)
     {
-        return new FfmpegInputStreamReaderThread(is, charset, progressReporter);
+        return new FfmpegInputStreamReaderThread(is, charset, progressReporter, isFfmpegVersion1);
     }
 
     /**
@@ -55,15 +60,18 @@ public class FfmpegInputStreamReaderThreadFactory extends InputStreamReaderThrea
     public static class FfmpegInputStreamReaderThread extends InputStreamReaderThread
     {
         protected ContentTransformerWorkerProgressReporter progressReporter;
+        protected boolean isFfmpegVersion1;
 
         private Double durationTotalSecs;
         private long lastReportTime = 0;
 
         public FfmpegInputStreamReaderThread(InputStream is, Charset charset,
-                ContentTransformerWorkerProgressReporter progressReporter)
+                ContentTransformerWorkerProgressReporter progressReporter,
+                boolean isFfmpegVersion1)
         {
             super(is, charset);
             this.progressReporter = progressReporter;
+            this.isFfmpegVersion1 = isFfmpegVersion1;
         }
 
         @Override
@@ -125,7 +133,8 @@ public class FfmpegInputStreamReaderThreadFactory extends InputStreamReaderThrea
             }
 
             String match;
-            while (null != (match = scanner.findWithinHorizon(TIME_PATTERN, 0))) {
+            Pattern timePattern = isFfmpegVersion1 ? TIME_PATTERN_V1 : TIME_PATTERN_V0;
+            while (null != (match = scanner.findWithinHorizon(timePattern, 0))) {
                 long now = (new Date()).getTime();
                 if ((now - lastReportTime) > PROGRESS_REPORT_FREQUENCY_MS)
                 {
@@ -136,7 +145,8 @@ public class FfmpegInputStreamReaderThreadFactory extends InputStreamReaderThrea
                     }
                     try
                     {
-                        double progressTotalSecs = getTotalSeconds(match);
+                        double progressTotalSecs =
+                                isFfmpegVersion1 ? getTotalSeconds(match) : Double.parseDouble(match);
                         float progress = new Double(progressTotalSecs / durationTotalSecs).floatValue();
                         progressReporter.onTransformationProgress(progress);
                     }

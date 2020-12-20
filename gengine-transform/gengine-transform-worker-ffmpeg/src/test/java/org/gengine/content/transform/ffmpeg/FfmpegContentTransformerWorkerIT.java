@@ -41,6 +41,7 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
     private static final Log logger = LogFactory.getLog(FfmpegContentTransformerWorkerIT.class);
 
     private ContentTransformerWorker transformerWorker;
+    private boolean isFfmpegVersion1;
     private StringListProgressReporter testProgressReporter;
     private File sourceFile;
     private ContentReference source;
@@ -56,6 +57,7 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
         ((FfmpegContentTransformerWorker) transformerWorker).setTargetContentReferenceHandler(
                 contentReferenceHandler);
         ((FfmpegContentTransformerWorker) transformerWorker).initialize();
+        isFfmpegVersion1 = ((FfmpegContentTransformerWorker) transformerWorker).isVersion1();
 
         testProgressReporter = new StringListProgressReporter();
 
@@ -153,8 +155,8 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
             if (stream.matches(regex))
             {
                 matched = true;
-                break;
             }
+            message = message + "\n" + stream;
         }
         assertTrue(message, matched);
     }
@@ -231,7 +233,7 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
 
         List<String> targetStreams = testTransformation(FileMediaType.VIDEO_MP4, options);
 
-        assertSomeStreamMatches("Target resolution incorrect", targetStreams, ".*Video: .*320x180.*");
+        assertSomeStreamMatches("Target resolution incorrect, expected 320x180", targetStreams, ".*Video: .*320x180.*");
     }
 
     @Test
@@ -246,7 +248,7 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
 
         List<String> targetStreams = testTransformation(FileMediaType.VIDEO_MP4, options);
 
-        assertSomeStreamMatches("Target resolution incorrect", targetStreams, ".*Video: .*320x180.*");
+        assertSomeStreamMatches("Target resolution incorrect, expected 320x180", targetStreams, ".*Video: .*320x180.*");
     }
 
     @Test
@@ -262,7 +264,7 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
 
         List<String> targetStreams = testTransformation(FileMediaType.VIDEO_MP4, options);
 
-        assertSomeStreamMatches("Target resolution incorrect", targetStreams, ".*Video: .*396x180.*");
+        assertSomeStreamMatches("Target resolution incorrect, expected 396x180", targetStreams, ".*Video: .*396x180.*");
     }
 
     @Test
@@ -284,15 +286,18 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
 
         List<String> targetStreams = testTransformation(FileMediaType.VIDEO_MP4, options);
 
-        assertSomeStreamMatches("Target video codec incorrect", targetStreams, ".*Video: .*h264.*");
-        assertSomeStreamMatches("Target resolution incorrect", targetStreams, ".*Video: .*320x180.*");
-        assertSomeStreamMatches("Target frame rate incorrect", targetStreams, ".*Video: .*10 fps.*");
-        assertSomeStreamMatches("Target audio codec incorrect", targetStreams, ".*Audio: .*aac.*");
-        assertSomeStreamMatches("Target audio sampling rate incorrect", targetStreams, ".*Audio: .*11025 Hz.*");
-        assertSomeStreamMatches("Target audio codec incorrect", targetStreams, ".*Audio: .*stereo.*");
-        // bitrates may vary depending on presets used
-        // assertSomeStreamMatches("Target video bitrate incorrect", targetStreams, ".*Video: .*20 kb\\/s.*");
-        // assertSomeStreamMatches("Target audio bitrate incorrect", targetStreams, ".*Audio: .*22 kb\\/s.*");
+        assertSomeStreamMatches("Target video codec incorrect, expected h264", targetStreams, ".*Video: .*h264.*");
+        assertSomeStreamMatches("Target resolution incorrect, expected 320x180", targetStreams, ".*Video: .*320x180.*");
+        assertSomeStreamMatches("Target frame rate incorrect, expected 10 fps", targetStreams, ".*Video: .*10 fps.*");
+        assertSomeStreamMatches("Target audio codec incorrect, expected aac", targetStreams, ".*Audio: .*aac.*");
+        assertSomeStreamMatches("Target audio sampling rate incorrect, expected 11025 Hz", targetStreams, ".*Audio: .*11025 Hz.*");
+        assertSomeStreamMatches("Target audio channels incorrect, expected stereo", targetStreams, ".*Audio: .*stereo.*");
+        // bitrates may vary depending on presets used in ffmpeg < 1
+        if (isFfmpegVersion1)
+        {
+            assertSomeStreamMatches("Target video bitrate incorrect", targetStreams, ".*Video: .*20 kb\\/s.*");
+            assertSomeStreamMatches("Target audio bitrate incorrect", targetStreams, ".*Audio: .*22 kb\\/s.*");
+        }
 
         List<String> progressEvents = testProgressReporter.getProgressEvents();
         assertTrue(progressEvents.size() > 0);

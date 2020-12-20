@@ -375,7 +375,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         RuntimeExec.ExecutionResult result = executer.execute(
                 properties,
                 null,
-                new FfmpegInputStreamReaderThreadFactory(progressReporter),
+                new FfmpegInputStreamReaderThreadFactory(progressReporter, isVersion1()),
                 -1);
         if (result.getExitValue() != 0 && result.getStdErr() != null && result.getStdErr().length() > 0)
         {
@@ -420,7 +420,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         return thisVersion.compareTo(filtersSupportedVersion) >= 0;
     }
 
-    protected boolean isVersion1()
+    public boolean isVersion1()
     {
         String ffmpegVersionNumber = getFfmpegVersionNumber();
         if (ffmpegVersionNumber == null)
@@ -506,26 +506,6 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             logger.warn("Could not get file details: " + e.getMessage());
         }
 
-        if (isFilterSupported())
-        {
-            return getTargetResizeCommandOptionsByFilter(imageResizeOptions, aspectRatio);
-        }
-        else
-        {
-            return getTargetResizeCommandOptionsBySize(imageResizeOptions, aspectRatio);
-        }
-    }
-
-    /**
-     * Gets the resize options using the filter option
-     *
-     * @param imageResizeOptions
-     * @param aspectRatio
-     * @return the resize options
-     */
-    protected String getTargetResizeCommandOptionsByFilter(
-            ImageResizeOptions imageResizeOptions, float aspectRatio)
-    {
         StringBuilder builder = new StringBuilder(32);
         int width = imageResizeOptions.getWidth();
         int height = imageResizeOptions.getHeight();
@@ -546,6 +526,19 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
                     width = Math.round(height * aspectRatio);
                 }
             }
+            else if (!isFilterSupported())
+            {
+                if (imageResizeOptions.getHeight() < 0)
+                {
+                    width = imageResizeOptions.getWidth();
+                    height = Math.round(width * (1 / aspectRatio));
+                }
+                else
+                {
+                    height = imageResizeOptions.getHeight();
+                    width = Math.round(height * aspectRatio);
+                }
+            }
             if (height > 0 && (height % 2) != 0)
             {
                 height = height - 1;
@@ -556,59 +549,23 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             }
         }
 
-        builder.append(CMD_OPT_SCALE);
-        builder.append(CMD_OPT_PARAM_ASSIGNMENT);
-        builder.append(width);
-        builder.append(":");
-        builder.append(height);
-
-        return builder.toString();
-    }
-
-    /**
-     * Gets the resize options using the size option
-     *
-     * @param imageResizeOptions
-     * @param aspectRatio
-     * @return the resize options
-     */
-    protected String getTargetResizeCommandOptionsBySize(
-            ImageResizeOptions imageResizeOptions, float aspectRatio)
-    {
-        StringBuilder builder = new StringBuilder(32);
-        int width = 0;
-        int height = 0;
-
-        if (imageResizeOptions.getWidth() > 0 && imageResizeOptions.getHeight() > 0)
+        if (isFilterSupported())
         {
-            if (imageResizeOptions.getWidth() <= imageResizeOptions.getHeight())
-            {
-                width = imageResizeOptions.getWidth();
-                height = Math.round(width * (1 / aspectRatio));
-            }
-            else if (imageResizeOptions.getWidth() > imageResizeOptions.getHeight())
-            {
-                height = imageResizeOptions.getHeight();
-                width = Math.round(height * aspectRatio);
-            }
+            builder.append(CMD_OPT_SCALE);
+            builder.append(CMD_OPT_PARAM_ASSIGNMENT);
+            builder.append(width);
+            builder.append(":");
+            builder.append(height);
         }
-
-        if (width > 0 && height > 0)
+        else
         {
-            if ((height % 2) != 0)
-            {
-                height = height - 1;
-            }
-            if ((width % 2) != 0)
-            {
-                width = width + 1;
-            }
             builder.append(CMD_OPT_SIZE);
             builder.append(CMD_OPT_ASSIGNMENT);
             builder.append(width);
             builder.append("x");
             builder.append(height);
         }
+
         return builder.toString();
     }
 
