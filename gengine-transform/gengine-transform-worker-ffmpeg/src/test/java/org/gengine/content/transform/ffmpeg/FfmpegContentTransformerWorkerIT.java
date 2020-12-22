@@ -300,7 +300,7 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
         }
 
         List<String> progressEvents = testProgressReporter.getProgressEvents();
-        assertTrue(progressEvents.size() > 0);
+        assertTrue("Expected at least one progress event", progressEvents.size() > 0);
     }
 
     @Test

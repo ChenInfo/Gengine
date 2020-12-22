@@ -126,7 +126,8 @@ public class FfmpegInputStreamReaderThreadFactory extends InputStreamReaderThrea
                 }
                 catch (Exception e)
                 {
-                    logger.info("could not report progress: " + e.getMessage());
+                    logger.debug("could not get duration for progress reporting from '" +
+                            duration + "' with isFfmpegVersions=" + isFfmpegVersion1 + ": " + e.getMessage());
                     scanner.close();
                     return;
                 }
@@ -152,7 +153,8 @@ public class FfmpegInputStreamReaderThreadFactory extends InputStreamReaderThrea
                     }
                     catch (Exception e)
                     {
-                        logger.info("could not report progress: " + e.getMessage());
+                        logger.debug("could not get progress for reporting from'" + match
+                                + "' with isFfmpegVersions=" + isFfmpegVersion1 + ": " + e.getMessage());
                     }
                     lastReportTime = (new Date()).getTime();
                 }
