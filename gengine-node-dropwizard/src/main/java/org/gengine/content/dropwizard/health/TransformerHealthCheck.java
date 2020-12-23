@@ -28,7 +28,12 @@ public class TransformerHealthCheck extends HealthCheck
             return Result.unhealthy("AMQP endpoint could not be initialized, "
                     + "please check the logs for additional information");
         }
-        return Result.healthy();
+        String message = null;
+        if (component.getLastRequest() != null)
+        {
+            message = "lastRequest=" + component.getLastRequest().getRequestId();
+        }
+        return Result.healthy(message);
     }
 
 }

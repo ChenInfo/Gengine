@@ -20,8 +20,24 @@ public class BaseContentTransformerComponent
 {
     private static final Log logger = LogFactory.getLog(BaseContentTransformerComponent.class);
 
+    protected TransformationRequest lastRequest;
+
+    /**
+     * Gets the last transformation request received.
+     * <p>
+     * This is simply the last request, stored in-memory, with no indication
+     * as to it's status, it may have been completed days ago.
+     *
+     * @return the last request received
+     */
+    public TransformationRequest getLastRequest()
+    {
+        return lastRequest;
+    }
+
     protected void processRequest(TransformationRequest request)
     {
+        lastRequest = request;
         logger.info("Processing transformation request " + request.getRequestId());
         ContentTransformerWorkerProgressReporterImpl progressReporter =
                 new ContentTransformerWorkerProgressReporterImpl(request);
