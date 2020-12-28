@@ -40,6 +40,11 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
 {
     private static final Log logger = LogFactory.getLog(FfmpegContentTransformerWorkerIT.class);
 
+    protected static final String TEST_RESOURCE_CLASSPATH = "/quick/quick.mpg";
+    protected static final String TEST_RESOURCE_MEDIATYPE = "video/mpeg";
+    protected static final String TEST_RESOURCE_1080_CLASSPATH = "/quick/quick-1080.mov";
+    protected static final String TEST_RESOURCE_1080_MEDIATYPE = "video/quicktime";
+
     private ContentTransformerWorker transformerWorker;
     private boolean isFfmpegVersion1;
     private StringListProgressReporter testProgressReporter;
@@ -61,9 +66,9 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
 
         testProgressReporter = new StringListProgressReporter();
 
-        sourceFile = new File(this.getClass().getResource("/quick/quick.mpg").toURI());
+        sourceFile = new File(this.getClass().getResource(TEST_RESOURCE_CLASSPATH).toURI());
         source = new ContentReference(
-                sourceFile.toURI().toString(), "video/mpeg", sourceFile.length());
+                sourceFile.toURI().toString(), TEST_RESOURCE_MEDIATYPE, sourceFile.length());
     }
 
     @Test
@@ -270,6 +275,11 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
     @Test
     public void testProxyTransformation() throws Exception
     {
+        // Override with a higher res file so we can detect progress
+        sourceFile = new File(this.getClass().getResource(TEST_RESOURCE_1080_CLASSPATH).toURI());
+        source = new ContentReference(
+                sourceFile.toURI().toString(), TEST_RESOURCE_1080_MEDIATYPE, sourceFile.length());
+
         ImageResizeOptions resizeOptions = new ImageResizeOptions();
         resizeOptions.setHeight(180);
         resizeOptions.setWidth(396);
@@ -292,11 +302,11 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
         assertSomeStreamMatches("Target audio codec incorrect, expected aac", targetStreams, ".*Audio: .*aac.*");
         assertSomeStreamMatches("Target audio sampling rate incorrect, expected 11025 Hz", targetStreams, ".*Audio: .*11025 Hz.*");
         assertSomeStreamMatches("Target audio channels incorrect, expected stereo", targetStreams, ".*Audio: .*stereo.*");
-        // bitrates may vary depending on presets used in ffmpeg < 1
+        // bitrates may vary, particularly depending on presets used in ffmpeg < 1, but should not be over 100 kb/s
         if (isFfmpegVersion1)
         {
-            assertSomeStreamMatches("Target video bitrate incorrect", targetStreams, ".*Video: .*20 kb\\/s.*");
-            assertSomeStreamMatches("Target audio bitrate incorrect", targetStreams, ".*Audio: .*22 kb\\/s.*");
+            assertSomeStreamMatches("Target video bitrate incorrect", targetStreams, ".*Video: .*, \\d\\d kb\\/s.*");
+            assertSomeStreamMatches("Target audio bitrate incorrect", targetStreams, ".*Audio: .*, \\d\\d kb\\/s.*");
         }
 
         List<String> progressEvents = testProgressReporter.getProgressEvents();
