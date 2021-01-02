@@ -58,6 +58,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected static final String CMD_OPT_FRAME_RATE = "-r";
     protected static final String CMD_OPT_MOV_FLAGS = "-movflags";
     protected static final String CMD_OPT_MOV_FLAGS_FASTSTART = "+faststart";
+    protected static final String CMD_OPT_ENABLE_EXPERIMENTAL = "-strict experimental";
     protected static final String CMD_OPT_PAIR_1_FRAME = CMD_OPT_NUM_VIDEO_FRAMES + CMD_OPT_DELIMITER + "1";
 
     protected static final String DEFAULT_VIDEO_PRESET = "default";
@@ -672,14 +673,15 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             {
                 return "libfaac";
             }
-            if (versionDetailsString.contains("aac"))
-            {
-                return "aac";
-            }
             if (versionDetailsString.contains("libvo-aacenc"))
             {
                 return "libvo_aacenc";
             }
+            if (versionDetailsString.contains("aac"))
+            {
+                return "aac" + CMD_OPT_DELIMITER + CMD_OPT_ENABLE_EXPERIMENTAL;
+            }
+
         }
         if (AudioTransformationOptions.AUDIO_CODEC_MP3.equals(gengineAudioCodec))
         {
