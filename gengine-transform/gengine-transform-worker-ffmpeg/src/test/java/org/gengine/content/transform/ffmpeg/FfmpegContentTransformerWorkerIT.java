@@ -328,9 +328,9 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
         catch (Exception e)
         {
             assertTrue("Expected message about codec support "
-                    + "(Only VP8 video and Vorbis audio are supported for WebM) "
+                    + "(.*Only VP8.*are supported.*) "
                     + "but received: " +  e.getMessage(),
-                    e.getMessage().contains("Only VP8 video and Vorbis audio are supported for WebM"));
+                    e.getMessage().matches(".*Only VP8.*are supported.*"));
         }
     }
 
