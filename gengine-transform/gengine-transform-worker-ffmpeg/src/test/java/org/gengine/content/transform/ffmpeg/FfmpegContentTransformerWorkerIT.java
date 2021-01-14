@@ -330,7 +330,7 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
             assertTrue("Expected message about codec support "
                     + "(.*Only VP8.*are supported.*) "
                     + "but received: " +  e.getMessage(),
-                    e.getMessage().matches(".*Only VP8.*are supported.*"));
+                    e.getMessage().contains("supported for WebM"));
         }
     }
 
