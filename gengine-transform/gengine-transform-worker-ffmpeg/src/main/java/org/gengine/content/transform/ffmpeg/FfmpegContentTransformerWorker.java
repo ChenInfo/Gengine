@@ -356,13 +356,13 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             commandOptions = commandOptions + CMD_OPT_DELIMITER + resizeOptions;
         }
 
-        String targetVideoOptions = getTargetVideoCommandOptions(options);
+        String targetVideoOptions = getTargetVideoCommandOptions(targetMimetype, options);
         if (targetVideoOptions != null && !targetVideoOptions.equals(""))
         {
             commandOptions = commandOptions + CMD_OPT_DELIMITER + targetVideoOptions;
         }
 
-        String targetAudioOptions = getTargetAudioCommandOptions(options);
+        String targetAudioOptions = getTargetAudioCommandOptions(targetMimetype, options);
         if (targetAudioOptions != null && !targetAudioOptions.equals(""))
         {
             commandOptions = commandOptions + CMD_OPT_DELIMITER + targetAudioOptions;
@@ -619,7 +619,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         return (isVersion1() ? CMD_OPT_AUDIO_CODEC_v1 : CMD_OPT_AUDIO_CODEC_v0);
     }
 
-    protected String getTargetVideoCommandOptions(TransformationOptions options)
+    protected String getTargetVideoCommandOptions(String targetMediaType, TransformationOptions options)
     {
         String commandOptions = "";
         if (options == null)
@@ -657,13 +657,14 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         return commandOptions.trim();
     }
 
-    protected String getFfmpegAudioCodec(String gengineAudioCodec)
+    protected String getFfmpegAudioCodec(String targetMediaType, String gengineAudioCodec)
     {
         if (versionDetailsString == null)
         {
             return null;
         }
-        if (AudioTransformationOptions.AUDIO_CODEC_AAC.equals(gengineAudioCodec))
+        if (AudioTransformationOptions.AUDIO_CODEC_AAC.equals(gengineAudioCodec) ||
+                targetMediaType.equals(FileMediaType.VIDEO_M4V))
         {
             if (versionDetailsString.contains("libfdk-aac"))
             {
@@ -698,7 +699,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         return null;
     }
 
-    protected String getTargetAudioCommandOptions(TransformationOptions options)
+    protected String getTargetAudioCommandOptions(String targetMediaType, TransformationOptions options)
     {
         String commandOptions = "";
         if (options == null)
@@ -733,7 +734,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         if (audioCodec != null)
         {
             commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
-                    getCmdOptAudioCodec() + CMD_OPT_DELIMITER + getFfmpegAudioCodec(audioCodec);
+                    getCmdOptAudioCodec() + CMD_OPT_DELIMITER +
+                    getFfmpegAudioCodec(targetMediaType, audioCodec);
         }
         if (fastStartEnabled)
         {
