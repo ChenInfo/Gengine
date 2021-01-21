@@ -42,6 +42,7 @@ public class MediaTypeServiceTest
     {
         assertEquals("text/plain", FileMediaType.TEXT_PLAIN.getMediaType());
         assertEquals("application/pdf", FileMediaType.PDF.getMediaType());
+        assertEquals("video/x-m4v", FileMediaType.VIDEO_M4V.getMediaType());
     }
 
 }
