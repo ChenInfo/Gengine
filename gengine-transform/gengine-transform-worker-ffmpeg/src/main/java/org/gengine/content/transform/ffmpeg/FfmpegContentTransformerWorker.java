@@ -62,6 +62,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected static final String CMD_OPT_PAIR_1_FRAME = CMD_OPT_NUM_VIDEO_FRAMES + CMD_OPT_DELIMITER + "1";
 
     protected static final String DEFAULT_VIDEO_PRESET = "default";
+    protected static final String DEFAULT_VIDEO_PRESET_PREFIX = "libx264-";
+    protected static final String DEFAULT_VIDEO_PRESET_SUFFIX = ".ffpreset";
 
     public static final String VAR_OPTIONS = "options";
 
@@ -74,6 +76,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected static final String DEFAULT_OFFSET = "00:00:00";
 
     private String ffmpegExe = "ffmpeg";
+    private String ffmpegPresetsDir = "/usr/share/ffmpeg";
 
     @Override
     protected void initializeExecuter()
@@ -83,6 +86,10 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             if (System.getProperty("ffmpeg.exe") != null)
             {
                 ffmpegExe = System.getProperty("ffmpeg.exe");
+            }
+            if (System.getProperty("ffmpeg.presets.dir") != null)
+            {
+                ffmpegPresetsDir = System.getProperty("ffmpeg.presets.dir");
             }
             executer = new RuntimeExec();
             Map<String, String[]> commandsAndArguments = new HashMap<>();
@@ -653,10 +660,17 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
                 ((videoCodec != null && videoCodec.equals(VideoTransformationOptions.VIDEO_CODEC_H264)) ||
                 targetMediaType.equals(FileMediaType.VIDEO_M4V.getMediaType())))
         {
+            String presetFilePath = getDefaultVideoPreset();
             commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
-                    CMD_OPT_VIDEO_PRESET + CMD_OPT_DELIMITER + DEFAULT_VIDEO_PRESET;
+                    CMD_OPT_VIDEO_PRESET + CMD_OPT_DELIMITER + presetFilePath;
         }
         return commandOptions.trim();
+    }
+
+    protected String getDefaultVideoPreset()
+    {
+        return ffmpegPresetsDir + System.getProperty("file.separator") +
+                DEFAULT_VIDEO_PRESET_PREFIX + DEFAULT_VIDEO_PRESET + DEFAULT_VIDEO_PRESET_SUFFIX;
     }
 
     protected String getFfmpegAudioCodec(String targetMediaType, String gengineAudioCodec)
