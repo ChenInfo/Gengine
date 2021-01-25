@@ -648,8 +648,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         {
             commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
                     getCmdOptVideoCodec() + CMD_OPT_DELIMITER + getFfmpegVideoCodec(videoCodec);
-            if (!isVersion1() && videoCodec.equals(VideoTransformationOptions.VIDEO_CODEC_H264) ||
-                    targetMediaType.equals(FileMediaType.VIDEO_M4V.getMediaType()))
+            if (!isVersion1() && (videoCodec.equals(VideoTransformationOptions.VIDEO_CODEC_H264) ||
+                    targetMediaType.equals(FileMediaType.VIDEO_M4V.getMediaType())))
             {
                 commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
                         CMD_OPT_VIDEO_PRESET + CMD_OPT_DELIMITER + DEFAULT_VIDEO_PRESET;
@@ -732,7 +732,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
                     CMD_OPT_AUDIO_CHANNELS + CMD_OPT_DELIMITER + audioChannels;
         }
-        if (audioCodec != null)
+        if (audioCodec != null ||
+                targetMediaType.equals(FileMediaType.VIDEO_M4V.getMediaType()))
         {
             commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
                     getCmdOptAudioCodec() + CMD_OPT_DELIMITER +
