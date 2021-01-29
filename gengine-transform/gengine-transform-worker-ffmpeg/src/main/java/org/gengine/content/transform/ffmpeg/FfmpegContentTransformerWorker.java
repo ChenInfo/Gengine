@@ -629,12 +629,13 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected String getTargetVideoCommandOptions(String targetMediaType, TransformationOptions options)
     {
         String commandOptions = "";
-        if (options == null)
+        if (options == null || !(options instanceof VideoTransformationOptions))
         {
-            return null;
-        }
-        if (!(options instanceof VideoTransformationOptions))
-        {
+            if (!isVersion1() && targetMediaType.equals(FileMediaType.VIDEO_M4V.getMediaType()))
+            {
+                commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER + getVideoPresetOptions();
+                return commandOptions.trim();
+            }
             return null;
         }
         Float frameRate = ((VideoTransformationOptions) options).getTargetVideoFrameRate();
@@ -660,17 +661,16 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
                 ((videoCodec != null && videoCodec.equals(VideoTransformationOptions.VIDEO_CODEC_H264)) ||
                 targetMediaType.equals(FileMediaType.VIDEO_M4V.getMediaType())))
         {
-            String presetFilePath = getDefaultVideoPreset();
-            commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
-                    CMD_OPT_VIDEO_PRESET + CMD_OPT_DELIMITER + presetFilePath;
+            commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER + getVideoPresetOptions();
         }
         return commandOptions.trim();
     }
 
-    protected String getDefaultVideoPreset()
+    protected String getVideoPresetOptions()
     {
-        return ffmpegPresetsDir + System.getProperty("file.separator") +
+        String presetFilePath = ffmpegPresetsDir + System.getProperty("file.separator") +
                 DEFAULT_VIDEO_PRESET_PREFIX + DEFAULT_VIDEO_PRESET + DEFAULT_VIDEO_PRESET_SUFFIX;
+        return CMD_OPT_VIDEO_PRESET + CMD_OPT_DELIMITER + presetFilePath;
     }
 
     protected String getFfmpegAudioCodec(String targetMediaType, String gengineAudioCodec)
