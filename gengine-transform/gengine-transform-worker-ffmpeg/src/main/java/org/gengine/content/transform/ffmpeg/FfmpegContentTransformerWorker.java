@@ -76,7 +76,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected static final String DEFAULT_OFFSET = "00:00:00";
 
     private String ffmpegExe = "ffmpeg";
-    private String ffmpegPresetsDir = "/usr/share/ffmpeg";
+    private String ffmpegPresetsDir; // Often "/usr/share/ffmpeg"
 
     @Override
     protected void initializeExecuter()
@@ -668,9 +668,13 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
 
     protected String getVideoPresetOptions()
     {
-        String presetFilePath = ffmpegPresetsDir + System.getProperty("file.separator") +
-                DEFAULT_VIDEO_PRESET_PREFIX + DEFAULT_VIDEO_PRESET + DEFAULT_VIDEO_PRESET_SUFFIX;
-        return CMD_OPT_VIDEO_PRESET + CMD_OPT_DELIMITER + presetFilePath;
+        String preset = DEFAULT_VIDEO_PRESET;
+        if (ffmpegPresetsDir != null)
+        {
+            preset = ffmpegPresetsDir + System.getProperty("file.separator") +
+                    DEFAULT_VIDEO_PRESET_PREFIX + DEFAULT_VIDEO_PRESET + DEFAULT_VIDEO_PRESET_SUFFIX;
+        }
+        return CMD_OPT_VIDEO_PRESET + CMD_OPT_DELIMITER + preset;
     }
 
     protected String getFfmpegAudioCodec(String targetMediaType, String gengineAudioCodec)
