@@ -61,8 +61,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected static final String CMD_OPT_ENABLE_EXPERIMENTAL = "-strict experimental";
     protected static final String CMD_OPT_PAIR_1_FRAME = CMD_OPT_NUM_VIDEO_FRAMES + CMD_OPT_DELIMITER + "1";
 
-    protected static final String DEFAULT_VIDEO_PRESET = "default";
-    protected static final String DEFAULT_VIDEO_PRESET_PREFIX = "libx264-";
+    protected static final String DEFAULT_VIDEO_PRESET = "libx264-default";
+    protected static final String DEFAULT_VIDEO_PRESET_PREFIX = "";
     protected static final String DEFAULT_VIDEO_PRESET_SUFFIX = ".ffpreset";
 
     public static final String VAR_OPTIONS = "options";
