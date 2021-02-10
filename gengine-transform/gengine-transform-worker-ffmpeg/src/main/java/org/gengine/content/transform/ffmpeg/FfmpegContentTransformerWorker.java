@@ -1,6 +1,7 @@
 package org.gengine.content.transform.ffmpeg;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -219,6 +220,21 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             this.versionDetailsString = this.versionDetailsString + "\n\n" +
                     formats;
         }
+        reinitializeVersionString();
+    }
+
+    protected void reinitializeVersionString()
+    {
+        if (getProperties() == null)
+        {
+            versionString = this.getClass().getSimpleName();
+        }
+        else
+        {
+            String nameFormat = getProperties().getProperty(FRAMEWORK_PROPERTY_NAME);
+            String name = MessageFormat.format(nameFormat, getFfmpegVersionNumber());
+            versionString = name + " " + getProperties().getProperty(FRAMEWORK_PROPERTY_VERSION);
+        }
     }
 
     /**
@@ -383,7 +399,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         RuntimeExec.ExecutionResult result = executer.execute(
                 properties,
                 null,
-                new FfmpegInputStreamReaderThreadFactory(progressReporter, isVersion1()),
+                new FfmpegInputStreamReaderThreadFactory(progressReporter, isVersion1orGreater()),
                 -1);
         if (result.getExitValue() != 0 && result.getStdErr() != null && result.getStdErr().length() > 0)
         {
@@ -400,7 +416,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
 
     protected String getFfmpegVersionNumber()
     {
-        Pattern verisonNumPattern = Pattern.compile("(FFmpeg version |ffmpeg version )((\\d|\\.)+\\d)(.*)");
+        Pattern verisonNumPattern =
+                Pattern.compile("(FFmpeg version |ffmpeg version )((\\w|\\.|\\-)+)[, ](.*)");
         try
         {
             Matcher versionNumMatcher = verisonNumPattern.matcher(this.versionDetailsString);
@@ -423,17 +440,28 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         {
             return false;
         }
+        // TODO Better method than to assume nightly is greater than 1.0
+        if (ffmpegVersionNumber.startsWith("N-"))
+        {
+            return true;
+        }
         DefaultArtifactVersion filtersSupportedVersion = new DefaultArtifactVersion("0.7");
         DefaultArtifactVersion thisVersion = new DefaultArtifactVersion(ffmpegVersionNumber);
         return thisVersion.compareTo(filtersSupportedVersion) >= 0;
     }
 
-    public boolean isVersion1()
+    public boolean isVersion1orGreater()
     {
         String ffmpegVersionNumber = getFfmpegVersionNumber();
         if (ffmpegVersionNumber == null)
         {
             return false;
+        }
+
+        // TODO Better method than to assume nightly is greater than 1.0
+        if (ffmpegVersionNumber.startsWith("N-"))
+        {
+            return true;
         }
         DefaultArtifactVersion version1 = new DefaultArtifactVersion("1.0");
         DefaultArtifactVersion thisVersion = new DefaultArtifactVersion(ffmpegVersionNumber);
@@ -608,22 +636,22 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
 
     protected String getCmdOptVideoBitrate()
     {
-        return (isVersion1() ? CMD_OPT_VIDEO_BITRATE_v1 : CMD_OPT_VIDEO_BITRATE_v0);
+        return (isVersion1orGreater() ? CMD_OPT_VIDEO_BITRATE_v1 : CMD_OPT_VIDEO_BITRATE_v0);
     }
 
     protected String getCmdOptVideoCodec()
     {
-        return (isVersion1() ? CMD_OPT_VIDEO_CODEC_v1 : CMD_OPT_VIDEO_CODEC_v0);
+        return (isVersion1orGreater() ? CMD_OPT_VIDEO_CODEC_v1 : CMD_OPT_VIDEO_CODEC_v0);
     }
 
     protected String getCmdOptAudioBitrate()
     {
-        return (isVersion1() ? CMD_OPT_AUDIO_BITRATE_v1 : CMD_OPT_AUDIO_BITRATE_v0);
+        return (isVersion1orGreater() ? CMD_OPT_AUDIO_BITRATE_v1 : CMD_OPT_AUDIO_BITRATE_v0);
     }
 
     protected String getCmdOptAudioCodec()
     {
-        return (isVersion1() ? CMD_OPT_AUDIO_CODEC_v1 : CMD_OPT_AUDIO_CODEC_v0);
+        return (isVersion1orGreater() ? CMD_OPT_AUDIO_CODEC_v1 : CMD_OPT_AUDIO_CODEC_v0);
     }
 
     protected String getTargetVideoCommandOptions(String targetMediaType, TransformationOptions options)
@@ -631,7 +659,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         String commandOptions = "";
         if (options == null || !(options instanceof VideoTransformationOptions))
         {
-            if (!isVersion1() && targetMediaType.equals(FileMediaType.VIDEO_M4V.getMediaType()))
+            if (!isVersion1orGreater() && targetMediaType.equals(FileMediaType.VIDEO_M4V.getMediaType()))
             {
                 commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER + getVideoPresetOptions();
                 return commandOptions.trim();
@@ -657,7 +685,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
                     getCmdOptVideoCodec() + CMD_OPT_DELIMITER + getFfmpegVideoCodec(videoCodec);
         }
-        if (!isVersion1() &&
+        if (!isVersion1orGreater() &&
                 ((videoCodec != null && videoCodec.equals(VideoTransformationOptions.VIDEO_CODEC_H264)) ||
                 targetMediaType.equals(FileMediaType.VIDEO_M4V.getMediaType())))
         {
