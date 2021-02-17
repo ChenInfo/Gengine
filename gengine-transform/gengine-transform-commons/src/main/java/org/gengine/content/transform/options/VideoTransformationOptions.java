@@ -15,6 +15,7 @@ public class VideoTransformationOptions extends AudioTransformationOptions
     public static final String VIDEO_CODEC_VP7 = "vp7";
     public static final String VIDEO_CODEC_VP8 = "vp8";
     public static final String VIDEO_CODEC_WMV = "wmv";
+    public static final String VIDEO_CODEC_PASSTHROUGH = "PASSTHROUGH";
 
     /** Image resize options */
     private ImageResizeOptions resizeOptions;

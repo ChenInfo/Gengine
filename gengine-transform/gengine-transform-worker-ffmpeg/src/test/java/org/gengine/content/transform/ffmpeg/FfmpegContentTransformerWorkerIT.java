@@ -115,8 +115,10 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
         TemporalSourceOptions temporalSourceOptions = new TemporalSourceOptions();
         temporalSourceOptions.setOffset("00:00:00.5");
         temporalSourceOptions.setDuration("00:00:00.2");
-        TransformationOptions options = new TransformationOptionsImpl();
+        VideoTransformationOptions options = new VideoTransformationOptions();
         options.addSourceOptions(temporalSourceOptions);
+        options.setTargetAudioCodec(AudioTransformationOptions.AUDIO_CODEC_PASSTHROUGH);
+        options.setTargetVideoCodec(VideoTransformationOptions.VIDEO_CODEC_PASSTHROUGH);
 
         String sourceExtension = "mpg";
         String targetExtension = "mp4";

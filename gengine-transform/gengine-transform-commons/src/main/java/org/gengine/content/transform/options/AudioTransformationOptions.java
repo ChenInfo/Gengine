@@ -12,6 +12,7 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
     public static final String AUDIO_CODEC_MP3 = "mp3";
     public static final String AUDIO_CODEC_VORBIS = "vorbis";
     public static final String AUDIO_CODEC_WMA = "wma";
+    public static final String AUDIO_CODEC_PASSTHROUGH = "PASSTHROUGH";
 
     private String targetAudioCodec;
     private Long targetAudioBitrate;
