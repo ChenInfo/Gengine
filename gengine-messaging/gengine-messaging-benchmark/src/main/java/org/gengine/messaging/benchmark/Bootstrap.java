@@ -41,8 +41,8 @@ public class Bootstrap
 {
     private static final Log logger = LogFactory.getLog(Bootstrap.class);
 
-    protected static final String DEFAULT_QUEUE = "gengine.test.benchmark";
-    protected static final String USAGE_MESSAGE = "USAGE: brokerUrl numMessages [queue]";
+    protected static final String DEFAULT_ENDPOINT = "queue:gengine.test.benchmark";
+    protected static final String USAGE_MESSAGE = "USAGE: brokerUrl numMessages [endpoint]";
     protected static final String LOG_SEPERATOR = "--------------------------------------------------\n";
 
     private static final long CHECK_CONSUMER_COMPLETE_PERIOD_MS = 100;
@@ -58,15 +58,15 @@ public class Bootstrap
 
         int numMessages = Integer.valueOf(args[1]);
 
-        String queue = DEFAULT_QUEUE;
+        String endpoint = DEFAULT_ENDPOINT;
         if (args.length > 2)
         {
-            queue = args[2];
+            endpoint = args[2];
         }
 
         try
         {
-            runBenchmark(brokerUrl, queue, numMessages);
+            runBenchmark(brokerUrl, endpoint, numMessages);
         }
         catch (Exception e)
         {
@@ -75,28 +75,28 @@ public class Bootstrap
         }
     }
 
-    protected static void runBenchmark(final String brokerUrl, final String queue, int numMessages) throws Exception
+    protected static void runBenchmark(final String brokerUrl, final String endpoint, int numMessages) throws Exception
     {
 
         BenchmarkConsumer messageConsumer = new BenchmarkConsumer();
-        MessageProducer endpoint = null;
+        MessageProducer producer = null;
 
         if (brokerUrl.startsWith("tcp") || brokerUrl.startsWith("failover"))
         {
             logger.debug("Initializing Camel Endpoint");
-            endpoint = initializeCamelEndpoint(brokerUrl, queue, messageConsumer);
+            producer = initializeCamelEndpoint(brokerUrl, endpoint, messageConsumer);
         }
         else if (brokerUrl.startsWith("amqp"))
         {
             logger.debug("Initializing AmqpDirect Endpoint");
-            endpoint = initializeAmqpDirectEndpoint(brokerUrl, queue, messageConsumer);
+            producer = initializeAmqpDirectEndpoint(brokerUrl, endpoint, messageConsumer);
         }
         else
         {
             throw new IllegalArgumentException("Unsupported transport in " + brokerUrl);
         }
 
-        logStart(numMessages, brokerUrl, queue);
+        logStart(numMessages, brokerUrl, endpoint);
 
         long start = (new Date()).getTime();
 
@@ -104,7 +104,7 @@ public class Bootstrap
         for (int i = 0; i < numMessages; i++)
         {
             BenchmarkMessage message = BenchmarkMessage.createInstance();
-            endpoint.send(message);
+            producer.send(message);
             if (i > 0 && i % BenchmarkConsumer.LOG_AFTER_NUM_MESSAGES == 0)
             {
                 logger.debug("Sent " + (i + 1) + " messages...");
@@ -138,22 +138,22 @@ public class Bootstrap
         long end = (new Date()).getTime();
         long receiveTime = end - start;
 
-        logStatistics(endpoint, numMessages, sendTime, receiveTime);
+        logStatistics(producer, numMessages, sendTime, receiveTime);
         System.exit(0);
     }
 
     /**
      * Initializes a Camel context and configures routes and object marshaling with the given
-     * brokerUrl, queue, and messageConsumer.
+     * brokerUrl, enpoint, and messageConsumer.
      *
      * @param brokerUrl
-     * @param queue
+     * @param endpoint
      * @param messageConsumer
      * @return the Gengine message producer
      * @throws Exception
      */
     protected static MessageProducer initializeCamelEndpoint(
-            final String brokerUrl, final String queue, final MessageConsumer messageConsumer) throws Exception
+            final String brokerUrl, final String endpoint, final MessageConsumer messageConsumer) throws Exception
     {
         CamelContext context = new DefaultCamelContext();
 
@@ -168,8 +168,8 @@ public class Bootstrap
 
         context.addRoutes(new RouteBuilder() {
             public void configure() {
-                from("amqp:queue:" + queue).unmarshal(dataFormat).bean(messageConsumer, "onReceive");
-                from("direct:benchmark.test").marshal(dataFormat).to("amqp:queue:" + queue);
+                from("amqp:" + endpoint).unmarshal(dataFormat).bean(messageConsumer, "onReceive");
+                from("direct:benchmark.test").marshal(dataFormat).to("amqp:" + endpoint);
             }
         });
 
@@ -184,25 +184,25 @@ public class Bootstrap
 
     /**
      * Initializes a Qpid-based AMQP endpoint with no object marshaling with given
-     * brokerUrl, queue, and messageConsumer.
+     * brokerUrl, endpoint, and messageConsumer.
      *
      * @param brokerUrl
-     * @param queue
+     * @param endpoint
      * @param messageConsumer
      * @return the Gengine message producer
      */
     protected static MessageProducer initializeAmqpDirectEndpoint(
-            final String brokerUrl, final String queue, final MessageConsumer messageConsumer)
+            final String brokerUrl, final String endpoint, final MessageConsumer messageConsumer)
     {
-        AmqpDirectEndpoint endpoint =
-                AmqpNodeBootstrapUtils.createEndpoint(messageConsumer, brokerUrl, null, null, queue, queue);
+        AmqpDirectEndpoint amqpEndpoint =
+                AmqpNodeBootstrapUtils.createEndpoint(messageConsumer, brokerUrl, null, null, endpoint, endpoint);
 
         // Start listener
         ExecutorService executorService = Executors.newCachedThreadPool();
-        executorService.execute(endpoint.getListener());
+        executorService.execute(amqpEndpoint.getListener());
 
         // Wait for listener initialization
-        while (!endpoint.isInitialized())
+        while (!amqpEndpoint.isInitialized())
         {
             try
             {
@@ -212,7 +212,7 @@ public class Bootstrap
             {
             }
         }
-        return endpoint;
+        return amqpEndpoint;
     }
 
     /**
@@ -220,9 +220,9 @@ public class Bootstrap
      *
      * @param numMessages
      * @param brokerUrl
-     * @param queue
+     * @param endpoint
      */
-    protected static void logStart(int numMessages, String brokerUrl, String queue)
+    protected static void logStart(int numMessages, String brokerUrl, String endpoint)
     {
         System.out.println("\n\n"
                 + LOG_SEPERATOR
@@ -231,7 +231,7 @@ public class Bootstrap
                 + "Simultaneously sending and receiving..." + "\n\n"
                 + "Number of messages: " + numMessages + "\n"
                 + "Broker URL:         " + brokerUrl + "\n"
-                + "Queue:              "+ queue + "\n"
+                + "Endpoint:           "+ endpoint + "\n"
                 + LOG_SEPERATOR);
     }
 
