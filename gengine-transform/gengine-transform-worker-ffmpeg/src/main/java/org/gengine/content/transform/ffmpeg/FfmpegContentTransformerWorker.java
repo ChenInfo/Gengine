@@ -1,17 +1,20 @@
 package org.gengine.content.transform.ffmpeg;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.gengine.content.ContentReference;
 import org.gengine.content.mediatype.FileMediaType;
 import org.gengine.content.transform.AbstractRuntimeExecContentTransformerWorker;
 import org.gengine.content.transform.ContentTransformerWorkerProgressReporter;
@@ -57,10 +60,13 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected static final String CMD_OPT_SIZE = "-s";
     protected static final String CMD_OPT_SCALE = "-vf scale";
     protected static final String CMD_OPT_FRAME_RATE = "-r";
+    protected static final String CMD_OPT_FRAME_RATE_FILTER = "-vf fps=fps";
     protected static final String CMD_OPT_MOV_FLAGS = "-movflags";
     protected static final String CMD_OPT_MOV_FLAGS_FASTSTART = "+faststart";
     protected static final String CMD_OPT_ENABLE_EXPERIMENTAL = "-strict experimental";
     protected static final String CMD_OPT_PAIR_1_FRAME = CMD_OPT_NUM_VIDEO_FRAMES + CMD_OPT_DELIMITER + "1";
+    protected static final String CMD_OPT_MULTI_TARGET_INDEX_FORMATTER = "%03d";
+    protected static final String CMD_OPT_MULTI_TARGET_INDEX_REGEX = "\\\\d{3}";
 
     protected static final String DEFAULT_VIDEO_PRESET = "libx264-default";
     protected static final String DEFAULT_VIDEO_PRESET_PREFIX = "";
@@ -325,34 +331,105 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             throw new IllegalArgumentException("Only single source and target "
                     + "transformations are currently supported");
         }
-        FileContentReferencePair targetPair = targetPairs.iterator().next();
-        File targetFile = targetPair.getFile();
-        singleTransformInternal(
-                sourcePairs.iterator().next(),
-                targetPair,
-                options, progressReporter);
-        return Arrays.asList(targetFile);
-        // TODO: Other transform types, i.e.:
-        //   - Stitch multiple sources into one target
-        //   - Storyboard thumbnails: one source into multiple images
-        //   - Merge multiple images into a movie?
-        //   - Extract multiple audio tracks from a movie
-    }
 
-    protected void singleTransformInternal(
-            FileContentReferencePair sourcePair,
-            FileContentReferencePair targetPair,
-            TransformationOptions options,
-            ContentTransformerWorkerProgressReporter progressReporter) throws Exception
-    {
+        FileContentReferencePair sourcePair = sourcePairs.iterator().next();
+        FileContentReferencePair targetPair = targetPairs.iterator().next();
+
         File sourceFile = sourcePair.getFile();
         File targetFile = targetPair.getFile();
 
         String sourceMimetype = sourcePair.getContentReference().getMediaType();
         String targetMimetype = targetPair.getContentReference().getMediaType();
 
+        boolean isStoryboardThumbnailRequest =
+                isStoryboardThumbnailRequest(sourceMimetype, targetMimetype, options);
+
+        if (isStoryboardThumbnailRequest)
+        {
+            // The default target created won't work, we need a special one
+            targetContentReferenceHandler.delete(targetPair.getContentReference());
+            ContentReference multiTargetContentReference =
+                    createMultiTargetContentReference(targetMimetype);
+            List<FileContentReferencePair> multiTargetPairs =
+                    getTargetPairs(Arrays.asList(multiTargetContentReference));
+            FileContentReferencePair multiTargetPair = multiTargetPairs.iterator().next();
+            targetFile = multiTargetPair.getFile();
+        }
+
+        singleTransformInternal(
+                sourceFile, sourceMimetype,
+                targetFile, targetMimetype,
+                options, progressReporter);
+
+        if (isStoryboardThumbnailRequest)
+        {
+            File targetParent = targetFile.getParentFile();
+            final String multiTargetFilenameMatch = targetFile.getName().replaceFirst(
+                    CMD_OPT_MULTI_TARGET_INDEX_FORMATTER, CMD_OPT_MULTI_TARGET_INDEX_REGEX);
+            if (logger.isDebugEnabled())
+            {
+                logger.debug("Looking for filenames matching " + multiTargetFilenameMatch + " in " + targetParent.getAbsolutePath());
+            }
+            File[] multiTargetFiles = targetParent.listFiles(new FilenameFilter() {
+                public boolean accept(File dir, String filename) {
+                    return filename.matches(multiTargetFilenameMatch);
+                }
+            } );
+            if (logger.isDebugEnabled())
+            {
+                logger.debug("Found " + multiTargetFiles.length + " files");
+            }
+            return Arrays.asList(multiTargetFiles);
+        }
+
+        return Arrays.asList(targetFile);
+        // TODO: Other transform types, i.e.:
+        //   - Stitch multiple sources into one target
+        //   - Merge multiple images into a movie?
+        //   - Extract multiple audio tracks from a movie
+    }
+
+    protected void singleTransformInternal(
+            File sourceFile, String sourceMimetype,
+            File targetFile, String targetMimetype,
+            TransformationOptions options,
+            ContentTransformerWorkerProgressReporter progressReporter) throws Exception
+    {
         Map<String, String> properties = new HashMap<String, String>(5);
         // set properties
+        String commandOptions = getCommandOptions(
+                sourceFile, targetFile, sourceMimetype, targetMimetype, options);
+
+        properties.put(VAR_OPTIONS, commandOptions.trim());
+        properties.put(VAR_SOURCE, sourceFile.getAbsolutePath());
+        properties.put(VAR_TARGET, targetFile.getAbsolutePath());
+
+        // execute the statement
+        RuntimeExec.ExecutionResult result = executer.execute(
+                properties,
+                null,
+                new FfmpegInputStreamReaderThreadFactory(progressReporter, isVersion1orGreater()),
+                -1);
+        if (result.getExitValue() != 0 && result.getStdErr() != null && result.getStdErr().length() > 0)
+        {
+            throw new Exception("Failed to perform ffmpeg transformation: \n" +
+                    result.toString() + "\n\n-------- Full Error --------\n" +
+                    result.getStdErr() + "\n----------------------------\n");
+        }
+        // success
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("ffmpeg executed successfully: \n" + result);
+        }
+    }
+
+    protected String getCommandOptions(
+            File sourceFile,
+            File targetFile,
+            String sourceMimetype,
+            String targetMimetype,
+            TransformationOptions options) throws Exception
+    {
         String commandOptions = "";
 
         String sourceTemporalOptions = getSourceTemporalCommandOptions(sourceMimetype, targetMimetype, options);
@@ -379,7 +456,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             commandOptions = commandOptions + CMD_OPT_DELIMITER + resizeOptions;
         }
 
-        String targetVideoOptions = getTargetVideoCommandOptions(targetMimetype, options);
+        String targetVideoOptions = getTargetVideoCommandOptions(
+                sourceMimetype, targetMimetype, options);
         if (targetVideoOptions != null && !targetVideoOptions.equals(""))
         {
             commandOptions = commandOptions + CMD_OPT_DELIMITER + targetVideoOptions;
@@ -390,28 +468,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         {
             commandOptions = commandOptions + CMD_OPT_DELIMITER + targetAudioOptions;
         }
-
-        properties.put(VAR_OPTIONS, commandOptions.trim());
-        properties.put(VAR_SOURCE, sourceFile.getAbsolutePath());
-        properties.put(VAR_TARGET, targetFile.getAbsolutePath());
-
-        // execute the statement
-        RuntimeExec.ExecutionResult result = executer.execute(
-                properties,
-                null,
-                new FfmpegInputStreamReaderThreadFactory(progressReporter, isVersion1orGreater()),
-                -1);
-        if (result.getExitValue() != 0 && result.getStdErr() != null && result.getStdErr().length() > 0)
-        {
-            throw new Exception("Failed to perform ffmpeg transformation: \n" +
-                    result.toString() + "\n\n-------- Full Error --------\n" +
-                    result.getStdErr() + "\n----------------------------\n");
-        }
-        // success
-        if (logger.isDebugEnabled())
-        {
-            logger.debug("ffmpeg executed successfully: \n" + result);
-        }
+        return commandOptions;
     }
 
     protected String getFfmpegVersionNumber()
@@ -658,7 +715,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         return (isVersion1orGreater() ? CMD_OPT_AUDIO_CODEC_v1 : CMD_OPT_AUDIO_CODEC_v0);
     }
 
-    protected String getTargetVideoCommandOptions(String targetMediaType, TransformationOptions options)
+    protected String getTargetVideoCommandOptions(String sourceMediaType, String targetMediaType, TransformationOptions options)
     {
         String commandOptions = "";
         if (options == null || !(options instanceof VideoTransformationOptions))
@@ -851,7 +908,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             temporalSourceOptions = options.getSourceOptions(TemporalSourceOptions.class);
         }
         String commandOptions = "";
-        if (isSingleSourceFrameRangeRequired(sourceMimetype, targetMimetype))
+        if (isSingleSourceFrameRangeRequired(sourceMimetype, targetMimetype, options))
         {
             commandOptions = commandOptions + CMD_OPT_PAIR_1_FRAME + CMD_OPT_DELIMITER;
         }
@@ -870,6 +927,12 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
                     CMD_OPT_OFFSET + CMD_OPT_DELIMITER + temporalSourceOptions.getOffset() +
                     CMD_OPT_DELIMITER;
         }
+        if (temporalSourceOptions != null && temporalSourceOptions.getElementIntervalSeconds() != null)
+        {
+            commandOptions = commandOptions +
+                    CMD_OPT_FRAME_RATE_FILTER + CMD_OPT_PARAM_ASSIGNMENT + temporalSourceOptions.getElementIntervalSeconds() +
+                    CMD_OPT_DELIMITER;
+        }
         return commandOptions.trim();
     }
 
@@ -880,10 +943,35 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
      * @param targetMimetype
      * @return whether or not a page range must be specified for the transformer to read the target files
      */
-    protected boolean isSingleSourceFrameRangeRequired(String sourceMimetype, String targetMimetype)
+    protected boolean isSingleSourceFrameRangeRequired(String sourceMimetype, String targetMimetype, TransformationOptions options)
     {
+        if (isStoryboardThumbnailRequest(sourceMimetype, targetMimetype, options))
+        {
+            return false;
+        }
         // Need a single frame if we're transforming from video to an image
-        return (targetMimetype.startsWith(FileMediaType.PREFIX_IMAGE));
+        return targetMimetype.startsWith(FileMediaType.PREFIX_IMAGE);
+    }
+
+    /**
+     * Determines whether or not the transformation request is for storyboard
+     * thumbnails.
+     *
+     * @param sourceMimetype
+     * @param targetMimetype
+     * @param options
+     * @return true if requesting storyboard thumbnails
+     */
+    protected boolean isStoryboardThumbnailRequest(String sourceMimetype, String targetMimetype, TransformationOptions options)
+    {
+        if (!targetMimetype.startsWith(FileMediaType.PREFIX_IMAGE) || options == null ||
+                !(options instanceof VideoTransformationOptions))
+        {
+            return false;
+        }
+        TemporalSourceOptions temporalSourceOptions = options.getSourceOptions(TemporalSourceOptions.class);
+
+        return (temporalSourceOptions != null && temporalSourceOptions.getElementIntervalSeconds() != null);
     }
 
     /**
@@ -920,6 +1008,18 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected boolean disableSubtitles(String sourceMimetype, String targetMimetype)
     {
         return (targetMimetype.startsWith(FileMediaType.PREFIX_AUDIO));
+    }
+
+    protected ContentReference createMultiTargetContentReference(String mediaType)
+    {
+        String filename = this.getClass().getSimpleName() + "-target-" +
+                UUID.randomUUID().toString() + CMD_OPT_MULTI_TARGET_INDEX_FORMATTER +
+                "." + FileMediaType.SERVICE.getExtension(mediaType);
+        ContentReference multiTarget =
+                targetContentReferenceHandler.createContentReference(filename, mediaType);
+        // FFmpeg will create multiple targets, we don't need a real file here
+        targetContentReferenceHandler.delete(multiTarget);
+        return multiTarget;
     }
 
 }

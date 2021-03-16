@@ -1,5 +1,9 @@
 package org.gengine.content.transform.options;
 
+import org.gengine.util.BeanUtils;
+import org.gengine.util.CloneField;
+import org.gengine.util.ToStringProperty;
+
 /**
  * Options relating to video transformations
  *
@@ -24,6 +28,21 @@ public class VideoTransformationOptions extends AudioTransformationOptions
     private String targetVideoCodecProfile;
     private Long targetVideoBitrate;
     private Float targetVideoFrameRate;
+
+    public VideoTransformationOptions()
+    {
+        super();
+    }
+
+    public VideoTransformationOptions(VideoTransformationOptions origOptions)
+    {
+        super(origOptions);
+        setResizeOptions(origOptions.getResizeOptions());
+        setTargetVideoCodec(origOptions.getTargetVideoCodec());
+        setTargetVideoCodecProfile(origOptions.getTargetVideoCodecProfile());
+        setTargetVideoBitrate(origOptions.getTargetVideoBitrate());
+        setTargetVideoFrameRate(origOptions.getTargetVideoFrameRate());
+    }
 
     /**
      * Set the image resize options
@@ -51,6 +70,7 @@ public class VideoTransformationOptions extends AudioTransformationOptions
      * @return the target video codec
      */
     @ToStringProperty
+    @CloneField
     public String getTargetVideoCodec()
     {
         return targetVideoCodec;
@@ -73,6 +93,7 @@ public class VideoTransformationOptions extends AudioTransformationOptions
      * @return the target video codec profile
      */
     @ToStringProperty
+    @CloneField
     public String getTargetVideoCodecProfile()
     {
         return targetVideoCodecProfile;
@@ -94,6 +115,7 @@ public class VideoTransformationOptions extends AudioTransformationOptions
      * @return the target video bitrate
      */
     @ToStringProperty
+    @CloneField
     public Long getTargetVideoBitrate()
     {
         return targetVideoBitrate;
@@ -115,6 +137,7 @@ public class VideoTransformationOptions extends AudioTransformationOptions
      * @return the target video frame rate
      */
     @ToStringProperty
+    @CloneField
     public Float getTargetVideoFrameRate()
     {
         return targetVideoFrameRate;
@@ -134,14 +157,14 @@ public class VideoTransformationOptions extends AudioTransformationOptions
     public String toString()
     {
         StringBuilder output = new StringBuilder();
-        output.append(TO_STR_OBJ_START);
-        output.append("\"").append("resizeOptions").append("\"").append(TO_STR_KEY_VAL).
-            append(TO_STR_OBJ_START).append(toString(getResizeOptions())).append(TO_STR_OBJ_END);
-        output.append(TO_STR_DEL);
-        output.append(toString(this));
-        output.append(TO_STR_DEL);
+        output.append(BeanUtils.TO_STR_OBJ_START);
+        output.append("\"").append("resizeOptions").append("\"").append(BeanUtils.TO_STR_KEY_VAL).
+            append(BeanUtils.TO_STR_OBJ_START).append(BeanUtils.toString(getResizeOptions())).append(BeanUtils.TO_STR_OBJ_END);
+        output.append(BeanUtils.TO_STR_DEL);
+        output.append(BeanUtils.toString(this));
+        output.append(BeanUtils.TO_STR_DEL);
         output.append(toStringSourceOptions());
-        output.append(TO_STR_OBJ_END);
+        output.append(BeanUtils.TO_STR_OBJ_END);
         return output.toString();
     }
 

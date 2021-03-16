@@ -4,12 +4,14 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
+import org.gengine.util.Mergable;
+
 /**
  * Interface defining values of options that are passed to content transformers.  These options
  * are used during the transformation process to provide context or parameter values.
  *
  */
-public interface TransformationOptions extends Serializable
+public interface TransformationOptions extends Serializable, Mergable<TransformationOptions>
 {
 
     /**

@@ -1,5 +1,9 @@
 package org.gengine.content.transform.options;
 
+import org.gengine.util.BeanUtils;
+import org.gengine.util.CloneField;
+import org.gengine.util.ToStringProperty;
+
 
 /**
  * Image transformation options
@@ -20,6 +24,36 @@ public class ImageTransformationOptions extends TransformationOptionsImpl
     private ImageResizeOptions resizeOptions;
 
     private boolean autoOrient = true;
+
+    public ImageTransformationOptions()
+    {
+        super();
+    }
+
+    public ImageTransformationOptions(ImageTransformationOptions origOptions)
+    {
+        super(origOptions);
+        setCommandOptions(origOptions.getCommandOptions());
+        setResizeOptions(origOptions.getResizeOptions());
+        setAutoOrient(origOptions.isAutoOrient());
+    }
+
+    @Override
+    public void merge(TransformationOptions override)
+    {
+        super.merge(override);
+        ImageTransformationOptions options = (ImageTransformationOptions) override;
+        if (options.getCommandOptions() != null)
+        {
+            setCommandOptions(options.getCommandOptions());
+        }
+        if (options.getResizeOptions() != null)
+        {
+            setResizeOptions(options.getResizeOptions());
+        }
+        setAutoOrient(options.isAutoOrient());
+    }
+
     /**
      * Set the command string options
      *
@@ -35,6 +69,7 @@ public class ImageTransformationOptions extends TransformationOptionsImpl
      *
      * @return  String  the command string options
      */
+    @CloneField
     public String getCommandOptions()
     {
         return commandOptions;
@@ -55,6 +90,7 @@ public class ImageTransformationOptions extends TransformationOptionsImpl
      *
      * @return  ImageResizeOptions  image resize options
      */
+    @CloneField
     public ImageResizeOptions getResizeOptions()
     {
         return resizeOptions;
@@ -65,6 +101,7 @@ public class ImageTransformationOptions extends TransformationOptionsImpl
      * Defaults to TRUE
      */
     @ToStringProperty
+    @CloneField
     public boolean isAutoOrient()
     {
         return this.autoOrient;
@@ -82,14 +119,14 @@ public class ImageTransformationOptions extends TransformationOptionsImpl
     public String toString()
     {
         StringBuilder output = new StringBuilder();
-        output.append(TO_STR_OBJ_START);
-        output.append("\"").append("resizeOptions").append("\"").append(TO_STR_KEY_VAL).
-            append(TO_STR_OBJ_START).append(toString(getResizeOptions())).append(TO_STR_OBJ_END);
-        output.append(TO_STR_DEL);
-        output.append(toString(this));
-        output.append(TO_STR_DEL);
+        output.append(BeanUtils.TO_STR_OBJ_START);
+        output.append("\"").append("resizeOptions").append("\"").append(BeanUtils.TO_STR_KEY_VAL).
+            append(BeanUtils.TO_STR_OBJ_START).append(BeanUtils.toString(getResizeOptions())).append(BeanUtils.TO_STR_OBJ_END);
+        output.append(BeanUtils.TO_STR_DEL);
+        output.append(BeanUtils.toString(this));
+        output.append(BeanUtils.TO_STR_DEL);
         output.append(toStringSourceOptions());
-        output.append(TO_STR_OBJ_END);
+        output.append(BeanUtils.TO_STR_OBJ_END);
         return output.toString();
     }
 }

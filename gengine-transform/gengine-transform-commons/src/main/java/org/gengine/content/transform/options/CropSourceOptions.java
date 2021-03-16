@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.gengine.content.mediatype.FileMediaType;
+import org.gengine.util.CloneField;
+import org.gengine.util.ToStringProperty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -15,12 +17,33 @@ public class CropSourceOptions extends AbstractTransformationSourceOptions
 {
     private static final long serialVersionUID = -2781602556526484879L;
 
-    private int height = -1;
-    private int width = -1;
-    private int xOffset = 0;
-    private int yOffset = 0;
-    private boolean isPercentageCrop = false;
-    private String gravity = null;
+    private int height;
+    private int width;
+    private int xOffset;
+    private int yOffset;
+    private boolean isPercentageCrop;
+    private String gravity;
+
+    public CropSourceOptions()
+    {
+        super();
+        initDefaults();
+    }
+
+    public CropSourceOptions(CropSourceOptions options)
+    {
+        super(options);
+    }
+
+    protected void initDefaults()
+    {
+        this.height = -1;
+        this.width = -1;
+        this.xOffset = 0;
+        this.yOffset = 0;
+        this.isPercentageCrop = false;
+        this.gravity = null;
+    }
 
     @Override
     public boolean isApplicableForMediaType(String sourceMimetype)
@@ -38,6 +61,7 @@ public class CropSourceOptions extends AbstractTransformationSourceOptions
      * @return the height
      */
     @ToStringProperty
+    @CloneField
     public int getHeight()
     {
         return this.height;
@@ -63,6 +87,7 @@ public class CropSourceOptions extends AbstractTransformationSourceOptions
      * @return the width
      */
     @ToStringProperty
+    @CloneField
     public int getWidth()
     {
         return this.width;
@@ -88,6 +113,7 @@ public class CropSourceOptions extends AbstractTransformationSourceOptions
      * @return the xOffset
      */
     @ToStringProperty
+    @CloneField
     public int getXOffset()
     {
         return this.xOffset;
@@ -113,6 +139,7 @@ public class CropSourceOptions extends AbstractTransformationSourceOptions
      * @return the yOffset
      */
     @ToStringProperty
+    @CloneField
     public int getYOffset()
     {
         return this.yOffset;
@@ -134,6 +161,7 @@ public class CropSourceOptions extends AbstractTransformationSourceOptions
      * @return the isPercentageCrop
      */
     @ToStringProperty
+    @CloneField
     public boolean isPercentageCrop()
     {
         return this.isPercentageCrop;
@@ -165,6 +193,7 @@ public class CropSourceOptions extends AbstractTransformationSourceOptions
      * @return the gravity
      */
     @ToStringProperty
+    @CloneField
     public String getGravity()
     {
         return this.gravity;
@@ -341,5 +370,4 @@ public class CropSourceOptions extends AbstractTransformationSourceOptions
         }
 
     }
-
 }

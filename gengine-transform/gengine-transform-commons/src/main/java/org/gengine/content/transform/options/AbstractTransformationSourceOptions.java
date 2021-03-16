@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.gengine.util.CloneField;
+import org.gengine.util.BeanUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -11,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * and handles merge of options.
  *
  */
-public abstract class AbstractTransformationSourceOptions implements TransformationSourceOptions, Cloneable
+public abstract class AbstractTransformationSourceOptions implements TransformationSourceOptions
 {
 
     private static final long serialVersionUID = 2017077314384548215L;
@@ -19,12 +22,36 @@ public abstract class AbstractTransformationSourceOptions implements Transformat
     /** The list of applicable media types */
     private List<String> applicableMediaTypes;
 
+    public AbstractTransformationSourceOptions()
+    {
+        super();
+    }
+
+    /**
+     * Constructs a field copy object from the given
+     *
+     * @param origObject
+     * @return a field copy object
+     */
+    public AbstractTransformationSourceOptions(AbstractTransformationSourceOptions origObject)
+    {
+        this();
+        BeanUtils.copyFields(origObject, this, false);
+    }
+
+    @Override
+    public void merge(TransformationSourceOptions override)
+    {
+        BeanUtils.copyFields(override, this, true);
+    }
+
     /**
      * Gets the list of applicable media types
      *
      * @return the applicable media types
      */
     @JsonIgnore
+    @CloneField
     public List<String> getApplicableMediaTypes()
     {
         return applicableMediaTypes;
@@ -53,36 +80,6 @@ public abstract class AbstractTransformationSourceOptions implements Transformat
         return false;
     }
 
-    @Override
-    protected AbstractTransformationSourceOptions clone() throws CloneNotSupportedException
-    {
-        return (AbstractTransformationSourceOptions) super.clone();
-    }
-
-    /**
-     * Creates a new <code>TransformationSourceOptions</code> object from this
-     * one, merging any non-null overriding fields in the given
-     * <code>overridingOptions</code>
-     *
-     * @param overridingOptions
-     * @return a merged <code>TransformationSourceOptions</code> object
-     */
-    public TransformationSourceOptions mergedOptions(TransformationSourceOptions overridingOptions)
-    {
-        try
-        {
-            AbstractTransformationSourceOptions mergedOptions = this.clone();
-            mergedOptions.setApplicableMediaTypes(this.getApplicableMediaTypes());
-
-            return mergedOptions;
-        }
-        catch (CloneNotSupportedException e)
-        {
-            // Not thrown
-        }
-        return null;
-    }
-
     /**
      * Adds the given paramValue to the given params if it's not null.
      *
@@ -101,7 +98,7 @@ public abstract class AbstractTransformationSourceOptions implements Transformat
     @Override
     public String toString()
     {
-        return TransformationOptionsImpl.toString(this);
+        return BeanUtils.toString(this);
     }
 
 }

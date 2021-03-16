@@ -1,5 +1,9 @@
 package org.gengine.content.transform.options;
 
+import org.gengine.util.BeanUtils;
+import org.gengine.util.CloneField;
+import org.gengine.util.ToStringProperty;
+
 /**
  * Options relating to audio transformations
  *
@@ -20,12 +24,43 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
     private Integer targetAudioChannels;
     private boolean targetFastStartEnabled = true;
 
+    public AudioTransformationOptions()
+    {
+        super();
+    }
+
+    public AudioTransformationOptions(AudioTransformationOptions origOptions)
+    {
+        super(origOptions);
+        setTargetAudioCodec(origOptions.getTargetAudioCodec());
+        setTargetAudioBitrate(origOptions.getTargetAudioBitrate());
+        setTargetAudioSamplingRate(origOptions.getTargetAudioSamplingRate());
+        setTargetAudioChannels(origOptions.getTargetAudioChannels());
+        setTargetFastStartEnabled(origOptions.getTargetFastStartEnabled());
+    }
+
+    @Override
+    public void merge(TransformationOptions override)
+    {
+        super.merge(override);
+        AudioTransformationOptions options = (AudioTransformationOptions) override;
+        if (options.getTargetAudioCodec() != null)
+        {
+            setTargetAudioCodec(options.getTargetAudioCodec());
+        }
+        if (options.getTargetAudioCodec() != null)
+        {
+            setTargetAudioCodec(options.getTargetAudioCodec());
+        }
+    }
+
     /**
      * Gets the audio codec to use for the target of the transformation
      *
      * @return the target audio codec
      */
     @ToStringProperty
+    @CloneField
     public String getTargetAudioCodec()
     {
         return targetAudioCodec;
@@ -47,6 +82,7 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
      * @return the target audio bitrate
      */
     @ToStringProperty
+    @CloneField
     public Long getTargetAudioBitrate()
     {
         return targetAudioBitrate;
@@ -68,6 +104,7 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
      * @return the target audio sampling rate
      */
     @ToStringProperty
+    @CloneField
     public Integer getTargetAudioSamplingRate()
     {
         return targetAudioSamplingRate;
@@ -89,6 +126,7 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
      * @return the number of target audio channels
      */
     @ToStringProperty
+    @CloneField
     public Integer getTargetAudioChannels()
     {
         return targetAudioChannels;
@@ -110,6 +148,7 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
      * @return true if moving the moov atom should be attempted
      */
     @ToStringProperty
+    @CloneField
     public boolean getTargetFastStartEnabled()
     {
         return targetFastStartEnabled;
@@ -129,11 +168,11 @@ public class AudioTransformationOptions extends TransformationOptionsImpl
     public String toString()
     {
         StringBuilder output = new StringBuilder();
-        output.append(TO_STR_OBJ_START);
-        output.append(toString(this));
-        output.append(TO_STR_DEL);
+        output.append(BeanUtils.TO_STR_OBJ_START);
+        output.append(BeanUtils.toString(this));
+        output.append(BeanUtils.TO_STR_DEL);
         output.append(toStringSourceOptions());
-        output.append(TO_STR_OBJ_END);
+        output.append(BeanUtils.TO_STR_OBJ_END);
         return output.toString();
     }
 

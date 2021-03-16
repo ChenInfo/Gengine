@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.gengine.util.Mergable;
+
 /**
  * Defines options and demarcations needed to describe the details of how
  * the source should be transformed, independent of the target requirements.
@@ -12,7 +14,7 @@ import java.util.Map;
  * describes the page number that should be used from the source content.
  *
  */
-public interface TransformationSourceOptions extends Serializable
+public interface TransformationSourceOptions extends Serializable, Mergable<TransformationSourceOptions>
 {
 
     /**
@@ -30,16 +32,6 @@ public interface TransformationSourceOptions extends Serializable
      * @return if these transformation source options apply
      */
     public boolean isApplicableForMediaType(String mediaType);
-
-    /**
-     * Creates a new <code>TransformationSourceOptions</code> object from this
-     * one, merging any non-null overriding fields in the given
-     * <code>overridingOptions</code>
-     *
-     * @param overridingOptions
-     * @return a merged <code>TransformationSourceOptions</code> object
-     */
-    public TransformationSourceOptions mergedOptions(TransformationSourceOptions overridingOptions);
 
     /**
      * Gets the serializer for the source options.

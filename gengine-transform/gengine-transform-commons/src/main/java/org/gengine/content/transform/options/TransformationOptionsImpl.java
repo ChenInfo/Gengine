@@ -3,27 +3,23 @@ package org.gengine.content.transform.options;
 import java.beans.Introspector;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.gengine.error.GengineRuntimeException;
+import org.gengine.util.BeanUtils;
+import org.gengine.util.Mergable;
+import org.gengine.util.CloneField;
+
 /**
  * Concrete implementation of transformation options
  *
  */
-public class TransformationOptionsImpl implements TransformationOptions
+public class TransformationOptionsImpl implements TransformationOptions, Mergable<TransformationOptions>
 {
     private static final long serialVersionUID = -4466824587314591239L;
-
-    protected static final String TO_STR_KEY_VAL = ": ";
-    protected static final String TO_STR_OBJ_START = "{ ";
-    protected static final String TO_STR_OBJ_END = " }";
-    protected static final String TO_STR_SET_START = "[ ";
-    protected static final String TO_STR_SET_END = " ]";
-    protected static final String TO_STR_DEL = ", ";
 
     /** Source options based on its mimetype */
     private Map<Class<? extends TransformationSourceOptions>, TransformationSourceOptions> sourceOptionsMap;
@@ -35,6 +31,76 @@ public class TransformationOptionsImpl implements TransformationOptions
 
     /** Time, KBytes and page limits */
     private TransformationOptionLimits limits = new TransformationOptionLimits();
+
+    public TransformationOptionsImpl()
+    {
+        super();
+    }
+
+    public TransformationOptionsImpl(TransformationOptionsImpl origOptions)
+    {
+        this();
+        BeanUtils.copyFields(origOptions, this, false);
+        setSourceOptionsMap(deepCopySourceOptionsMap(origOptions.getSourceOptionsMap()));
+        if (origOptions.getAdditionalOptions() != null)
+        {
+            setAdditionalOptions(new HashMap<String, Serializable>(origOptions.getAdditionalOptions()));
+        }
+    }
+
+    @Override
+    public void merge(TransformationOptions override)
+    {
+        BeanUtils.copyFields(override, this, true);
+        if (override.getSourceOptionsMap() != null)
+        {
+            for (Class<? extends TransformationSourceOptions> overrideSourceOptionsClass : override.getSourceOptionsMap().keySet())
+            {
+                addSourceOptions(override.getSourceOptions(overrideSourceOptionsClass));
+            }
+        }
+        if (override.getAdditionalOptions() != null)
+        {
+            if (this.additionalOptions == null)
+            {
+                this.additionalOptions =
+                        new HashMap<String, Serializable>(override.getAdditionalOptions().size());
+            }
+            for (String additionalOptionKey : override.getAdditionalOptions().keySet())
+            {
+                this.additionalOptions.put(
+                        additionalOptionKey,
+                        override.getAdditionalOptions().get(additionalOptionKey));
+            }
+        }
+    }
+
+    protected Map<Class<? extends TransformationSourceOptions>, TransformationSourceOptions> deepCopySourceOptionsMap(
+            Map<Class<? extends TransformationSourceOptions>, TransformationSourceOptions> origMap)
+    {
+        if (origMap == null)
+        {
+            return null;
+        }
+        try
+        {
+            HashMap<Class<? extends TransformationSourceOptions>, TransformationSourceOptions> copyMap =
+                    new HashMap<Class<? extends TransformationSourceOptions>, TransformationSourceOptions>(origMap.size());
+            for (Class<? extends TransformationSourceOptions> origSourceOptionsClass : origMap.keySet())
+            {
+                TransformationSourceOptions origSourceOptions = origMap.get(origSourceOptionsClass);
+                TransformationSourceOptions copySourceOptions;
+                copySourceOptions = origSourceOptionsClass.getConstructor(origSourceOptionsClass).newInstance(origSourceOptions);
+                copyMap.put(origSourceOptionsClass, copySourceOptions);
+            }
+            return copyMap;
+        }
+        catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException e)
+        {
+            throw new GengineRuntimeException("Could not copy " + this.getClass().getCanonicalName(), e);
+        }
+    }
 
     @Override
     public Map<Class<? extends TransformationSourceOptions>, TransformationSourceOptions> getSourceOptionsMap()
@@ -77,16 +143,19 @@ public class TransformationOptionsImpl implements TransformationOptions
         {
             sourceOptionsMap = new HashMap<Class<? extends TransformationSourceOptions>, TransformationSourceOptions>(1);
         }
-        TransformationSourceOptions newOptions = sourceOptions;
         TransformationSourceOptions existingOptions = sourceOptionsMap.get(sourceOptions.getClass());
         if (existingOptions != null)
         {
-            newOptions = existingOptions.mergedOptions(sourceOptions);
+            existingOptions.merge(sourceOptions);
         }
-        sourceOptionsMap.put(sourceOptions.getClass(), newOptions);
+        else
+        {
+            sourceOptionsMap.put(sourceOptions.getClass(), sourceOptions);
+        }
     }
 
     @Override
+    @CloneField
     public long getTimeoutMs()
     {
         return limits.getTimeoutMs();
@@ -99,9 +168,16 @@ public class TransformationOptionsImpl implements TransformationOptions
     }
 
     @Override
+    @CloneField
     public int getPageLimit()
     {
         return limits.getPageLimit();
+    }
+
+    @Override
+    public void setPageLimit(int pageLimit)
+    {
+        limits.setPageLimit(pageLimit);
     }
 
     @Override
@@ -111,15 +187,10 @@ public class TransformationOptionsImpl implements TransformationOptions
     }
 
     @Override
+    @CloneField
     public Boolean getIncludeEmbedded()
     {
         return includeEmbedded;
-    }
-
-    @Override
-    public void setPageLimit(int pageLimit)
-    {
-        limits.setPageLimit(pageLimit);
     }
 
     @Override
@@ -145,7 +216,7 @@ public class TransformationOptionsImpl implements TransformationOptions
     protected String toStringSourceOptions()
     {
         StringBuilder output = new StringBuilder();
-        output.append("\"sourceOptions\"").append(TO_STR_KEY_VAL).append(TO_STR_OBJ_START);
+        output.append("\"sourceOptions\"").append(BeanUtils.TO_STR_KEY_VAL).append(BeanUtils.TO_STR_OBJ_START);
         if (sourceOptionsMap != null)
         {
             for (Iterator<TransformationSourceOptions> iterator = sourceOptionsMap.values().iterator(); iterator.hasNext();)
@@ -153,15 +224,15 @@ public class TransformationOptionsImpl implements TransformationOptions
                 TransformationSourceOptions sourceOptions = (TransformationSourceOptions) iterator.next();
                 output.append("\"").
                     append(Introspector.decapitalize(sourceOptions.getClass().getSimpleName())).
-                    append("\"").append(TO_STR_KEY_VAL);
-                output.append(TO_STR_OBJ_START).append(sourceOptions.toString()).append(TO_STR_OBJ_END);
+                    append("\"").append(BeanUtils.TO_STR_KEY_VAL);
+                output.append(BeanUtils.TO_STR_OBJ_START).append(sourceOptions.toString()).append(BeanUtils.TO_STR_OBJ_END);
                 if (iterator.hasNext())
                 {
-                    output.append(TO_STR_DEL);
+                    output.append(BeanUtils.TO_STR_DEL);
                 }
             }
         }
-        output.append(TO_STR_OBJ_END);
+        output.append(BeanUtils.TO_STR_OBJ_END);
         return output.toString();
     }
 
@@ -169,68 +240,11 @@ public class TransformationOptionsImpl implements TransformationOptions
     public String toString()
     {
         StringBuilder output = new StringBuilder();
-        output.append(TO_STR_OBJ_START);
+        output.append(BeanUtils.TO_STR_OBJ_START);
         output.append(toStringSourceOptions());
-        output.append(TO_STR_OBJ_END);
+        output.append(BeanUtils.TO_STR_OBJ_END);
         return output.toString();
     }
 
-    /**
-     * Builds the JSON toString of the given object through methods
-     * annotated with {@link ToStringProperty}.
-     * <p>
-     * We can't rely on a framework here because we need full serialization
-     * for messaging.
-     *
-     * @param object
-     * @return the toString representation of the object
-     */
-    protected static String toString(Object object)
-    {
-        if (object == null)
-        {
-            return "null";
-        }
-        StringBuilder builder = new StringBuilder();
-        Method[] methods = object.getClass().getMethods();
-        ArrayList<Method> annotatedMethods = new ArrayList<Method>();
-        for (int i = 0; i < methods.length; i++)
-        {
-            Method method = methods[i];
-            if (method.isAnnotationPresent(ToStringProperty.class))
-            {
-                annotatedMethods.add(method);
-            }
-        }
-        for (Iterator<Method> iterator = annotatedMethods.iterator(); iterator.hasNext();)
-        {
-            Method method = (Method) iterator.next();
 
-            Object value = "*error*";
-            try
-            {
-                value = method.invoke(object);
-            }
-            catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-            {
-            }
-            String methodName = Introspector.decapitalize(method.getName().startsWith("get") ?
-                    method.getName().replaceFirst("get",  "") : method.getName());
-
-            builder.append("\"").append(methodName).append("\"").append(TransformationOptionsImpl.TO_STR_KEY_VAL);
-            if (value instanceof String)
-            {
-                builder.append("\"").append(value).append("\"");
-            }
-            else
-            {
-                builder.append(value);
-            }
-            if (iterator.hasNext())
-            {
-                builder.append(TO_STR_DEL);
-            }
-        }
-        return builder.toString();
-    }
 }

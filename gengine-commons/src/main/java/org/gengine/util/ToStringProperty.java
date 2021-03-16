@@ -1,4 +1,4 @@
-package org.gengine.content.transform.options;
+package org.gengine.util;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

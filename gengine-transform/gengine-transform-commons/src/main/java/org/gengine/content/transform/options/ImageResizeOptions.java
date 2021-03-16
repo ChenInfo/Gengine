@@ -2,6 +2,9 @@ package org.gengine.content.transform.options;
 
 import java.io.Serializable;
 
+import org.gengine.util.BeanUtils;
+import org.gengine.util.ToStringProperty;
+
 /**
  * Image resize options
  *
@@ -109,7 +112,7 @@ public class ImageResizeOptions implements Serializable
     @Override
     public String toString()
     {
-        return TransformationOptionsImpl.toString(this);
+        return BeanUtils.toString(this);
     }
 
 }

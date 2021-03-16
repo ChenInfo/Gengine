@@ -96,12 +96,27 @@ public class FileProviderImpl implements FileProvider
     {
         try
         {
-            File tempFile = File.createTempFile(prefix, suffix, directory);
+            String filePath = directory.getAbsolutePath() + File.separator + prefix + suffix;
             if (logger.isDebugEnabled())
             {
-                logger.debug("Creating file: " + tempFile);
+                logger.debug("Creating file: " + filePath);
             }
-            return tempFile;
+            File file = new File(filePath);
+            if (file.createNewFile())
+            {
+                if (logger.isDebugEnabled())
+                {
+                    logger.debug(filePath + " created");
+                }
+            }
+            else
+            {
+                if (logger.isDebugEnabled())
+                {
+                    logger.debug(filePath + " already exists");
+                }
+            }
+            return file;
         } catch (IOException e)
         {
             throw new RuntimeException("Failed to created file: \n" +
