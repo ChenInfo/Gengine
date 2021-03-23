@@ -792,11 +792,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             {
                 return "libvo_aacenc";
             }
-            if (versionDetailsString.contains("aac"))
-            {
-                return "aac" + CMD_OPT_DELIMITER + CMD_OPT_ENABLE_EXPERIMENTAL;
-            }
-
+            return "aac" + CMD_OPT_DELIMITER + CMD_OPT_ENABLE_EXPERIMENTAL;
         }
         if (AudioTransformationOptions.AUDIO_CODEC_MP3.equals(gengineAudioCodec))
         {
