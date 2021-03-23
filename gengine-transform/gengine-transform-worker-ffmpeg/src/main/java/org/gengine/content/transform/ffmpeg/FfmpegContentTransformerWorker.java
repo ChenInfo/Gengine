@@ -842,7 +842,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
                     CMD_OPT_AUDIO_CHANNELS + CMD_OPT_DELIMITER + audioChannels;
         }
         if (audioCodec != null ||
-                targetMediaType.equals(FileMediaType.VIDEO_M4V.getMediaType()))
+                targetMediaType.equals(FileMediaType.VIDEO_M4V.getMediaType()) ||
+                targetMediaType.equals(FileMediaType.VIDEO_MP4.getMediaType()))
         {
             commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
                     getCmdOptAudioCodec() + CMD_OPT_DELIMITER +
