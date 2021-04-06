@@ -294,6 +294,10 @@ public class ImageMagickContentTransformerWorker extends AbstractRuntimeExecCont
             {
                 commandOptions = commandOptions + " -auto-orient";
             }
+            if (imageOptions.getRotationDegrees() != null)
+            {
+                commandOptions = commandOptions + " -rotate " + imageOptions.getRotationDegrees() + " -trim";
+            }
             if (cropOptions != null)
             {
                 commandOptions = commandOptions + " " + getImageCropCommandOptions(cropOptions);
