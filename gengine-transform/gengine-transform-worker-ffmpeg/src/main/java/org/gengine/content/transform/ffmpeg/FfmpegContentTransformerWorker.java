@@ -404,12 +404,19 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         properties.put(VAR_SOURCE, sourceFile.getAbsolutePath());
         properties.put(VAR_TARGET, targetFile.getAbsolutePath());
 
+        long timeoutMs = options.getTimeoutMs();
+
+        if (logger.isTraceEnabled())
+        {
+            logger.trace("Executing with timeoutMs=" + timeoutMs +
+                    ", properties=" + properties.toString());
+        }
         // execute the statement
         RuntimeExec.ExecutionResult result = executer.execute(
                 properties,
                 null,
                 new FfmpegInputStreamReaderThreadFactory(progressReporter, isVersion1orGreater()),
-                -1);
+                timeoutMs);
         if (result.getExitValue() != 0 && result.getStdErr() != null && result.getStdErr().length() > 0)
         {
             throw new Exception("Failed to perform ffmpeg transformation: \n" +

@@ -45,8 +45,10 @@ public class AmqpDirectEndpoint implements MessageProducer
     private String receiveQueueName;
     private String sendQueueName;
 
-    private Connection connection;
-    private Session session;
+    private Connection consumerConnection;
+    private Connection producerConnection;
+    private Session consumerSession;
+    private Session producerSession;
     private org.apache.qpid.amqp_1_0.jms.MessageProducer defaultMessageProducer;
 
     private MessageConsumer messageConsumer;
@@ -61,9 +63,9 @@ public class AmqpDirectEndpoint implements MessageProducer
         {
             try
             {
-                Queue receiveQueue = getSession().createQueue(receiveQueueName);
+                Queue receiveQueue = getConsumerSession().createQueue(receiveQueueName);
                 org.apache.qpid.amqp_1_0.jms.MessageConsumer receiver =
-                        getSession().createConsumer(receiveQueue);
+                        getConsumerSession().createConsumer(receiveQueue);
 
                 isInitialized = true;
 
@@ -123,7 +125,7 @@ public class AmqpDirectEndpoint implements MessageProducer
                     }
                 });
 
-                getConnection().start();
+                getConsumerConnection().start();
             }
             catch (Exception e)
             {
@@ -172,33 +174,54 @@ public class AmqpDirectEndpoint implements MessageProducer
         this.objectMapper = objectMapper;
     }
 
-    private Connection getConnection() throws JMSException
+    private Connection getConsumerConnection() throws JMSException
     {
-        if (connection == null)
+        if (consumerConnection == null)
         {
             ConnectionFactory connectionFactory =
                     new ConnectionFactoryImpl(host, port, username, password);
-            connection = connectionFactory.createConnection();
+            consumerConnection = connectionFactory.createConnection();
 
         }
-        return connection;
+        return consumerConnection;
     }
 
-    private Session getSession() throws JMSException
+    private Connection getProducerConnection() throws JMSException
     {
-        if (session == null)
+        if (producerConnection == null)
         {
-            session = getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
+            ConnectionFactory connectionFactory =
+                    new ConnectionFactoryImpl(host, port, username, password);
+            producerConnection = connectionFactory.createConnection();
+
         }
-        return session;
+        return producerConnection;
+    }
+
+    private Session getConsumerSession() throws JMSException
+    {
+        if (consumerSession == null)
+        {
+            consumerSession = getConsumerConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
+        }
+        return consumerSession;
+    }
+
+    private Session getProducerSession() throws JMSException
+    {
+        if (producerSession == null)
+        {
+            producerSession = getProducerConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
+        }
+        return producerSession;
     }
 
     private org.apache.qpid.amqp_1_0.jms.MessageProducer getDefaultMessageProducer() throws JMSException
     {
         if (defaultMessageProducer == null)
         {
-            Queue sendQueue = getSession().createQueue(sendQueueName);
-            defaultMessageProducer = getSession().createProducer(sendQueue);
+            Queue sendQueue = getProducerSession().createQueue(sendQueueName);
+            defaultMessageProducer = getProducerSession().createProducer(sendQueue);
         }
         return defaultMessageProducer;
     }
@@ -209,8 +232,8 @@ public class AmqpDirectEndpoint implements MessageProducer
         {
             return getDefaultMessageProducer();
         }
-        Queue queue = getSession().createQueue(queueName);
-        return getSession().createProducer(queue);
+        Queue queue = getProducerSession().createQueue(queueName);
+        return getProducerSession().createProducer(queue);
     }
 
     public void send(Object message) {
@@ -242,7 +265,7 @@ public class AmqpDirectEndpoint implements MessageProducer
                 queueName = sendQueueName;
             }
 
-            TextMessage textMessage = getSession().createTextMessage(stringMessage);
+            TextMessage textMessage = getProducerSession().createTextMessage(stringMessage);
 
             if (logger.isTraceEnabled())
             {

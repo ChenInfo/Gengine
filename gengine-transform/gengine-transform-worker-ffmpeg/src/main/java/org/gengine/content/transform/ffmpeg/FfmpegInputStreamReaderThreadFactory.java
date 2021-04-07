@@ -149,6 +149,11 @@ public class FfmpegInputStreamReaderThreadFactory extends InputStreamReaderThrea
                         double progressTotalSecs =
                                 isFfmpegVersion1 ? getTotalSeconds(match) : Double.parseDouble(match);
                         float progress = new Double(progressTotalSecs / durationTotalSecs).floatValue();
+                        if (progress > 1.0)
+                        {
+                            // That's just silly, we're probably done
+                            break;
+                        }
                         progressReporter.onTransformationProgress(progress);
                     }
                     catch (Exception e)
