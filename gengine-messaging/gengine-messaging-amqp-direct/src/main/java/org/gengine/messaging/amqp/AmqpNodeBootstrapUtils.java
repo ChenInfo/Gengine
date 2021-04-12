@@ -34,9 +34,9 @@ public class AmqpNodeBootstrapUtils
     public static AmqpDirectEndpoint createEndpoint(MessageConsumer messageConsumer,
             String brokerUrl,
             String brokerUsername, String brokerPassword,
-            String requestQueueName, String replyQueueName)
+            String requestEndpoint, String replyEndpoint)
     {
-        validate(brokerUrl, requestQueueName, replyQueueName);
+        validate(brokerUrl, requestEndpoint, replyEndpoint);
 
         AmqpDirectEndpoint messageProducer = new AmqpDirectEndpoint();
         ObjectMapper objectMapper = ObjectMapperFactory.createInstance();
@@ -65,8 +65,8 @@ public class AmqpNodeBootstrapUtils
         {
             ((AmqpDirectEndpoint) messageProducer).setPassword(brokerPassword);
         }
-        ((AmqpDirectEndpoint) messageProducer).setReceiveQueueName(requestQueueName);
-        ((AmqpDirectEndpoint) messageProducer).setSendQueueName(replyQueueName);
+        ((AmqpDirectEndpoint) messageProducer).setReceiveEndpoint(requestEndpoint);
+        ((AmqpDirectEndpoint) messageProducer).setSendEndpoint(replyEndpoint);
 
 
         ((AmqpDirectEndpoint) messageProducer).setMessageConsumer(messageConsumer);
@@ -92,8 +92,8 @@ public class AmqpNodeBootstrapUtils
             String brokerUrl, String requestQueueName, String replyQueueName)
     {
         if (StringUtils.isEmpty(brokerUrl) ||
-                StringUtils.isEmpty(requestQueueName) ||
-                StringUtils.isEmpty(replyQueueName))
+                (StringUtils.isEmpty(requestQueueName) &&
+                StringUtils.isEmpty(replyQueueName)))
         {
             throw new IllegalArgumentException(
                     "brokerUrl, requestQueueName, and replyQueueName must not be empty");

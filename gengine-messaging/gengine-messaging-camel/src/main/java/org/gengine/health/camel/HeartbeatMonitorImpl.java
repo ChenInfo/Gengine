@@ -3,9 +3,9 @@ package org.gengine.health.camel;
 import org.apache.camel.Handler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.gengine.health.Heartbeat;
-import org.gengine.health.HeartbeatDao;
-import org.gengine.health.HeartbeatMonitor;
+import org.gengine.health.heartbeat.Heartbeat;
+import org.gengine.health.heartbeat.HeartbeatDao;
+import org.gengine.health.heartbeat.HeartbeatMonitor;
 
 /**
  * HeartbeatMonitor implementation which uses Camel to route {@link Heartbeat}
@@ -34,9 +34,8 @@ public class HeartbeatMonitorImpl implements HeartbeatMonitor
     {
         if (!(message instanceof Heartbeat))
         {
-           logger.info("Heartbeat message expected but received: " + message.toString());
-           message = new Heartbeat("bogus: " + message.toString(), null);
-           //return;
+           logger.warn("Heartbeat message expected but received: " + message.toString());
+           return;
         }
         heartbeatDao.record((Heartbeat) message);
     }

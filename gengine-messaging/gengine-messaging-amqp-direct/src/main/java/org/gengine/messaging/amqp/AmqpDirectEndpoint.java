@@ -14,9 +14,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
-import javax.jms.Queue;
 
 import org.gengine.messaging.MessageConsumer;
 import org.gengine.messaging.MessageProducer;
@@ -38,12 +38,17 @@ public class AmqpDirectEndpoint implements MessageProducer
     private static final String DEFAULT_USERNAME = "guest";
     private static final String DEFAULT_PASSWORD = "password";
 
+    private static final String ENDPOINT_PREFIX_QUEUE = "queue:";
+    private static final String ENDPOINT_PREFIX_TOPIC = "topic:";
+    private static final String CONNECTION_PREFIX_TOPIC = "topic://";
+
+
     private String host;
     private int port = DEFAULT_PORT;
     private String username = DEFAULT_USERNAME;
     private String password = DEFAULT_PASSWORD;
-    private String receiveQueueName;
-    private String sendQueueName;
+    private String receiveEndpoint;
+    private String sendEndpoint;
 
     private Connection consumerConnection;
     private Connection producerConnection;
@@ -63,13 +68,14 @@ public class AmqpDirectEndpoint implements MessageProducer
         {
             try
             {
-                Queue receiveQueue = getConsumerSession().createQueue(receiveQueueName);
+                Destination receiveDestination =
+                        AmqpDirectEndpoint.getDestination(getConsumerSession(), receiveEndpoint);
                 org.apache.qpid.amqp_1_0.jms.MessageConsumer receiver =
-                        getConsumerSession().createConsumer(receiveQueue);
+                        getConsumerSession().createConsumer(receiveDestination);
 
                 isInitialized = true;
 
-                logger.info("Waiting for an AMQP message on " + host + ":" + receiveQueueName);
+                logger.info("Waiting for an AMQP message on " + host + ":" + receiveEndpoint);
                 receiver.setMessageListener(new MessageListener()
                 {
                     public void onMessage(final javax.jms.Message message)
@@ -154,14 +160,14 @@ public class AmqpDirectEndpoint implements MessageProducer
         this.password = password;
     }
 
-    public void setReceiveQueueName(String receiveQueueName)
+    public void setReceiveEndpoint(String receiveEndpoint)
     {
-        this.receiveQueueName = receiveQueueName;
+        this.receiveEndpoint = receiveEndpoint;
     }
 
-    public void setSendQueueName(String sendQueueName)
+    public void setSendEndpoint(String sendEndpoint)
     {
-        this.sendQueueName = sendQueueName;
+        this.sendEndpoint = sendEndpoint;
     }
 
     public void setMessageConsumer(MessageConsumer messageConsumer)
@@ -180,6 +186,7 @@ public class AmqpDirectEndpoint implements MessageProducer
         {
             ConnectionFactory connectionFactory =
                     new ConnectionFactoryImpl(host, port, username, password);
+            ((ConnectionFactoryImpl) connectionFactory).setTopicPrefix(CONNECTION_PREFIX_TOPIC);
             consumerConnection = connectionFactory.createConnection();
 
         }
@@ -192,6 +199,7 @@ public class AmqpDirectEndpoint implements MessageProducer
         {
             ConnectionFactory connectionFactory =
                     new ConnectionFactoryImpl(host, port, username, password);
+            ((ConnectionFactoryImpl) connectionFactory).setTopicPrefix(CONNECTION_PREFIX_TOPIC);
             producerConnection = connectionFactory.createConnection();
 
         }
@@ -216,34 +224,54 @@ public class AmqpDirectEndpoint implements MessageProducer
         return producerSession;
     }
 
+    private static Destination getDestination(Session session, String endpoint) throws JMSException
+    {
+        Destination destination = null;
+        if (endpoint.startsWith(ENDPOINT_PREFIX_QUEUE))
+        {
+            destination = session.createQueue(endpoint.replaceFirst(ENDPOINT_PREFIX_QUEUE, ""));
+        }
+        else if (endpoint.startsWith(ENDPOINT_PREFIX_TOPIC))
+        {
+            destination = session.createTopic(endpoint.replaceFirst(ENDPOINT_PREFIX_TOPIC, ""));
+        }
+        else
+        {
+            destination = session.createQueue(endpoint);
+        }
+        return destination;
+    }
+
     private org.apache.qpid.amqp_1_0.jms.MessageProducer getDefaultMessageProducer() throws JMSException
     {
         if (defaultMessageProducer == null)
         {
-            Queue sendQueue = getProducerSession().createQueue(sendQueueName);
-            defaultMessageProducer = getProducerSession().createProducer(sendQueue);
+            Destination sendDestination =
+                    getDestination(getProducerSession(), sendEndpoint);
+            defaultMessageProducer = getProducerSession().createProducer(sendDestination);
         }
         return defaultMessageProducer;
     }
 
-    private org.apache.qpid.amqp_1_0.jms.MessageProducer getMessageProducer(String queueName) throws JMSException
+    private org.apache.qpid.amqp_1_0.jms.MessageProducer getMessageProducer(String endpoint) throws JMSException
     {
-        if (sendQueueName.equals(queueName))
+        if (sendEndpoint.equals(endpoint))
         {
             return getDefaultMessageProducer();
         }
-        Queue queue = getProducerSession().createQueue(queueName);
-        return getProducerSession().createProducer(queue);
+        Destination sendDestination =
+                getDestination(getProducerSession(), endpoint);
+        return getProducerSession().createProducer(sendDestination);
     }
 
     public void send(Object message) {
-        send(message, sendQueueName);
+        send(message, sendEndpoint);
     }
 
     @Override
     public void send(Object message, Map<String, Object> headers) throws MessagingException
     {
-        send(message, sendQueueName, headers);
+        send(message, sendEndpoint, headers);
     }
 
     @Override
@@ -262,7 +290,7 @@ public class AmqpDirectEndpoint implements MessageProducer
 
             if (StringUtils.isEmpty(queueName))
             {
-                queueName = sendQueueName;
+                queueName = sendEndpoint;
             }
 
             TextMessage textMessage = getProducerSession().createTextMessage(stringMessage);
@@ -311,9 +339,9 @@ public class AmqpDirectEndpoint implements MessageProducer
         builder.append(", ");
         builder.append("username: " + username);
         builder.append(", ");
-        builder.append("sendQueueName: " + sendQueueName);
+        builder.append("sendEndpoint: " + sendEndpoint);
         builder.append(", ");
-        builder.append("receiveQueueName: " + receiveQueueName);
+        builder.append("receiveEndpoint: " + receiveEndpoint);
         builder.append(", ");
         builder.append("isInitialized: " + isInitialized());
         builder.append("]");

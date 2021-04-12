@@ -1,8 +1,8 @@
-package org.gengine.health;
+package org.gengine.health.heartbeat;
 
 /**
  * Defines the persistence of a heartbeat.  Implementations might
- * be a log or database
+ * be a log, database, or in-memory queue.
  *
  */
 public interface HeartbeatDao

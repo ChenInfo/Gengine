@@ -1,4 +1,4 @@
-package org.gengine.health;
+package org.gengine.health.heartbeat;
 
 /**
  * Defines an object responsible for listening for the heartbeat.
