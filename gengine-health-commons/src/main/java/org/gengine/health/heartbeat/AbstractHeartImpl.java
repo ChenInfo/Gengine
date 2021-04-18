@@ -6,6 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 /**
  * Abstract heart implementation for sending {@link Heartbeat} messages.
@@ -15,8 +16,10 @@ public abstract class AbstractHeartImpl implements Heart
 {
     private static final Log logger = LogFactory.getLog(AbstractHeartImpl.class);
 
+    public static final Object SERVICE_INSTANCE_ID_FLAG_GENERATE_UUID = "--GENERATE-UUID--";
+
     protected static final long DEFAULT_TIMER_DELAY_MS = 2000;
-    protected static final long DEFAULT_TIMER_PERIOD_MS = 5000;
+    protected static final long DEFAULT_TIMER_PERIOD_MS = 2000;
 
     protected String serviceType;
     protected String serviceInstanceId;
@@ -40,7 +43,14 @@ public abstract class AbstractHeartImpl implements Heart
      */
     public void setServiceInstanceId(String serviceInstanceId)
     {
-        this.serviceInstanceId = serviceInstanceId;
+        if (SERVICE_INSTANCE_ID_FLAG_GENERATE_UUID.equals(serviceInstanceId))
+        {
+            this.serviceInstanceId = UUID.randomUUID().toString();
+        }
+        else
+        {
+            this.serviceInstanceId = serviceInstanceId;
+        }
     }
 
     /**
@@ -56,6 +66,10 @@ public abstract class AbstractHeartImpl implements Heart
     @Override
     public void start()
     {
+        if (serviceInstanceId == null)
+        {
+            serviceInstanceId = UUID.randomUUID().toString();
+        }
         logger.info("Starting heartbeat for " + serviceType + " id=" + serviceInstanceId);
         timer = new Timer();
         timer.schedule(new HeartbeatTask(), DEFAULT_TIMER_DELAY_MS, timerPeriodMs);

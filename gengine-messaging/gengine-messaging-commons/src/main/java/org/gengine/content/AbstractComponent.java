@@ -1,7 +1,5 @@
 package org.gengine.content;
 
-import java.util.concurrent.ExecutorService;
-
 import org.gengine.messaging.MessageProducer;
 
 /**
@@ -11,9 +9,28 @@ import org.gengine.messaging.MessageProducer;
  */
 public abstract class AbstractComponent<W extends ContentWorker> implements Component
 {
+    protected String name;
     protected W worker;
     protected MessageProducer messageProducer;
-    protected ExecutorService executorService;
+
+    public String getName()
+    {
+        if (name != null)
+        {
+            return name;
+        }
+        return this.getClass().getSimpleName();
+    }
+
+    /**
+     * Sets the component name
+     *
+     * @param name
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 
     /**
      * Sets the transformer worker which does the actual work of the transformation
@@ -35,16 +52,6 @@ public abstract class AbstractComponent<W extends ContentWorker> implements Comp
         this.messageProducer = messageProducer;
     }
 
-    /**
-     * Sets the executor service components may optionally need for running
-     * separate threads.
-     *
-     * @param executorService
-     */
-    public void setExecutorService(ExecutorService executorService)
-    {
-        this.executorService = executorService;
-    }
 
     public void init()
     {
@@ -56,6 +63,36 @@ public abstract class AbstractComponent<W extends ContentWorker> implements Comp
     }
 
     protected abstract void onReceiveImpl(Object message);
+
+    @Override
+    public boolean isWorkerAvailable()
+    {
+        if (worker == null)
+        {
+            return false;
+        }
+        return worker.isAvailable();
+    }
+
+    @Override
+    public String getWorkerVersionString()
+    {
+        if (worker == null)
+        {
+            return null;
+        }
+        return worker.getVersionString();
+    }
+
+    @Override
+    public String getWorkerVersionDetailsString()
+    {
+        if (worker == null)
+        {
+            return null;
+        }
+        return worker.getVersionDetailsString();
+    }
 
     @Override
     public String toString()

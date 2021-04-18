@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 
 import org.gengine.messaging.Reply;
@@ -25,7 +26,20 @@ public abstract class AbstractAsyncComponent<W extends ContentWorker, RQ extends
      */
     private static final Log logger = LogFactory.getLog(AbstractAsyncComponent.class);
 
+    protected ExecutorService executorService;
+
     private final BlockingQueue<RQ> localQueue =  new SynchronousQueue<RQ>();
+
+    /**
+     * Sets the executor service components may optionally need for running
+     * separate threads.
+     *
+     * @param executorService
+     */
+    public void setExecutorService(ExecutorService executorService)
+    {
+        this.executorService = executorService;
+    }
 
     @SuppressWarnings("unchecked")
     protected void onReceiveImpl(Object message)
