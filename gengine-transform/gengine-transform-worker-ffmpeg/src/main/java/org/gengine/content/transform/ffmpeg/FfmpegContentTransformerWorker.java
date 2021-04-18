@@ -256,7 +256,8 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
                 mediaType.equals("video/x-sgi-movie") ||
                 mediaType.equals("video/mpeg2"))) ||
                 (mediaType.startsWith(FileMediaType.PREFIX_AUDIO) && !(
-                mediaType.equals("audio/vnd.adobe.soundbooth"))));
+                mediaType.equals("audio/vnd.adobe.soundbooth"))) ||
+                mediaType.equals("application/mxf"));
     }
 
     /**
