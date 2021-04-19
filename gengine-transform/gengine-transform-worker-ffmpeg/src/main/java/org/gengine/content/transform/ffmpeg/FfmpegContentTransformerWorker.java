@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
@@ -84,6 +85,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
 
     private String ffmpegExe = "ffmpeg";
     private String ffmpegPresetsDir; // Often "/usr/share/ffmpeg"
+    private String versionFullDetailsString;
 
     @Override
     protected void initializeExecuter()
@@ -163,67 +165,67 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         }
     }
 
+    /**
+     * Uses the executable defined in <code>versionDetailsExecuter</code> with the
+     * given alternative arguments to obtain additional version detail output
+     *
+     * @param arguments
+     * @return the additional version details output
+     */
+    protected String getVersionDetailOutput(String[] arguments)
+    {
+        String ffmpegVersionExe = ffmpegExe;
+        RuntimeExec additionalDetailsExecuter = new RuntimeExec();
+        if (versionDetailsExecuter != null)
+        {
+            String[] command = versionDetailsExecuter.getCommand();
+            if (command != null && command.length > 0)
+            {
+                ffmpegVersionExe = command[0];
+            }
+        }
+        Map<String, String[]> checkCommandsAndArguments = new HashMap<String, String[]>();
+        checkCommandsAndArguments.put(".*", (String[]) ArrayUtils.addAll(
+                new String[] { ffmpegVersionExe }, arguments));
+        additionalDetailsExecuter.setCommandsAndArguments(checkCommandsAndArguments);
+        String output = null;
+        try
+        {
+            ExecutionResult result = additionalDetailsExecuter.execute();
+            String out = result.getStdOut().trim();
+            if (!out.equals(""))
+            {
+                output = out;
+            }
+            else
+            {
+                output = result.getStdErr().trim();
+            }
+        }
+        catch (Throwable e)
+        {
+            logger.info(getClass().getSimpleName() + " could not get additional details: "
+                    + (e.getMessage() != null ? e.getMessage() : ""));
+        }
+        return output;
+    }
+
     @Override
     protected void initializeVersionDetailsString()
     {
         super.initializeVersionDetailsString();
-        if (versionDetailsExecuter == null)
-        {
-            versionDetailsExecuter = new RuntimeExec();
-        }
-        Map<String, String[]> checkCommandsAndArguments = new HashMap<String, String[]>();
-        checkCommandsAndArguments.put(".*", new String[] {
-            ffmpegExe,
-            "-h",
-            "full"
-        });
-        versionDetailsExecuter.setCommandsAndArguments(checkCommandsAndArguments);
-        String fullHelp = null;
-        try
-        {
-            ExecutionResult result = this.versionDetailsExecuter.execute();
-            String out = result.getStdOut().trim();
-            if (!out.equals(""))
-            {
-                fullHelp = out;
-            }
-            fullHelp = result.getStdErr().trim();
-        }
-        catch (Throwable e)
-        {
-            logger.info(getClass().getSimpleName() + " could not get help: "
-                    + (e.getMessage() != null ? e.getMessage() : ""));
-        }
+        this.versionFullDetailsString = this.versionDetailsString + "";
+        // Get additional details on supported formats
+        String fullHelp = getVersionDetailOutput(new String[] { "-h", "full" });
         if (fullHelp != null)
         {
-            this.versionDetailsString = this.versionDetailsString + "\n\n" +
+            this.versionFullDetailsString = this.versionFullDetailsString + "\n\n" +
                     fullHelp;
         }
-        checkCommandsAndArguments = new HashMap<String, String[]>();
-        checkCommandsAndArguments.put(".*", new String[] {
-            ffmpegExe,
-            "-formats"
-        });
-        versionDetailsExecuter.setCommandsAndArguments(checkCommandsAndArguments);
-        String formats = null;
-        try
-        {
-            ExecutionResult result = this.versionDetailsExecuter.execute();
-            String out = result.getStdOut().trim();
-            if (!out.equals(""))
-            {
-                formats = out;
-            }
-            formats = result.getStdErr().trim();
-        }
-        catch (Throwable e)
-        {
-            logger.info(getClass().getSimpleName() + " could not get formats: "
-                    + (e.getMessage() != null ? e.getMessage() : ""));
-        }
+        String formats = getVersionDetailOutput(new String[] { "-formats" } );
         if (formats != null)
         {
-            this.versionDetailsString = this.versionDetailsString + "\n\n" +
+            this.versionFullDetailsString = this.versionFullDetailsString + "\n\n" +
                     formats;
         }
         reinitializeVersionString();
@@ -776,7 +778,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
 
     protected String getFfmpegAudioCodec(String targetMediaType, String gengineAudioCodec)
     {
-        if (versionDetailsString == null)
+        if (versionFullDetailsString == null)
         {
             return null;
         }
@@ -788,15 +790,15 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
                 targetMediaType.equals(FileMediaType.VIDEO_M4V.getMediaType()) ||
                 (gengineAudioCodec == null && targetMediaType.equals(FileMediaType.VIDEO_MP4.getMediaType())))
         {
-            if (versionDetailsString.contains("libfdk-aac"))
+            if (versionFullDetailsString.contains("libfdk-aac"))
             {
                 return "libfdk_aac";
             }
-            if (versionDetailsString.contains("libfaac"))
+            if (versionFullDetailsString.contains("libfaac"))
             {
                 return "libfaac";
             }
-            if (versionDetailsString.contains("libvo-aacenc"))
+            if (versionFullDetailsString.contains("libvo-aacenc"))
             {
                 return "libvo_aacenc";
             }
@@ -859,7 +861,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
         }
         if (fastStartEnabled)
         {
-            if (versionDetailsString != null && versionDetailsString.contains("faststart"))
+            if (versionFullDetailsString != null && versionFullDetailsString.contains("faststart"))
             {
                 commandOptions = commandOptions.trim() + CMD_OPT_DELIMITER +
                         CMD_OPT_MOV_FLAGS + CMD_OPT_DELIMITER + CMD_OPT_MOV_FLAGS_FASTSTART;
