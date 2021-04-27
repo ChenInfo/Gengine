@@ -214,6 +214,19 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     protected void initializeVersionDetailsString()
     {
         super.initializeVersionDetailsString();
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("StdOut versionDetailsString=" + this.versionDetailsString);
+        }
+        if (this.versionDetailsString == null)
+        {
+            ExecutionResult result = this.versionDetailsExecuter.execute();
+            this.versionDetailsString = result.getStdErr().trim();
+            if (logger.isDebugEnabled())
+            {
+                logger.debug("StdErr versionDetailsString=" + this.versionDetailsString);
+            }
+        }
         this.versionFullDetailsString = this.versionDetailsString + "";
         // Get additional details on supported formats
         String fullHelp = getVersionDetailOutput(new String[] { "-h", "full" });
