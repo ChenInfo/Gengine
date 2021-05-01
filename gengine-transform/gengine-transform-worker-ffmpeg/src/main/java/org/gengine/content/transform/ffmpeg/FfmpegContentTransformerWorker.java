@@ -150,7 +150,11 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
     {
         if (logger.isDebugEnabled())
         {
-            logger.debug("FFmpeg initialization test...");
+            logger.debug("FFmpeg version " + getFfmpegVersionNumber() + " initialization test...");
+        }
+        if (getFfmpegVersionNumber() == null || "null".equals(getFfmpegVersionNumber()))
+        {
+            throw new GengineRuntimeException("Could not determine version of FFmpeg");
         }
         try
         {
