@@ -500,6 +500,10 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
 
     protected String getFfmpegVersionNumber()
     {
+        if (logger.isDebugEnabled())
+        {
+            logger.debug("getFfmpegVersionNumber versionDetailsString=" + this.versionDetailsString);
+        }
         Pattern verisonNumPattern =
                 Pattern.compile("(FFmpeg version |ffmpeg version )((\\w|\\.|\\-)+)[, ](.*)");
         try
