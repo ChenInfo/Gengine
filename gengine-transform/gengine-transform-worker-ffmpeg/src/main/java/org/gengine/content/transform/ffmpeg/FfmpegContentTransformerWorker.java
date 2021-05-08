@@ -505,7 +505,7 @@ public class FfmpegContentTransformerWorker extends AbstractRuntimeExecContentTr
             logger.debug("getFfmpegVersionNumber versionDetailsString=" + this.versionDetailsString);
         }
         Pattern verisonNumPattern =
-                Pattern.compile("(FFmpeg version |ffmpeg version )((\\w|\\.|\\-)+)[, ](.*)");
+                Pattern.compile("(FFmpeg version |ffmpeg version )((\\w|\\.|\\-)+)(.*)");
         try
         {
             Matcher versionNumMatcher = verisonNumPattern.matcher(this.versionDetailsString);
