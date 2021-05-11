@@ -126,6 +126,10 @@ public abstract class AbstractFileContentTransformerWorker extends AbstractConte
             TransformationOptions options,
             ContentTransformerWorkerProgressReporter progressReporter) throws Exception
     {
+        if (!isAvailable())
+        {
+            throw new IllegalStateException("transform called but worker is marked as unavailable");
+        }
         List<FileContentReferencePair> sourcePairs = getSourcePairs(sources);
         List<FileContentReferencePair> targetPairs = getTargetPairs(targets);
 

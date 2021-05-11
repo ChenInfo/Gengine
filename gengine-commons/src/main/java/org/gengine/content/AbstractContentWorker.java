@@ -43,9 +43,18 @@ public abstract class AbstractContentWorker implements ContentWorker
      */
     public void initialize()
     {
-        loadProperties();
-        initializeVersionString();
-        initializeVersionDetailsString();
+        try
+        {
+            loadProperties();
+            initializeVersionString();
+            initializeVersionDetailsString();
+            this.isAvailable = true;
+        }
+        catch (Exception e)
+        {
+            logger.error(e.getMessage(), e);
+            this.isAvailable = false;
+        }
     }
 
     @Override
