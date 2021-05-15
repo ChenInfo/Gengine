@@ -85,6 +85,29 @@ public class FileContentReferenceHandlerImpl implements FileContentReferenceHand
     }
 
     @Override
+    public boolean isContentReferenceExists(ContentReference contentReference)
+    {
+        if (contentReference == null)
+        {
+            return false;
+        }
+        try
+        {
+            File file = getFile(contentReference, false);
+            if (file == null)
+            {
+                return false;
+            }
+            return file.exists();
+        }
+        catch (Exception e)
+        {
+            // Don't really care why, just that it doesn't exist
+            return false;
+        }
+    }
+
+    @Override
     public ContentReference createContentReference(String fileName, String mediaType) throws ContentIOException
     {
         String suffix = fileName.substring(StringUtils.lastIndexOf(fileName, "."), fileName.length());

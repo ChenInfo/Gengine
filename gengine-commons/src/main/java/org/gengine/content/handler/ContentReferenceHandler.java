@@ -21,6 +21,14 @@ public interface ContentReferenceHandler
     public boolean isContentReferenceSupported(ContentReference contentReference);
 
     /**
+     * Determines whether the given content reference exists
+     *
+     * @param contentReference
+     * @return whether or not the content reference exists
+     */
+    public boolean isContentReferenceExists(ContentReference contentReference);
+
+    /**
      * Creates a content reference of the given file name and media type.
      *
      * @param fileName

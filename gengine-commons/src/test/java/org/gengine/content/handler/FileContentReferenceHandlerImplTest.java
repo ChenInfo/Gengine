@@ -1,5 +1,7 @@
 package org.gengine.content.handler;
 
+import java.util.UUID;
+
 import org.apache.commons.lang.StringUtils;
 import org.gengine.content.ContentReference;
 import org.gengine.content.file.FileProvider;
@@ -60,4 +62,15 @@ public class FileContentReferenceHandlerImplTest
         checkReference("my.file.txt", "text/plain");
     }
 
+    @Test
+    public void testFileExists()
+    {
+        String fileName = "test-" + UUID.randomUUID().toString() + ".txt";
+        ContentReference reference = handler.createContentReference(fileName, "text/plain");
+        assertTrue(handler.isContentReferenceExists(reference));
+
+        String nonExistentFileUri = reference.getUri().replace(fileName, "NONEXISTENTFILE.txt");
+        ContentReference nonExistentReference = new ContentReference(nonExistentFileUri, "text/plain");
+        assertFalse(handler.isContentReferenceExists(nonExistentReference));
+    }
 }

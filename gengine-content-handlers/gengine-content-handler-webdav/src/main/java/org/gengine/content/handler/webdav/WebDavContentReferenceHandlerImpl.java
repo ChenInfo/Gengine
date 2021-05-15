@@ -106,6 +106,34 @@ public class WebDavContentReferenceHandlerImpl extends AbstractUrlContentReferen
     }
 
     @Override
+    public boolean isContentReferenceExists(ContentReference contentReference)
+    {
+        if (!isContentReferenceSupported(contentReference))
+        {
+            return false;
+        }
+        try
+        {
+            String remoteFileUrl = getRemoteFileUrl(contentReference);
+            while (true)
+            {
+                try
+                {
+                    return sardine.exists(remoteFileUrl);
+                }
+                catch (SardineException e)
+                {
+                    throw new ContentIOException("Failed to check existence of content: " + e.getMessage(), e);
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            throw new ContentIOException("Failed to check existence of content: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public InputStream getInputStream(ContentReference contentReference, boolean waitForAvailability) throws ContentIOException, InterruptedException
     {
         if (!isContentReferenceSupported(contentReference))

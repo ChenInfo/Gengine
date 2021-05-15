@@ -9,6 +9,7 @@ import org.gengine.content.ContentReference;
 import org.gengine.content.handler.AbstractUrlContentReferenceHandler;
 
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -147,6 +148,36 @@ public class S3ContentReferenceHandlerImpl extends AbstractUrlContentReferenceHa
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean isContentReferenceExists(ContentReference contentReference)
+    {
+        if (!isContentReferenceSupported(contentReference))
+        {
+            return false;
+        }
+        try
+        {
+            String s3Url = getS3UrlFromHttpUrl(contentReference.getUri());
+
+            if (logger.isDebugEnabled())
+            {
+                logger.debug("Checking existence of reference: " + s3Url);
+            }
+            // Get the object and retrieve the input stream
+            S3Object object = s3.getObject(new GetObjectRequest(s3BucketName, getRelativePath(s3Url)));
+            return object != null;
+        }
+        catch (AmazonServiceException e)
+        {
+            throw new ContentIOException("Failed to check existence of content: " + e.getMessage(), e);
+        }
+        catch (Throwable t)
+        {
+            // Otherwise don't really care why, just that it doesn't exist
+            return false;
+        }
     }
 
     @Override
