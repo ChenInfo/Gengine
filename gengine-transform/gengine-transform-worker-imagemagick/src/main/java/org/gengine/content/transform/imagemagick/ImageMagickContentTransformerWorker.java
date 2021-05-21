@@ -308,6 +308,10 @@ public class ImageMagickContentTransformerWorker extends AbstractRuntimeExecCont
             }
             properties.put(KEY_OPTIONS, commandOptions);
         }
+        else
+        {
+            properties.put(KEY_OPTIONS, "");
+        }
         properties.put(VAR_SOURCE, sourceFile.getAbsolutePath() +
                 getSourcePageRange(options, sourceMimetype, targetMimetype));
         properties.put(VAR_TARGET, targetFile.getAbsolutePath());
