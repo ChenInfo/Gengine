@@ -109,7 +109,7 @@ public abstract class AbstractRuntimeExecContentTransformerWorker extends Abstra
         }
         catch (Exception e)
         {
-            logger.error(e.getMessage(), e);
+            logger.warn(e.getMessage(), e);
             setIsAvailable(false);
         }
     }
