@@ -326,7 +326,7 @@ public class ImageMagickContentTransformerWorker extends AbstractRuntimeExecCont
         // success
         if (logger.isDebugEnabled())
         {
-            logger.debug("ImageMagic executed successfully: \n" + executer);
+            logger.debug("ImageMagic executed successfully: \n" + result);
         }
     }
 
