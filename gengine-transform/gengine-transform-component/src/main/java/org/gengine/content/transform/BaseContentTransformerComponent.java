@@ -40,7 +40,7 @@ public class BaseContentTransformerComponent
     {
         TransformationRequest request = (TransformationRequest) message;
         lastRequest = request;
-        logger.info("Processing transformation request " + request.getRequestId());
+        logger.info("Processing transformation requestId=" + request.getRequestId());
         ContentTransformerWorkerProgressReporterImpl progressReporter =
                 new ContentTransformerWorkerProgressReporterImpl(request);
         try
@@ -110,9 +110,9 @@ public class BaseContentTransformerComponent
 
         public void onTransformationComplete(List<ContentWorkResult> results)
         {
-            if (logger.isDebugEnabled())
+            if (logger.isInfoEnabled())
             {
-                logger.debug("Completed transformation of " +
+                logger.info("Completed transformation of " +
                         "requestId=" + request.getRequestId());
             }
             TransformationReply reply = new TransformationReply(request);
