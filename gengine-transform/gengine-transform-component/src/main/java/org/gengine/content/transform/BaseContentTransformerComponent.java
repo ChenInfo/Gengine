@@ -84,7 +84,7 @@ public class BaseContentTransformerComponent
         {
             if (logger.isDebugEnabled())
             {
-                logger.debug("Starting transformation of " +
+                logger.debug("Starting transformation " +
                         "requestId=" + request.getRequestId());
             }
             TransformationReply reply =
@@ -98,7 +98,7 @@ public class BaseContentTransformerComponent
         {
             if (logger.isDebugEnabled())
             {
-                logger.debug(progress*100 + "% progress on transformation of " +
+                logger.debug(progress*100 + "% progress on transformation " +
                         "requestId=" + request.getRequestId());
             }
             TransformationReply reply = new TransformationReply(request);
@@ -112,7 +112,7 @@ public class BaseContentTransformerComponent
         {
             if (logger.isInfoEnabled())
             {
-                logger.info("Completed transformation of " +
+                logger.info("Completed transformation " +
                         "requestId=" + request.getRequestId());
             }
             TransformationReply reply = new TransformationReply(request);
