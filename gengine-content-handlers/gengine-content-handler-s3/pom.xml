@@ -4,14 +4,14 @@
     <parent>
         <groupId>org.gengine</groupId>
         <artifactId>gengine-content-handlers</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>gengine-content-handler-s3</artifactId>
 
     <properties>
-        <dependency.aws-java-sdk.version>1.9.7</dependency.aws-java-sdk.version>
+        <dependency.aws-java-sdk.version>1.4.7</dependency.aws-java-sdk.version>
     </properties>
 
     <dependencies>
