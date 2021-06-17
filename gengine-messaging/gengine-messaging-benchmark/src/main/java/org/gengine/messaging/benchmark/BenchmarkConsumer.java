@@ -2,7 +2,6 @@ package org.gengine.messaging.benchmark;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.gengine.messaging.MessageConsumer;
 
 /**
@@ -13,9 +12,13 @@ public class BenchmarkConsumer implements MessageConsumer
 {
     private static final Log logger = LogFactory.getLog(BenchmarkConsumer.class);
 
-    protected static final int LOG_AFTER_NUM_MESSAGES = 1000;
+    protected int logAfterNumMessages = 1000;
+    protected int messageCount = 0;
 
-    private int messageCount = 0;
+    public void setLogAfterNumMessages(int logAfterNumMessages)
+    {
+        this.logAfterNumMessages = logAfterNumMessages;
+    }
 
     @Override
     public void onReceive(Object message)
@@ -24,15 +27,11 @@ public class BenchmarkConsumer implements MessageConsumer
         {
             logger.trace("Receiving message, current messageCount=" + messageCount + "...");
         }
-        if (message == null || ((BenchmarkMessage) message).getValue() == null ||
-                !((BenchmarkMessage) message).getValue().equals(BenchmarkMessage.DEFAULT_VALUE))
-        {
-            throw new IllegalArgumentException("Could not verify message");
-        }
+        validateMessage(message);
 
         messageCount++;
 
-        if (messageCount > 0 && messageCount % LOG_AFTER_NUM_MESSAGES == 0)
+        if (messageCount > 0 && messageCount % logAfterNumMessages == 0)
         {
             logger.debug("Received " + messageCount + " messages...");
         }
@@ -42,6 +41,15 @@ public class BenchmarkConsumer implements MessageConsumer
             {
                 logger.trace("Received " + messageCount + " messages...");
             }
+        }
+    }
+
+    protected void validateMessage(Object message)
+    {
+        if (message == null || ((BenchmarkMessage) message).getValue() == null ||
+                !((BenchmarkMessage) message).getValue().equals(BenchmarkMessage.DEFAULT_VALUE))
+        {
+            throw new IllegalArgumentException("Could not verify message");
         }
     }
 
