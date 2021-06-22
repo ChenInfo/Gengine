@@ -243,6 +243,16 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
     }
 
     @Test
+    public void testWMVTransformation() throws Exception
+    {
+        VideoTransformationOptions options = new VideoTransformationOptions();
+
+        List<String> targetStreams = testTransformation(FileMediaType.VIDEO_WMV, options);
+
+        assertSomeStreamMatches("Target resolution incorrect, expected 480x270", targetStreams, ".*Video: .*480x270.*");
+    }
+
+    @Test
     public void testResizeMaintainAspectRatioTransformation() throws Exception
     {
         ImageResizeOptions resizeOptions = new ImageResizeOptions();
