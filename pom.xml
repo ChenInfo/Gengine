@@ -93,7 +93,8 @@
     
     <distributionManagement>
         <repository>
-            <id>cheninfo-thirdparty</id>
+            <!-- TODO change to "cheninfo-thirdparty" once .m2/settings.xml has been added to all fixed bamboo agents -->
+            <id>cheninfo-internal</id>
             <url>${maven.distributionManagement.url}</url>
         </repository>
         <snapshotRepository>
