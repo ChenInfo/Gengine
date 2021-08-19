@@ -5,7 +5,7 @@
 
     <groupId>org.gengine</groupId>
     <artifactId>gengine-parent</artifactId>
-    <version>0.7-SNAPSHOT</version>
+    <version>0.8-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <organization>
@@ -40,7 +40,7 @@
         
         <dependency.junit.version>4.10</dependency.junit.version>
         <dependency.log4j.version>1.2.17</dependency.log4j.version>
-        <dependency.jackson2.version>2.3.2</dependency.jackson2.version>
+        <dependency.jackson2.version>2.8.10</dependency.jackson2.version>
     </properties>
 
     <modules>
