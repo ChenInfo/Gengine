@@ -13,7 +13,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class BenchmarkMessage
 {
     private static int NUM_SECTIONS = 100;
-    public static final String DEFAULT_VALUE = getDefaultValue();
+    private static String DEFAULT_VALUE;
 
     private String id;
     private Long timestamp;
@@ -54,25 +54,35 @@ public class BenchmarkMessage
         BenchmarkMessage message = new BenchmarkMessage();
         message.setId(UUID.randomUUID().toString());
         message.setTimestamp((new Date()).getTime());
-        message.setValue(DEFAULT_VALUE);
+        message.setValue(getDefaultValue());
         return message;
     }
 
-    private static String getDefaultValue()
+    public static String getDefaultValue()
     {
-        String section = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, "
-                + "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
-                + "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris "
-                + "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in "
-                + "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
-                + "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia "
-                + "deserunt mollit anim id est laborum.\n\n";
-        StringBuilder value = new StringBuilder();
-        for (int i = 0; i < NUM_SECTIONS - 1; i++)
+        if (DEFAULT_VALUE == null)
         {
-            value.append(section);
+            String section = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, "
+                    + "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
+                    + "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris "
+                    + "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in "
+                    + "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
+                    + "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia "
+                    + "deserunt mollit anim id est laborum.\n\n";
+            StringBuilder value = new StringBuilder();
+            for (int i = 0; i < NUM_SECTIONS; i++)
+            {
+                value.append(section);
+            }
+            DEFAULT_VALUE = value.toString();
         }
-        return value.toString();
+        return DEFAULT_VALUE;
+    }
+
+    public static void setDefaultNumSections(int numSections)
+    {
+        // note: optionally call before first call to getDefaultValue
+        NUM_SECTIONS = numSections;
     }
 
     @Override

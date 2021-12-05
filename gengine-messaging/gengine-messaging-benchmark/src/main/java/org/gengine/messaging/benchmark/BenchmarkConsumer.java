@@ -47,7 +47,7 @@ public class BenchmarkConsumer implements MessageConsumer
     protected void validateMessage(Object message)
     {
         if (message == null || ((BenchmarkMessage) message).getValue() == null ||
-                !((BenchmarkMessage) message).getValue().equals(BenchmarkMessage.DEFAULT_VALUE))
+                !((BenchmarkMessage) message).getValue().equals(BenchmarkMessage.getDefaultValue()))
         {
             throw new IllegalArgumentException("Could not verify message");
         }

@@ -156,8 +156,11 @@ public class BenchmarkRunner
         long receiveTime = 0;
         if (runConsumer)
         {
-            // Wait for consumer to dequeue all messages
-            while (messageConsumer.getMessageCount() < numMessages)
+            int noneConsumedCount = 0;
+            int lastMessageCount = messageConsumer.getMessageCount();
+
+            // Wait for consumer to dequeue all expected messages (or else timeout)
+            while ((lastMessageCount < numMessages) && (noneConsumedCount < 5))
             {
                 try
                 {
@@ -170,22 +173,36 @@ public class BenchmarkRunner
                 catch (InterruptedException e)
                 {
                 }
+
+                if (lastMessageCount < messageConsumer.getMessageCount())
+                {
+                    lastMessageCount = messageConsumer.getMessageCount();
+                }
+                else
+                {
+                    noneConsumedCount++;
+
+                    if (logger.isTraceEnabled())
+                    {
+                        logger.trace("Anymore messages - none received since last sleep (x" + noneConsumedCount + ")");
+                    }
+                }
             }
             long end = (new Date()).getTime();
             receiveTime = end - start;
         }
 
-        if (!runConsumer && (producer instanceof AmqpDirectEndpoint))
+        if (producer instanceof AmqpDirectEndpoint)
         {
-            // TODO why is this needed to enqueue all messages (eg. when running AMQP "produce-only")
-            // note: not currently counted in sendTime (throughput calculation)
+            // TODO why is this needed to enqueue all messages for AMQP (eg. when running "produce-only")
+            // note: not currently counted in throughput calculations
             int delaySecs = 5;
             logger.debug("Waiting for "+delaySecs+" secs ...");
             Thread.sleep(delaySecs*1000);
         }
 
         logStatistics((runProducer ? producer : null), (runConsumer ? messageConsumer : null),
-                getBenchmarkMessage(0), numMessages, sendTime, receiveTime);
+                getBenchmarkMessage(0), numMessages, messageConsumer.getMessageCount(), sendTime, receiveTime);
 
         System.exit(0);
     }
@@ -309,14 +326,15 @@ public class BenchmarkRunner
      * @param producer
      * @param consumer
      * @param message
-     * @param numMessages
+     * @param numMessagesSent
+     * @param numMessagesReceived
      * @param sendTime
      * @param receiveTime
      */
     protected void logStatistics(MessageProducer producer, BenchmarkConsumer consumer,
-            Object message, int numMessages, long sendTime, long receiveTime)
+            Object message, int numMessagesSent, int numMessagesReceived, long sendTime, long receiveTime)
     {
-        double messagesPerSecond = numMessages / ((consumer != null ? receiveTime : sendTime) / 1000.0);
+        double messagesPerSecond = numMessagesSent / ((consumer != null ? receiveTime : sendTime) / 1000.0);
 
         System.out.println("\n"
                 + LOG_SEPERATOR
@@ -325,8 +343,9 @@ public class BenchmarkRunner
                 + (producer != null ? "MessageProducer: " + producer.getClass().getSimpleName() + "\n": "")
                 + (consumer != null ? "MessageConsumer: " + consumer.getClass().getSimpleName() + "\n": "")
                 + "Message Type:    " + message.getClass().getSimpleName() + "\n"
-                + (producer != null ? "Sent:            " + numMessages + " messages in " + formatMillis(sendTime) + "\n": "")
-                + (consumer != null ? "Received:        " + numMessages + " messages in " + formatMillis(receiveTime) + "\n" : "")
+                + (producer != null ? "Sent:            " + numMessagesSent + " messages in " + formatMillis(sendTime) + "\n": "")
+                + (consumer != null ? "Received:        " + numMessagesReceived + " messages in " + formatMillis(receiveTime)
+                    + (numMessagesReceived != numMessagesSent ? " (*)" : "") + "\n" : "")
                 + "Throughput:      " + Math.round(messagesPerSecond) + " messages/second\n"
                 + LOG_SEPERATOR + "\n"
                 + "Note that results include time taken for factors\n"
