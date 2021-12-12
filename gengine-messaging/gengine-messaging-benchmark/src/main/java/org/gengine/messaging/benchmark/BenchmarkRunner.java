@@ -160,7 +160,7 @@ public class BenchmarkRunner
             int lastMessageCount = messageConsumer.getMessageCount();
 
             // Wait for consumer to dequeue all expected messages (or else timeout)
-            while ((lastMessageCount < numMessages) && (noneConsumedCount < 5))
+            while ((lastMessageCount < numMessages) && (noneConsumedCount < 100))
             {
                 try
                 {
@@ -177,6 +177,7 @@ public class BenchmarkRunner
                 if (lastMessageCount < messageConsumer.getMessageCount())
                 {
                     lastMessageCount = messageConsumer.getMessageCount();
+                    noneConsumedCount = 0;
                 }
                 else
                 {
@@ -202,7 +203,8 @@ public class BenchmarkRunner
         }
 
         logStatistics((runProducer ? producer : null), (runConsumer ? messageConsumer : null),
-                getBenchmarkMessage(0), numMessages, messageConsumer.getMessageCount(), sendTime, receiveTime);
+                getBenchmarkMessage(0), numMessages, (runConsumer ? messageConsumer.getMessageCount() : 0),
+                sendTime, receiveTime);
 
         System.exit(0);
     }
