@@ -51,26 +51,34 @@ public class AmqpNodeBootstrapUtils
             // This would have been caught by validation above
         }
 
-        ((AmqpDirectEndpoint) messageProducer).setHost(broker.getHost());
+        messageProducer.setHost(broker.getHost());
         Integer brokerPort = broker.getPort();
         if (brokerPort != null)
         {
-            ((AmqpDirectEndpoint) messageProducer).setPort(brokerPort);
+            messageProducer.setPort(brokerPort);
         }
+
+        String brokerScheme = broker.getScheme();
+        if ((brokerScheme != null) && (brokerScheme.equals("amqps")||brokerScheme.equals("amqp+ssl")))
+        {
+            messageProducer.setIsSSL(true);
+        }
+
         if (brokerUsername != null)
         {
-            ((AmqpDirectEndpoint) messageProducer).setUsername(brokerUsername);
+            messageProducer.setUsername(brokerUsername);
         }
+
         if (brokerPassword != null)
         {
-            ((AmqpDirectEndpoint) messageProducer).setPassword(brokerPassword);
+            messageProducer.setPassword(brokerPassword);
         }
-        ((AmqpDirectEndpoint) messageProducer).setReceiveEndpoint(requestEndpoint);
-        ((AmqpDirectEndpoint) messageProducer).setSendEndpoint(replyEndpoint);
 
+        messageProducer.setReceiveEndpoint(requestEndpoint);
+        messageProducer.setSendEndpoint(replyEndpoint);
 
-        ((AmqpDirectEndpoint) messageProducer).setMessageConsumer(messageConsumer);
-        ((AmqpDirectEndpoint) messageProducer).setObjectMapper(objectMapper);
+        messageProducer.setMessageConsumer(messageConsumer);
+        messageProducer.setObjectMapper(objectMapper);
 
         return messageProducer;
     }

@@ -22,9 +22,9 @@ either from the parent folder or this project.
 Start an AMQP broker.  See the `messaging-broker-activemq` project.
 
 The single jar with dependencies should be launched with a parameter of the
-path to the properties file, i.e.:
+path to the properties file, i.e. (replace 0.X-SNAPSHOT with appropriate version):
 
-    java -jar target/gengine-node-simple-0.1-SNAPSHOT-jar-with-dependencies.jar target/imagemagick.properties
+    java -jar target/gengine-node-simple-0.X-SNAPSHOT-jar-with-dependencies.jar target/imagemagick.properties
 
 You should see a message indicating that the node is waiting for a message.
 
