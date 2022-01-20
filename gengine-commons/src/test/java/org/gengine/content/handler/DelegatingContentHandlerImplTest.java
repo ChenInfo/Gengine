@@ -161,10 +161,18 @@ public class DelegatingContentHandlerImplTest
     @Test
     public void testDelete() throws Exception
     {
-        delegatingHandler.delete(contentReferenceFile1b);
+        File sourceFile = new File(this.getClass().getResource(
+                    "/content-handler-b/file-b-1.txt").toURI());
 
-        File targetFile = new File(new URI(contentReferenceFile1b.getUri()));
-        assertFalse(targetFile.exists());
+        ContentReference targetContentReferenceToDelete = getTextReference("/content-handler-b");
+        targetContentReferenceToDelete.setUri(targetContentReferenceToDelete.getUri() + "/file-b-3.txt");
+
+        delegatingHandler.putFile(sourceFile, targetContentReferenceToDelete);
+        File fileToDelete = new File(new URI(targetContentReferenceToDelete.getUri()));
+        assertTrue(fileToDelete.exists());
+
+        delegatingHandler.delete(targetContentReferenceToDelete);
+        assertFalse(fileToDelete.exists());
     }
 
     /**
