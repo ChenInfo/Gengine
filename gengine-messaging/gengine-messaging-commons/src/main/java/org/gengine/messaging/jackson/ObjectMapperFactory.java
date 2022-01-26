@@ -19,7 +19,6 @@ public class ObjectMapperFactory
         mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
         SimpleModule module = new SimpleModule("GengineJackson",
                 new Version(0, 1, 0, "SNAPSHOT", "org.gengine", "gengine-messaging-commons"));
-        module.addKeyDeserializer(Class.class, new JsonClassKeyDeserializer());
         mapper.registerModule(module);
         return mapper;
     }

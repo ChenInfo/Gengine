@@ -11,7 +11,7 @@
     <artifactId>gengine-messaging-camel</artifactId>
 
     <properties>
-        <dependency.camel.version>2.13.2</dependency.camel.version>
+        <dependency.camel.version>2.23.1</dependency.camel.version>
     </properties>
 
     <dependencies>

@@ -14,7 +14,7 @@
         <dependency.commons-logging.version>1.1.2</dependency.commons-logging.version>
         <dependency.commons-io.version>2.6</dependency.commons-io.version>
         <dependency.commons-lang.version>2.6</dependency.commons-lang.version>
-        <dependency.tika.version>1.5</dependency.tika.version>
+        <dependency.tika.version>1.20</dependency.tika.version>
         <dependency.maven-artifact.version>3.2.1</dependency.maven-artifact.version>
     </properties>
 

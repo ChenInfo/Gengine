@@ -13,7 +13,7 @@
     <properties>
         <dependency.log4j.version>1.2.17</dependency.log4j.version>
         <dependency.camel.version>2.11.0</dependency.camel.version>
-        <dependency.activemq.version>5.9.0</dependency.activemq.version>
+        <dependency.activemq.version>5.15.8</dependency.activemq.version>
         <dependency.sl4j.version>1.7.5</dependency.sl4j.version>
     </properties>
 
