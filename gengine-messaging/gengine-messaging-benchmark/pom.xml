@@ -9,11 +9,11 @@
     </parent>
 
     <artifactId>gengine-messaging-benchmark</artifactId>
-    
+
     <properties>
         <dependency.log4j.version>1.2.17</dependency.log4j.version>
         <dependency.camel.version>2.11.0</dependency.camel.version>
-        <dependency.activemq.version>5.15.8</dependency.activemq.version>
+        <dependency.activemq.version>5.15.9</dependency.activemq.version>
         <dependency.sl4j.version>1.7.5</dependency.sl4j.version>
     </properties>
 
@@ -49,7 +49,7 @@
             <version>${dependency.log4j.version}</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -106,5 +106,5 @@
             </plugins>
         </pluginManagement>
     </build>
-    
+
 </project>
