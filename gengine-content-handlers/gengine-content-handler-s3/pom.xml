@@ -11,7 +11,7 @@
     <artifactId>gengine-content-handler-s3</artifactId>
 
     <properties>
-        <dependency.aws-java-sdk.version>1.11.88</dependency.aws-java-sdk.version>
+        <dependency.aws-java-sdk.version>1.11.599</dependency.aws-java-sdk.version>
     </properties>
 
     <dependencies>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${dependency.jackson2.version}</version>
+            <version>${dependency.jackson-databind.version}</version>
             <scope>test</scope>
         </dependency>
 

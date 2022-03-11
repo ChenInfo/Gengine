@@ -19,12 +19,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${dependency.jackson2.version}</version>
+            <version>${dependency.jackson-databind.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <version>${dependency.jackson2.version}</version>
+            <version>${dependency.jackson.version}</version>
         </dependency>
     </dependencies>
 
