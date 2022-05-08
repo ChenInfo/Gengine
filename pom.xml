@@ -31,14 +31,12 @@
         <maven.scm.connection>scm:git:https://github.com/ChenInfo/gengine.git</maven.scm.connection>
         <maven.scm.developerConnection>scm:git:git@github.com:ChenInfo/gengine.git</maven.scm.developerConnection>
         <maven.scm.url>https://github.com/ChenInfo/gengine</maven.scm.url>
-        <maven.distributionManagement.snapshot.url>https://artifacts.cheninfo.com/nexus/content/repositories/snapshots</maven.distributionManagement.snapshot.url>
-        <maven.distributionManagement.url>https://artifacts.cheninfo.com/nexus/content/repositories/thirdparty</maven.distributionManagement.url>
         <maven.compile.source>1.8</maven.compile.source>
         <maven.compile.target>1.8</maven.compile.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         
-        <dependency.junit.version>4.10</dependency.junit.version>
+        <dependency.junit.version>4.12</dependency.junit.version>
         <dependency.log4j.version>1.2.17</dependency.log4j.version>
         <dependency.jackson.version>2.9.9</dependency.jackson.version>
         <dependency.jackson-databind.version>2.9.9.3</dependency.jackson-databind.version>
@@ -91,17 +89,16 @@
             <url>https://artifacts.cheninfo.com/nexus/content/groups/public</url>
         </repository>
     </repositories>
-    
+
     <distributionManagement>
-        <repository>
-            <!-- TODO change to "cheninfo-thirdparty" once .m2/settings.xml has been added to all fixed bamboo agents -->
-            <id>cheninfo-internal</id>
-            <url>${maven.distributionManagement.url}</url>
-        </repository>
         <snapshotRepository>
-            <id>cheninfo-snapshots</id>
-            <url>${maven.distributionManagement.snapshot.url}</url>
+            <id>cheninfo-public-snapshots</id>
+            <url>https://artifacts.cheninfo.com/nexus/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>cheninfo-thirdparty</id>
+            <url>https://artifacts.cheninfo.com/nexus/content/repositories/thirdparty</url>
+        </repository>
     </distributionManagement>
 
     <build>
@@ -124,7 +121,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>${maven.compile.source}</source>
                     <target>${maven.compile.target}</target>
@@ -144,12 +141,12 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.17</version>
+                    <version>2.22.2</version>
                     <executions>
                         <execution>
                             <id>integration-test</id>
@@ -176,7 +173,7 @@
                     <plugin>
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
-                        <version>0.10</version>
+                        <version>0.13</version>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
