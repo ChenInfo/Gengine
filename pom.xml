@@ -7,35 +7,32 @@
     <artifactId>gengine-parent</artifactId>
     <version>0.12-SNAPSHOT</version>
     <packaging>pom</packaging>
-    
+
     <organization>
         <name>ChenInfo Software</name>
         <url>http://www.cheninfo.org/</url>
     </organization>
+
     <licenses>
         <license>
-            <name>${maven.license.name}</name>
-            <url>${maven.license.url}</url>
+            <name>GNU Lesser General Public License v3.0 or later</name>
+            <url>http://www.gnu.org/licenses/lgpl-3.0-standalone.html</url>
         </license>
     </licenses>
+
     <scm>
-        <connection>${maven.scm.connection}</connection>
-        <developerConnection>${maven.scm.developerConnection}</developerConnection>
-        <url>${maven.scm.url}</url>
+        <connection>scm:git:https://github.com/ChenInfo/gengine.git</connection>
+        <developerConnection>scm:git:https://github.com/ChenInfo/gengine.git</developerConnection>
+        <url>https://github.com/ChenInfo/gengine</url>
         <tag>HEAD</tag>
-  </scm>
-    
+    </scm>
+
     <properties>
-        <maven.license.name>GNU Lesser General Public License v3.0 or later</maven.license.name>
-        <maven.license.url>http://www.gnu.org/licenses/lgpl-3.0-standalone.html</maven.license.url>
-        <maven.scm.connection>scm:git:https://github.com/ChenInfo/gengine.git</maven.scm.connection>
-        <maven.scm.developerConnection>scm:git:git@github.com:ChenInfo/gengine.git</maven.scm.developerConnection>
-        <maven.scm.url>https://github.com/ChenInfo/gengine</maven.scm.url>
         <maven.compile.source>1.8</maven.compile.source>
         <maven.compile.target>1.8</maven.compile.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        
+
         <dependency.junit.version>4.12</dependency.junit.version>
         <dependency.log4j.version>1.2.17</dependency.log4j.version>
         <dependency.jackson.version>2.9.9</dependency.jackson.version>
