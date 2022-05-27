@@ -15,8 +15,7 @@ branches:
   only:
     - master
     - /^SP\/.+$/
-    - release
-    - /^release\/SP\/.+$/
+    - /^HF\/.+$/
     - /^MM-.*$/
 
 stages:
@@ -37,6 +36,6 @@ jobs:
 
     - name: "Release"
       stage: release
-      if: branch = release OR branch =~ /^release\/SP\/.+$/
+      if: commit_message ~= /\[trigger release\]/ AND branch ~= /^(master|SP\/.+|HF\/.+)$/
       before_install: bash _ci/init.sh
       script: bash _ci/release.sh
