@@ -1,7 +1,7 @@
 package org.gengine.content.handler;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -234,6 +234,41 @@ public class FileContentReferenceHandlerImpl implements FileContentReferenceHand
                 catch (IOException e)
                 {
                 }
+            }
+        }
+    }
+
+    @Override
+    public long putFile(File sourceFile, ContentReference targetContentReference)
+            throws ContentIOException
+    {
+        FileOutputStream fileOutputStream = null;
+        FileInputStream fileInputStream = null;
+        try
+        {
+            File targetFile = getFile(targetContentReference, false);
+            fileOutputStream = new FileOutputStream(targetFile);
+            fileInputStream = new FileInputStream(sourceFile);
+            return IOUtils.copyLarge(fileInputStream, fileOutputStream);
+        }
+        catch (IOException e)
+        {
+            throw new ContentIOException("Error copying input stream", e);
+        }
+        catch (InterruptedException e)
+        {
+            return 0;
+        }
+        finally
+        {
+            try
+            {
+                if (fileOutputStream != null) { fileOutputStream.close(); }
+                if (fileInputStream != null) { fileInputStream.close(); }
+            }
+            catch (IOException e)
+            {
+                // Ignore
             }
         }
     }

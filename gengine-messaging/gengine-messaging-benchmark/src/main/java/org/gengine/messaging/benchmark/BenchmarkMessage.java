@@ -3,8 +3,8 @@ package org.gengine.messaging.benchmark;
 import java.util.Date;
 import java.util.UUID;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * A simple message with a decent sized payload for benchmarking.

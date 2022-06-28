@@ -13,9 +13,9 @@
     <properties>
         <dependency.commons-logging.version>1.2</dependency.commons-logging.version>
         <dependency.commons-io.version>2.6</dependency.commons-io.version>
-        <dependency.commons-lang.version>2.6</dependency.commons-lang.version>
-        <dependency.tika.version>1.20</dependency.tika.version>
-        <dependency.maven-artifact.version>3.2.1</dependency.maven-artifact.version>
+        <dependency.tika.version>1.22</dependency.tika.version>
+        <dependency.maven-artifact.version>3.6.3</dependency.maven-artifact.version>
+        <dependency.commons-lang3.version>3.9</dependency.commons-lang3.version>
     </properties>
 
     <dependencies>
@@ -30,11 +30,6 @@
             <version>${dependency.commons-io.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${dependency.commons-lang.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
             <version>${dependency.tika.version}</version>
@@ -44,6 +39,11 @@
             <artifactId>maven-artifact</artifactId>
             <version>${dependency.maven-artifact.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${dependency.commons-lang3.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -51,7 +51,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <goals>

@@ -4,7 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.gengine.messaging.MessageConsumer;
 import org.gengine.messaging.amqp.AmqpDirectEndpoint;
 import org.gengine.messaging.jackson.ObjectMapperFactory;

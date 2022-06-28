@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.camel.ProducerTemplate;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.gengine.messaging.MessageProducer;
 import org.gengine.messaging.MessagingException;
 

@@ -2,13 +2,11 @@ package org.gengine.content.handler;
 
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.gengine.content.ContentReference;
 import org.gengine.content.file.FileProvider;
 import org.gengine.content.file.FileProviderImpl;
 import org.gengine.content.file.TempFileProvider;
-import org.gengine.content.handler.ContentReferenceHandler;
-import org.gengine.content.handler.FileContentReferenceHandlerImpl;
 import org.junit.Before;
 import org.junit.Test;
 
