@@ -33,9 +33,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <dependency.junit.version>4.12</dependency.junit.version>
-        <dependency.log4j.version>1.2.17</dependency.log4j.version>
-        <dependency.jackson.version>2.10.1</dependency.jackson.version>
+        <dependency.junit.version>4.13</dependency.junit.version>
+
+        <dependency.commons-logging.version>1.2</dependency.commons-logging.version>
+        <dependency.log4j2.version>2.13.0</dependency.log4j2.version>
+
+        <dependency.jackson.version>2.10.2</dependency.jackson.version>
         <dependency.jackson-databind.version>2.10.1</dependency.jackson-databind.version>
     </properties>
 
@@ -51,41 +54,32 @@
 
     <dependencies>
         <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${dependency.commons-logging.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${dependency.junit.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${dependency.log4j.version}</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${dependency.log4j2.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${dependency.log4j2.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
-    
-    <repositories>
-        <repository>
-            <id>apache.snapshots</id>
-            <url>http://repository.apache.org/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>cheninfo-public-snapshots</id>
-            <url>https://artifacts.cheninfo.com/nexus/content/groups/public-snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>cheninfo-public</id>
-            <url>https://artifacts.cheninfo.com/nexus/content/groups/public</url>
-        </repository>
-    </repositories>
 
     <distributionManagement>
         <snapshotRepository>

@@ -7,7 +7,7 @@
     <version>0.1-SNAPSHOT</version>
 
     <properties>
-        <dependency.activemq.version>5.8.0</dependency.activemq.version>
+        <dependency.activemq.version>5.15.11</dependency.activemq.version>
         <dependency.activemq.maven.jetty.version>7.6.0.v20120127</dependency.activemq.maven.jetty.version>
     </properties>
 
