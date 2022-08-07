@@ -36,10 +36,17 @@
         <dependency.junit.version>4.13</dependency.junit.version>
 
         <dependency.commons-logging.version>1.2</dependency.commons-logging.version>
-        <dependency.log4j2.version>2.13.0</dependency.log4j2.version>
+        <dependency.log4j2.version>2.13.3</dependency.log4j2.version>
 
-        <dependency.jackson.version>2.10.2</dependency.jackson.version>
+        <dependency.jackson.version>2.11.1</dependency.jackson.version>
         <dependency.jackson-databind.version>2.10.1</dependency.jackson-databind.version>
+
+        <!-- gengine-commons -->
+        <dependency.commons-logging.version>1.2</dependency.commons-logging.version>
+        <dependency.commons-io.version>2.7</dependency.commons-io.version>
+        <dependency.tika.version>1.22</dependency.tika.version>
+        <dependency.maven-artifact.version>3.6.3</dependency.maven-artifact.version>
+        <dependency.commons-lang3.version>3.9</dependency.commons-lang3.version>
     </properties>
 
     <modules>

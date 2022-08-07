@@ -10,14 +10,6 @@
 
     <artifactId>gengine-commons</artifactId>
 
-    <properties>
-        <dependency.commons-logging.version>1.2</dependency.commons-logging.version>
-        <dependency.commons-io.version>2.6</dependency.commons-io.version>
-        <dependency.tika.version>1.22</dependency.tika.version>
-        <dependency.maven-artifact.version>3.6.3</dependency.maven-artifact.version>
-        <dependency.commons-lang3.version>3.9</dependency.commons-lang3.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>commons-logging</groupId>
