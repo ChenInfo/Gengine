@@ -10,7 +10,13 @@
 
     <artifactId>gengine-content-handlers</artifactId>
     <packaging>pom</packaging>
-    
+
+    <properties>
+        <dependency.http-client.version>4.5.13</dependency.http-client.version>
+        <dependency.http-core.version>4.4.13</dependency.http-core.version>
+        <dependency.commons-codec.version>1.15</dependency.commons-codec.version>
+    </properties>
+
     <modules>
         <module>gengine-content-handler-s3</module>
         <module>gengine-content-handler-webdav</module>
