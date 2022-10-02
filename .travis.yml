@@ -11,31 +11,37 @@ cache:
   directories:
     - ${HOME}/.m2/repository
 
+before_cache: rm -rf $HOME/.m2/repository/org/gengine
+
 branches:
   only:
     - master
     - /^SP\/.+$/
     - /^HF\/.+$/
-    - /^MM-.*$/
+    - /^ACS-.*$/
+    - /^feature\/.+$/
 
 stages:
   - build
   - release
 
+before_install: bash _ci/init.sh
+
 jobs:
   include:
     - name: "Build"
       stage: build
-      before_install: bash _ci/init.sh
       script: bash _ci/build.sh
 
-    - name: "WhiteSource"
-      stage: build
+#    - name: "WhiteSource"
+#      script: bash _ci/whitesource.sh
+    
+    - name: "Source Clear Scan (SCA)"  
       before_install: bash _ci/init.sh
-      script: bash _ci/whitesource.sh
+      # Run Veracode
+      script: travis_wait 30 bash _ci/source_clear.sh
 
     - name: "Release"
       stage: release
-      if: commit_message ~= /\[trigger release\]/ AND branch ~= /^(master|SP\/.+|HF\/.+)$/
-      before_install: bash _ci/init.sh
+      if: commit_message ~= /\[release\]/ AND branch ~= /^(master|SP\/.+|HF\/.+)$/
       script: bash _ci/release.sh

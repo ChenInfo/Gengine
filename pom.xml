@@ -5,7 +5,7 @@
 
     <groupId>org.gengine</groupId>
     <artifactId>gengine-parent</artifactId>
-    <version>0.12-SNAPSHOT</version>
+    <version>0.13-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <organization>
@@ -35,19 +35,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <dependency.junit.version>4.13.1</dependency.junit.version>
+        <dependency.junit.version>4.13.2</dependency.junit.version>
 
-        <dependency.camel.version>3.7.0</dependency.camel.version>
+        <dependency.camel.version>3.7.7</dependency.camel.version>
 
         <dependency.commons-logging.version>1.2</dependency.commons-logging.version>
-        <dependency.log4j2.version>2.13.3</dependency.log4j2.version>
+        <dependency.log4j2.version>2.17.1</dependency.log4j2.version>
 
-        <dependency.jackson.version>2.12.0</dependency.jackson.version>
+        <dependency.jackson.version>2.13.1</dependency.jackson.version>
         <dependency.jackson-databind.version>${dependency.jackson.version}</dependency.jackson-databind.version>
 
         <!-- gengine-commons -->
-        <dependency.commons-io.version>2.8.0</dependency.commons-io.version>
-        <dependency.tika.version>1.25</dependency.tika.version>
+        <dependency.commons-io.version>2.11.0</dependency.commons-io.version>
+        <dependency.tika.version>2.2.1</dependency.tika.version>
         <dependency.commons-lang3.version>3.11</dependency.commons-lang3.version>
     </properties>
 

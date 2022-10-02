@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.gengine</groupId>
         <artifactId>gengine-parent</artifactId>
-        <version>0.12-SNAPSHOT</version>
+        <version>0.13-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -13,7 +13,7 @@
 
     <properties>
         <dependency.http-client.version>4.5.13</dependency.http-client.version>
-        <dependency.http-core.version>4.4.13</dependency.http-core.version>
+        <dependency.http-core.version>4.4.14</dependency.http-core.version>
         <dependency.commons-codec.version>1.15</dependency.commons-codec.version>
     </properties>
 

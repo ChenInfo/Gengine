@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.gengine</groupId>
         <artifactId>gengine-content-handlers</artifactId>
-        <version>0.12-SNAPSHOT</version>
+        <version>0.13-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -12,6 +12,7 @@
 
     <properties>
         <dependency.quartz.version>2.3.2</dependency.quartz.version>
+        <dependency.sl4j.version>1.7.35</dependency.sl4j.version>
     </properties>
 
     <dependencies>
@@ -24,6 +25,11 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>${dependency.quartz.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${dependency.sl4j.version}</version>
         </dependency>
     </dependencies>
 

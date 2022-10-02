@@ -4,16 +4,16 @@
     <parent>
         <groupId>org.gengine</groupId>
         <artifactId>gengine-messaging</artifactId>
-        <version>0.12-SNAPSHOT</version>
+        <version>0.13-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>gengine-messaging-benchmark</artifactId>
 
     <properties>
-        <dependency.activemq.version>5.16.0</dependency.activemq.version>
+        <dependency.activemq.version>5.16.1</dependency.activemq.version>
 
-        <dependency.sl4j.version>1.7.30</dependency.sl4j.version>
+        <dependency.sl4j.version>1.7.35</dependency.sl4j.version>
     </properties>
 
     <dependencies>
