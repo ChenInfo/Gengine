@@ -1,6 +1,6 @@
 ---
 language: java
-jdk: openjdk11
+jdk: openjdk17
 dist: xenial
 
 git:
