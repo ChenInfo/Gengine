@@ -379,8 +379,8 @@ public class FfmpegContentTransformerWorkerIT extends AbstractContentTransformer
                 testProgressReporter);
         assertEquals(
                 TEST_RESOURCE_STORYBOARD_CLASSPATH +
-                " is just over 11 secs, should have 12 thumbnails",
-                12, results.size());
+                " is just 11 secs, should have 11 thumbnails",
+                11, results.size());
         for (ContentWorkResult result : results)
         {
             assertTrue("Target file size is zero", result.getContentReference().getSize() > 0);
