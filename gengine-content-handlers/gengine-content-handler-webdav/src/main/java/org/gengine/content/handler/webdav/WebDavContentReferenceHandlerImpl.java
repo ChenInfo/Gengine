@@ -1,5 +1,8 @@
 package org.gengine.content.handler.webdav;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -19,8 +22,7 @@ import com.github.sardine.impl.SardineException;
  * WebDAV content handler implementation
  *
  */
-public class WebDavContentReferenceHandlerImpl extends AbstractUrlContentReferenceHandler
-{
+public class WebDavContentReferenceHandlerImpl extends AbstractUrlContentReferenceHandler {
     private static final Log logger = LogFactory.getLog(WebDavContentReferenceHandlerImpl.class);
 
     /** store protocol that is used as prefix in contentUrls */
@@ -35,196 +37,147 @@ public class WebDavContentReferenceHandlerImpl extends AbstractUrlContentReferen
     private String password;
     private Long transferCheckPeriodMs = DEFAULT_TRANSFER_CHECK_PERIOD_MS;
 
-    public void setSardine(Sardine sardine)
-    {
+    public void setSardine(Sardine sardine) {
         this.sardine = sardine;
     }
 
-    protected String getRemoteBaseUrl()
-    {
+    protected String getRemoteBaseUrl() {
         return remoteBaseUrl;
     }
 
-    public void setRemoteBaseUrl(String remoteBaseUrl)
-    {
+    public void setRemoteBaseUrl(String remoteBaseUrl) {
         this.remoteBaseUrl = remoteBaseUrl;
     }
 
-    public void setUsername(String username)
-    {
+    public void setUsername(String username) {
         this.username = username;
     }
 
-    public void setPassword(String password)
-    {
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    public void setTransferCheckPeriodMs(Long transferCheckPeriodMs)
-    {
+    public void setTransferCheckPeriodMs(Long transferCheckPeriodMs) {
         this.transferCheckPeriodMs = transferCheckPeriodMs;
     }
 
-    public void init()
-    {
+    public void init() {
         // Instantiate Sardine object
-        if (sardine == null)
-        {
+        if (sardine == null) {
             sardine = SardineFactory.begin(username, password);
         }
-        if (logger.isDebugEnabled())
-        {
+        if (logger.isDebugEnabled()) {
             logger.debug("WebDAV content transport initialization complete: " +
-                    "{ remoteBaseUrl: '"+remoteBaseUrl+"' }");
+                    "{ remoteBaseUrl: '" + remoteBaseUrl + "' }");
         }
         this.waitForAvailability = transferCheckPeriodMs != null;
         this.isAvailable = true;
     }
 
-
     @Override
-    public boolean isContentReferenceSupported(ContentReference contentReference)
-    {
-        if (contentReference == null)
-        {
+    public boolean isContentReferenceSupported(ContentReference contentReference) {
+        if (contentReference == null) {
             return false;
         }
         String uri = contentReference.getUri();
-        if (uri == null)
-        {
+        if (uri == null) {
             return false;
         }
-        if (uri.startsWith(remoteBaseUrl))
-        {
+        if (uri.startsWith(remoteBaseUrl)) {
             return true;
         }
-        if ((uri.startsWith(HTTPS_PROTOCOL) || uri.startsWith(HTTP_PROTOCOL)))
-        {
+        if ((uri.startsWith(HTTPS_PROTOCOL) || uri.startsWith(HTTP_PROTOCOL))) {
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean isContentReferenceExists(ContentReference contentReference)
-    {
-        if (!isContentReferenceSupported(contentReference))
-        {
+    public boolean isContentReferenceExists(ContentReference contentReference) {
+        if (!isContentReferenceSupported(contentReference)) {
             return false;
         }
-        try
-        {
+        try {
             String remoteFileUrl = getRemoteFileUrl(contentReference);
-            while (true)
-            {
-                try
-                {
+            while (true) {
+                try {
                     return sardine.exists(remoteFileUrl);
-                }
-                catch (SardineException e)
-                {
+                } catch (SardineException e) {
                     throw new ContentIOException("Failed to check existence of content: " + e.getMessage(), e);
                 }
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new ContentIOException("Failed to check existence of content: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public InputStream getInputStream(ContentReference contentReference, boolean waitForAvailability) throws ContentIOException, InterruptedException
-    {
-        if (!isContentReferenceSupported(contentReference))
-        {
+    public InputStream getInputStream(ContentReference contentReference, boolean waitForAvailability) throws ContentIOException, InterruptedException {
+        if (!isContentReferenceSupported(contentReference)) {
             throw new ContentIOException("ContentReference not supported");
         }
-        try
-        {
+        try {
             String remoteFileUrl = getRemoteFileUrl(contentReference);
-            while (true)
-            {
-                try
-                {
+            while (true) {
+                try {
                     return sardine.get(remoteFileUrl);
-                }
-                catch (SardineException e)
-                {
-                    if (waitForAvailability && e.getMessage().contains("404"))
-                    {
+                } catch (SardineException e) {
+                    if (waitForAvailability && e.getMessage().contains("404")) {
                         logger.trace(remoteFileUrl + " not yet available, waiting " + transferCheckPeriodMs + "ms");
                         Thread.sleep(transferCheckPeriodMs);
-                    }
-                    else
-                    {
+                    } else {
                         logger.error(e.getMessage(), e);
                         throw new ContentIOException("Failed to read content: " + e.getMessage(), e);
                     }
                 }
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new ContentIOException("Failed to read content: " + e.getMessage(), e);
         }
     }
 
     @Override
     public long putInputStream(InputStream sourceInputStream, ContentReference targetContentReference)
-            throws ContentIOException
-    {
-        if (!isContentReferenceSupported(targetContentReference))
-        {
+            throws ContentIOException {
+        if (!isContentReferenceSupported(targetContentReference)) {
             throw new ContentIOException("ContentReference not supported");
         }
 
-        try
-        {
+        try {
             String remoteFileUrl = getRemoteFileUrl(targetContentReference);
 
             logger.debug("Putting input stream to " + remoteFileUrl);
             sardine.put(remoteFileUrl, sourceInputStream);
 
             List<DavResource> resources = sardine.list(remoteFileUrl);
-            if (resources == null || resources.size() > 1)
-            {
+            if (resources == null || resources.size() > 1) {
                 throw new ContentIOException("Unable to determine result of transfer");
             }
             DavResource davResource = resources.iterator().next();
             return davResource.getContentLength();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new ContentIOException("Failed to write content: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public void delete(ContentReference contentReference) throws ContentIOException
-    {
-        if (!isContentReferenceSupported(contentReference))
-        {
+    public void delete(ContentReference contentReference) throws ContentIOException {
+        if (!isContentReferenceSupported(contentReference)) {
             throw new ContentIOException("ContentReference not supported");
         }
 
         String remoteFileUrl = getRemoteFileUrl(contentReference);
 
-        try
-        {
+        try {
             sardine.delete(remoteFileUrl);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new ContentIOException("Failed to delete content: " + e.getMessage(), e);
         }
-
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder builder = new StringBuilder(this.getClass().getSimpleName() + "[");
         builder.append("sardine: " + (sardine == null ? "null" : sardine.toString()));
         builder.append(", ");
@@ -235,4 +188,38 @@ public class WebDavContentReferenceHandlerImpl extends AbstractUrlContentReferen
         return builder.toString();
     }
 
+    @Override
+    public long putFile(File file, ContentReference contentReference) throws ContentIOException {
+        try (InputStream inputStream = new FileInputStream(file)) {
+            return putInputStream(inputStream, contentReference);
+        } catch (IOException e) {
+            throw new ContentIOException("Failed to put file", e);
+        }
+    }
+
+    @Override
+    public File getFile(ContentReference contentReference, boolean waitForAvailability) throws ContentIOException, InterruptedException {
+        if (!isContentReferenceSupported(contentReference)) {
+            throw new ContentIOException("ContentReference not supported");
+        }
+
+        try {
+            String remoteFileUrl = getRemoteFileUrl(contentReference);
+            File tempFile = File.createTempFile("webdav-", ".tmp");
+
+            try (InputStream inputStream = getInputStream(contentReference, waitForAvailability);
+                 FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+
+            return tempFile;
+        } catch (IOException e) {
+            throw new ContentIOException("Failed to get file", e);
+        }
+    }
 }

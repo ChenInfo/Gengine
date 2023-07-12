@@ -1,5 +1,6 @@
 package org.gengine.content.handler;
 
+import java.io.File;
 import java.io.InputStream;
 
 import org.gengine.content.ContentIOException;
@@ -76,4 +77,26 @@ public interface ContentReferenceHandler
      */
     public boolean isAvailable();
 
+    /**
+     * Gets the file for the given content reference.
+     * 
+     * @param contentReference
+     * @param waitForTransfer
+     * @return the file
+     * @throws ContentIOException
+     * @throws InterruptedException
+     * 
+     */
+    public File getFile(ContentReference contentReference, boolean waitForTransfer) throws ContentIOException, InterruptedException;
+
+    /**
+     * Writes the given source file into the given target content reference.
+     * 
+     * @param sourceFile
+     * @param targetContentReference
+     * @return the size copied
+     * @throws ContentIOException
+     * 
+     */
+    public long putFile(File sourceFile, ContentReference targetContentReference) throws ContentIOException;
 }

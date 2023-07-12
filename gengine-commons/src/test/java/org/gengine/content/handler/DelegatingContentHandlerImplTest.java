@@ -123,7 +123,7 @@ public class DelegatingContentHandlerImplTest
     public void testGetInputStream() throws Exception
     {
         InputStream sourceInputStream = delegatingHandler.getInputStream(contentReferenceFile1a, false);
-        assertEquals(15, sourceInputStream.available());
+        assertEquals(16, sourceInputStream.available());
     }
 
     @Test
@@ -240,6 +240,12 @@ public class DelegatingContentHandlerImplTest
         public long putFile(File sourceFile, ContentReference targetContentReference) throws ContentIOException
         {
             return 0;
+        }
+
+        @Override
+        public File getFile(ContentReference contentReference, boolean waitForTransfer) throws ContentIOException, InterruptedException
+        {
+            return null;
         }
 
         @Override

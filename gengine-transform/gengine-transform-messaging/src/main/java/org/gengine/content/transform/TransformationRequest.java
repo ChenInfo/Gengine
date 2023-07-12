@@ -15,6 +15,7 @@ public class TransformationRequest extends AbstractContentRequest implements Req
 {
     private List<ContentReference> targetContentReferences;
     private TransformationOptions options;
+    private String targetMediaType; // Added field
 
     public TransformationRequest()
     {
@@ -70,6 +71,26 @@ public class TransformationRequest extends AbstractContentRequest implements Req
     public void setOptions(TransformationOptions options)
     {
         this.options = options;
+    }
+
+    /**
+     * Gets the target media type
+     * 
+     * @return target media type
+     */
+    public String getTargetMediaType()
+    {
+        return targetMediaType;
+    }
+
+    /**
+     * Sets the target media type
+     * 
+     * @param targetMediaType
+     */
+    public void setTargetMediaType(String targetMediaType)
+    {
+        this.targetMediaType = targetMediaType;
     }
 
     @Override

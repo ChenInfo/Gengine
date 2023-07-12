@@ -2,6 +2,8 @@ package org.gengine.content.handler.s3;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.commons.logging.Log;
@@ -394,6 +396,47 @@ public class S3ContentReferenceHandlerImpl extends AbstractUrlContentReferenceHa
         }
     }
 
+    @Override
+    public File getFile(ContentReference contentReference, boolean waitForTransfer) throws ContentIOException, InterruptedException {
+        if (!isContentReferenceSupported(contentReference)) {
+            throw new ContentIOException("ContentReference not supported");
+        }
+
+        try {
+            String s3Url = getS3UrlFromHttpUrl(contentReference.getUri());
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Getting file for reference: " + s3Url);
+            }
+
+            // Create a temporary file
+            File tempFile = File.createTempFile("s3content", null);
+
+            // Get the object and retrieve the input stream
+            S3Object object = s3.getObject(new GetObjectRequest(s3BucketName, getRelativePath(s3Url)));
+            InputStream inputStream = object.getObjectContent();
+
+            // Write the input stream to the temporary file
+            try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            } catch (IOException e) {
+                throw new ContentIOException("Failed to write content to file", e);
+            }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("File written to: " + tempFile.getAbsolutePath());
+            }
+
+            return tempFile;
+        } catch (Throwable t) {
+            throw new ContentIOException("Failed to get content", t);
+        }
+    }
+    
     @Override
     public void delete(ContentReference contentReference) throws ContentIOException
     {
